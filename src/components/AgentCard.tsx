@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { MessageCircle, Pencil, Check, X } from 'lucide-react';
@@ -15,15 +14,13 @@ interface AgentCardProps {
 const AgentCard: React.FC<AgentCardProps> = ({ agent }) => {
   const { isAdmin } = useAuth();
   
-  // Transform categories distribution for the pie chart
   const categoryData = Object.entries(agent.categoriesDistribution)
     .filter(([_, value]) => value > 0)
     .map(([name, value]) => ({
       name: name as ServiceCategory,
       value
     }));
-  
-  // Define colors for categories
+
   const COLORS: Record<ServiceCategory, string> = {
     'INTEGRATIONS': '#4071FF',
     'REASONING': '#E63946',
@@ -33,17 +30,18 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent }) => {
     'LLM PROVIDER': '#9B6DFF'
   };
 
-  // Generate initials from agent title
   const logoInitials = agent.title.substring(0, 2).toUpperCase();
   
-  // Check if agent.logo is a valid URL or base64 string (starting with http, https, or data:)
   const isValidLogoUrl = typeof agent.logo === 'string' && 
     (agent.logo.startsWith('http') || agent.logo.startsWith('data:'));
   
+  const displayLLMs = agent.llms.length > 0 
+    ? agent.llms.filter(llm => !['gpt-4o', 'lama'].includes(llm.toLowerCase()))
+    : ['GPT-4o Mini'];
+
   return (
     <Card className="bg-white rounded-2xl shadow-sm overflow-hidden">
       <div className="relative">
-        {/* Agent header with status icon */}
         <div className="p-6 pb-2">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-4">
@@ -83,7 +81,6 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent }) => {
           </div>
         </div>
 
-        {/* Agent description and related services side by side */}
         <div className="px-6 pb-4">
           <div className="flex flex-row gap-6">
             <div className="w-2/3">
@@ -102,7 +99,6 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent }) => {
           </div>
         </div>
 
-        {/* Applied service categories and pie chart side by side */}
         <div className="px-6 pb-4">
           <div className="flex flex-row gap-6 items-start">
             <div className="w-2/3">
@@ -162,7 +158,6 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent }) => {
               </div>
             </div>
             
-            {/* Pie chart for categories with tooltip */}
             <div className="w-1/3 h-24 flex justify-center">
               <PieChart width={100} height={100}>
                 <Pie
@@ -188,11 +183,10 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent }) => {
           </div>
         </div>
 
-        {/* LLMs used */}
         <div className="px-6 pb-4">
           <h4 className="text-sm font-medium mb-2">LLMs used:</h4>
           <div className="flex flex-wrap gap-2">
-            {agent.llms.map((llm, index) => (
+            {displayLLMs.map((llm, index) => (
               <div 
                 key={index} 
                 className="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-xs font-medium"
@@ -200,15 +194,9 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent }) => {
                 {llm}
               </div>
             ))}
-            {agent.llms.length === 0 && (
-              <div className="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-xs font-medium">
-                GPT-4o Mini
-              </div>
-            )}
           </div>
         </div>
 
-        {/* Cost section */}
         <div className="px-6 pb-4 grid grid-cols-3 gap-4">
           <div>
             <div className="text-sm text-gray-500">Total cost</div>
@@ -224,7 +212,6 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent }) => {
           </div>
         </div>
 
-        {/* Chat with Agent button */}
         <Link 
           to={`/agents/${agent.id}`}
           className={`block w-full py-3 px-4 text-center font-medium ${

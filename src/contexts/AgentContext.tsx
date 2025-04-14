@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { agentsDB, servicesDB, llmModelsDB, initializeDatabase } from '@/utils/database';
 
@@ -216,7 +215,7 @@ const createMockAgent = (id: string, title: string, version: string, subtitle: s
     logo: 'SB',
     isActive,
     services: mockServices.slice(0, 3),
-    llms: ['GPT-4o Mini'], // Default LLM is set to GPT-4o Mini only
+    llms: ['GPT-4o Mini'], // Always use GPT-4o Mini as default
     totalCost: 187.20,
     servicesCost: 187.20,
     llmCost: 187.20,
