@@ -27,11 +27,8 @@ const Header: React.FC = () => {
               <img 
                 src="/lovable-uploads/695db59c-0b86-4a3f-afbe-6cf313ac93e5.png" 
                 alt="BlueSky Logo" 
-                className="h-16" 
+                className="h-20" 
               />
-            </div>
-            <div className="flex items-center mt-1">
-              <span className="text-xs text-gray-500">Powered by BlueSky</span>
             </div>
           </Link>
         </div>
@@ -56,7 +53,10 @@ const Header: React.FC = () => {
         </nav>
         
         <div>
-          <Link to="/profile" className="p-2 rounded-full bg-white hover:bg-gray-100 transition-colors shadow-sm">
+          <Link 
+            to="/profile" 
+            className="p-3 rounded-full bg-white hover:bg-gray-100 transition-colors shadow-md flex items-center justify-center"
+          >
             <User className="w-6 h-6 text-indigo-900" />
           </Link>
         </div>
