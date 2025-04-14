@@ -91,7 +91,7 @@ const AgentEdit: React.FC = () => {
       setIsSubmitting(true);
       
       // Prepare the updated agent data
-      const updatedAgent = {
+      const updatedAgent: Partial<AIAgent> & { id: string } = {
         id,
         title: data.title,
         subtitle: data.subtitle,
@@ -107,24 +107,31 @@ const AgentEdit: React.FC = () => {
         prompt: data.prompt
       };
       
-      // Update the agent data (this will save to database and update state)
-      await updateAgent(updatedAgent);
-      
-      // Handle logo upload if there is one
+      // Add logo to updated agent if there's a new logo
       if (logoFile) {
-        console.log("Logo file to upload:", logoFile);
-        // Here we would upload the logo file to a server
-        // For now, we just simulate it as done
-        toast.success("Logo uploaded successfully");
+        // In a real application, we would upload the file to a server
+        // and get back a URL. For this demo, we'll create a data URL.
+        const reader = new FileReader();
+        reader.onloadend = async () => {
+          // Update with the new logo (using first letters if no logo)
+          updatedAgent.logo = logoPreview || data.title.substring(0, 2).toUpperCase();
+          
+          // Now update the agent with the logo
+          await updateAgent(updatedAgent);
+          
+          toast.success("Agent updated successfully with new logo");
+          navigate(`/agents/${id}`);
+        };
+        reader.readAsDataURL(logoFile);
+      } else {
+        // Update the agent data without changing the logo
+        await updateAgent(updatedAgent);
+        toast.success("Agent updated successfully");
+        navigate(`/agents/${id}`);
       }
-      
-      toast.success("Agent updated successfully");
-      // Navigate back to agent details
-      navigate(`/agents/${id}`);
     } catch (error) {
       console.error("Error updating agent:", error);
       toast.error("Failed to update agent");
-    } finally {
       setIsSubmitting(false);
     }
   };
@@ -336,14 +343,15 @@ const AgentEdit: React.FC = () => {
                 Select the language models this agent can use:
               </p>
               
-              <div className="grid grid-cols-1 gap-4">
+              <div className="grid grid-cols-1 gap-4 max-h-[400px] overflow-y-auto pr-2">
                 {llmModels.map((llm) => {
+                  // Using the name field for LLM models
                   const isSelected = form.watch('selectedLlms').includes(llm.name as LLMModel);
                   
                   return (
                     <div 
                       key={llm.id} 
-                      className={`flex items-center space-x-3 p-3 rounded-lg border ${isSelected ? 'border-action-primary bg-action-50' : 'border-gray-200 hover:bg-gray-50'}`}
+                      className={`flex items-center space-x-3 p-3 rounded-lg border cursor-pointer ${isSelected ? 'border-action-primary bg-action-50' : 'border-gray-200 hover:bg-gray-50'}`}
                       onClick={() => handleLlmToggle(llm.name as LLMModel)}
                     >
                       <div className="flex items-center justify-center h-5 w-5">

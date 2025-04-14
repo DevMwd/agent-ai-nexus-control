@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { PieChart, Pie, Cell, Tooltip } from 'recharts';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 interface AgentCardProps {
   agent: AIAgent;
@@ -32,6 +33,9 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent }) => {
     'SCRAPING - CRAWLING': '#3CAF85',
     'LLM PROVIDER': '#9B6DFF'
   };
+
+  // Check if agent.logo is a string with length > 10, which likely means it's a data URL
+  const isLogoImage = typeof agent.logo === 'string' && agent.logo.length > 10;
   
   return (
     <Card className="bg-white rounded-2xl shadow-sm overflow-hidden">
@@ -40,9 +44,16 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent }) => {
         <div className="p-6 pb-2">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center text-xl font-semibold">
-                {agent.logo}
-              </div>
+              {isLogoImage ? (
+                <Avatar className="w-16 h-16">
+                  <AvatarImage src={agent.logo} alt={agent.title} className="object-cover" />
+                  <AvatarFallback>{agent.title.substring(0, 2).toUpperCase()}</AvatarFallback>
+                </Avatar>
+              ) : (
+                <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center text-xl font-semibold">
+                  {agent.logo}
+                </div>
+              )}
               <div>
                 <p className="text-sm text-gray-500">{agent.subtitle}</p>
                 <h3 className="text-xl font-bold">{agent.title} {agent.version}</h3>
