@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -16,6 +15,7 @@ import ServicesLLM from "./pages/ServicesLLM";
 import AdminPanel from "./pages/AdminPanel";
 import SessionLogs from "./pages/SessionLogs";
 import Profile from "./pages/Profile";
+import AgentEdit from './pages/AgentEdit';
 
 const queryClient = new QueryClient();
 
@@ -74,6 +74,16 @@ const App = () => (
                   <RequireAuth>
                     <MainLayout>
                       <AgentDetails />
+                    </MainLayout>
+                  </RequireAuth>
+                } 
+              />
+              <Route 
+                path="/agents/:id/edit" 
+                element={
+                  <RequireAuth>
+                    <MainLayout>
+                      <AgentEdit />
                     </MainLayout>
                   </RequireAuth>
                 } 

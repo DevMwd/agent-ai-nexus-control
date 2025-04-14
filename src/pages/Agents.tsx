@@ -3,8 +3,9 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAgents } from '@/contexts/AgentContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { Plus } from 'lucide-react';
+import { Plus, Pencil } from 'lucide-react';
 import AgentCard from '@/components/AgentCard';
+import { Button } from '@/components/ui/button';
 
 const Agents: React.FC = () => {
   const { agents } = useAgents();
@@ -28,7 +29,18 @@ const Agents: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {agents.map((agent) => (
-          <AgentCard key={agent.id} agent={agent} />
+          <div key={agent.id} className="relative">
+            <AgentCard agent={agent} />
+            {isAdmin() && (
+              <Link 
+                to={`/agents/${agent.id}/edit`}
+                className="absolute top-4 right-4 bg-white rounded-full p-2 shadow hover:bg-gray-100 transition-all"
+                title="Edit Agent"
+              >
+                <Pencil className="w-4 h-4 text-gray-600" />
+              </Link>
+            )}
+          </div>
         ))}
       </div>
     </div>
