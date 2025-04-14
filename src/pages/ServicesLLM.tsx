@@ -16,6 +16,86 @@ import * as z from 'zod';
 import { servicesDB, llmModelsDB } from '@/utils/database';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
+// CategoryBadge component
+const CategoryBadge = ({ category }: { category: string }) => {
+  const getColor = () => {
+    switch (category) {
+      case 'INTEGRATIONS': return 'bg-blue-100 text-blue-800';
+      case 'REASONING': return 'bg-red-100 text-red-800';
+      case 'DB': return 'bg-yellow-100 text-yellow-800';
+      case 'DOCUMENT COMPOSITION': return 'bg-red-100 text-red-800';
+      case 'SCRAPING - CRAWLING': return 'bg-green-100 text-green-800';
+      case 'LLM PROVIDER': return 'bg-purple-100 text-purple-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+  
+  return (
+    <span className={`${getColor()} px-2 py-1 rounded-full text-xs font-medium`}>
+      {category}
+    </span>
+  );
+};
+
+// CategoryCard component
+const CategoryCard = ({ 
+  name, 
+  color, 
+  icon,
+  onEdit,
+  onDelete
+}: { 
+  name: string; 
+  color: string; 
+  icon: string;
+  onEdit: () => void;
+  onDelete: () => void;
+}) => {
+  const getIcon = () => {
+    switch (icon) {
+      case 'database': return <Database className="w-5 h-5" />;
+      case 'activity': return <Activity className="w-5 h-5" />;
+      case 'file-edit': return <FileEdit className="w-5 h-5" />;
+      case 'clipboard-list': return <ClipboardList className="w-5 h-5" />;
+      case 'globe': return <Globe className="w-5 h-5" />;
+      case 'cloud': return <Cloud className="w-5 h-5" />;
+      default: return <Database className="w-5 h-5" />;
+    }
+  };
+  
+  const getBgColor = () => {
+    switch (color) {
+      case 'blue': return 'bg-blue-100';
+      case 'red': return 'bg-red-100';
+      case 'yellow': return 'bg-yellow-100';
+      case 'green': return 'bg-green-100';
+      case 'purple': return 'bg-purple-100';
+      default: return 'bg-gray-100';
+    }
+  };
+  
+  return (
+    <div className="border rounded-lg p-4 relative">
+      <div className="flex justify-between items-start mb-4">
+        <div className="flex items-center gap-2">
+          <div className={`${getBgColor()} p-2 rounded-lg`}>
+            {getIcon()}
+          </div>
+          <h3 className="font-semibold text-lg">{name}</h3>
+        </div>
+        <div className="flex gap-1">
+          <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={onEdit}>
+            <Edit className="h-4 w-4" />
+          </Button>
+          <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={onDelete}>
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const ServicesLLM: React.FC = () => {
   const [activeTab, setActiveTab] = useState("services");
   const { services, llmModels } = useAgents();
@@ -711,99 +791,4 @@ const ServicesLLM: React.FC = () => {
                 className="border border-dashed border-gray-300 rounded-lg p-4 flex items-center justify-center cursor-pointer hover:bg-gray-50"
                 onClick={handleAddCategory}
               >
-                <Plus className="w-5 h-5 text-gray-500 mr-2" />
-                <span className="text-gray-500">Add New Category</span>
-              </div>
-            </div>
-          </div>
-        </TabsContent>
-      </Tabs>
-
-      {/* Category Dialogs */}
-      
-      <Dialog open={isAddCategoryDialogOpen} onOpenChange={setIsAddCategoryDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Add New Category</DialogTitle>
-            <DialogDescription>
-              Create a new service category with a name, color, and icon.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="name" className="text-right">
-                Name
-              </label>
-              <Input
-                id="name"
-                value={categoryName}
-                onChange={(e) => setCategoryName(e.target.value)}
-                className="col-span-3"
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label className="text-right">
-                Color
-              </label>
-              <div className="col-span-3 flex gap-2">
-                {colorOptions.map((option) => (
-                  <button
-                    key={option.value}
-                    className={`w-8 h-8 rounded-full border ${
-                      categoryColor === option.value ? 'ring-2 ring-blue-500' : ''
-                    } bg-${option.value}-100`}
-                    onClick={() => setCategoryColor(option.value)}
-                    title={option.name}
-                  />
-                ))}
-              </div>
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label className="text-right">
-                Icon
-              </label>
-              <div className="col-span-3 flex flex-wrap gap-2">
-                {iconOptions.map((option) => (
-                  <button
-                    key={option.value}
-                    className={`p-2 rounded-md border ${
-                      categoryIcon === option.value ? 'bg-blue-100 border-blue-300' : 'bg-gray-50'
-                    }`}
-                    onClick={() => setCategoryIcon(option.value)}
-                    title={option.name}
-                  >
-                    {getCategoryIcon(option.value)}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button 
-              variant="outline" 
-              onClick={() => setIsAddCategoryDialogOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button onClick={handleAddCategorySubmit}>Add Category</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={isEditCategoryDialogOpen} onOpenChange={setIsEditCategoryDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Edit Category</DialogTitle>
-            <DialogDescription>
-              Update the category name, color, and icon.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="edit-name" className="text-right">
-                Name
-              </label>
-              <Input
-                id="edit-name"
-                value={categoryName}
-                onChange={(e) => setCategory
+                <Plus className="w-5
