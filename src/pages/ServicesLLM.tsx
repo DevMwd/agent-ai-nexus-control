@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAgents } from '@/contexts/AgentContext';
@@ -744,7 +745,6 @@ const ServicesLLM: React.FC = () => {
             </p>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              
               <CategoryCard 
                 name="INTEGRATIONS" 
                 color="blue" 
@@ -791,4 +791,806 @@ const ServicesLLM: React.FC = () => {
                 className="border border-dashed border-gray-300 rounded-lg p-4 flex items-center justify-center cursor-pointer hover:bg-gray-50"
                 onClick={handleAddCategory}
               >
-                <Plus className="w-5
+                <Plus className="w-5 h-5 text-gray-500 mr-2" />
+                <span className="text-gray-500">Add New Category</span>
+              </div>
+            </div>
+          </div>
+        </TabsContent>
+      </Tabs>
+
+      {/* Category Dialogs */}
+      <Dialog open={isAddCategoryDialogOpen} onOpenChange={setIsAddCategoryDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Add New Category</DialogTitle>
+            <DialogDescription>
+              Create a new service category with a name, color, and icon.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="name" className="text-right">
+                Name
+              </label>
+              <Input
+                id="name"
+                value={categoryName}
+                onChange={(e) => setCategoryName(e.target.value)}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label className="text-right">
+                Color
+              </label>
+              <div className="col-span-3 flex gap-2">
+                {colorOptions.map((option) => (
+                  <button
+                    key={option.value}
+                    className={`w-8 h-8 rounded-full border ${
+                      categoryColor === option.value ? 'ring-2 ring-blue-500' : ''
+                    } bg-${option.value}-100`}
+                    onClick={() => setCategoryColor(option.value)}
+                    title={option.name}
+                  />
+                ))}
+              </div>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label className="text-right">
+                Icon
+              </label>
+              <div className="col-span-3 flex flex-wrap gap-2">
+                {iconOptions.map((option) => (
+                  <button
+                    key={option.value}
+                    className={`p-2 rounded-md border ${
+                      categoryIcon === option.value ? 'bg-blue-100 border-blue-300' : 'bg-gray-50'
+                    }`}
+                    onClick={() => setCategoryIcon(option.value)}
+                    title={option.name}
+                  >
+                    {getCategoryIcon(option.value)}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setIsAddCategoryDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleAddCategorySubmit}>Add Category</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isEditCategoryDialogOpen} onOpenChange={setIsEditCategoryDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Category</DialogTitle>
+            <DialogDescription>
+              Update the category name, color, and icon.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="edit-name" className="text-right">
+                Name
+              </label>
+              <Input
+                id="edit-name"
+                value={categoryName}
+                onChange={(e) => setCategoryName(e.target.value)}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label className="text-right">
+                Color
+              </label>
+              <div className="col-span-3 flex gap-2">
+                {colorOptions.map((option) => (
+                  <button
+                    key={option.value}
+                    className={`w-8 h-8 rounded-full border ${
+                      categoryColor === option.value ? 'ring-2 ring-blue-500' : ''
+                    } bg-${option.value}-100`}
+                    onClick={() => setCategoryColor(option.value)}
+                    title={option.name}
+                  />
+                ))}
+              </div>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label className="text-right">
+                Icon
+              </label>
+              <div className="col-span-3 flex flex-wrap gap-2">
+                {iconOptions.map((option) => (
+                  <button
+                    key={option.value}
+                    className={`p-2 rounded-md border ${
+                      categoryIcon === option.value ? 'bg-blue-100 border-blue-300' : 'bg-gray-50'
+                    }`}
+                    onClick={() => setCategoryIcon(option.value)}
+                    title={option.name}
+                  >
+                    {getCategoryIcon(option.value)}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setIsEditCategoryDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleEditCategorySubmit}>Update Category</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isDeleteCategoryDialogOpen} onOpenChange={setIsDeleteCategoryDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete Category</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this category? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-gray-700">
+              Category: <strong>{selectedCategory}</strong>
+            </p>
+          </div>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setIsDeleteCategoryDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={handleDeleteCategorySubmit}
+            >
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Service Dialogs */}
+      <Dialog open={isAddServiceDialogOpen} onOpenChange={setIsAddServiceDialogOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Add New Service</DialogTitle>
+            <DialogDescription>
+              Create a new service with its details and configuration.
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...serviceForm}>
+            <form onSubmit={serviceForm.handleSubmit(handleAddServiceSubmit)} className="space-y-6">
+              <FormField
+                control={serviceForm.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter service name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={serviceForm.control}
+                name="category"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Category</FormLabel>
+                    <Select 
+                      onValueChange={field.onChange} 
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a category" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="INTEGRATIONS">Integrations</SelectItem>
+                        <SelectItem value="REASONING">Reasoning</SelectItem>
+                        <SelectItem value="DB">Database</SelectItem>
+                        <SelectItem value="DOCUMENT COMPOSITION">Document Composition</SelectItem>
+                        <SelectItem value="SCRAPING - CRAWLING">Scraping & Crawling</SelectItem>
+                        <SelectItem value="LLM PROVIDER">LLM Provider</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={serviceForm.control}
+                name="costStructure"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Cost Structure</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g., Per request, Monthly subscription" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={serviceForm.control}
+                name="costPerUnit"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Cost per Unit</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g., $0.001 per token, $10 per month" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={serviceForm.control}
+                name="hasFreetier"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                    <FormControl>
+                      <input
+                        type="checkbox"
+                        checked={field.value}
+                        onChange={field.onChange}
+                        className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel>Has Free Tier</FormLabel>
+                      <FormDescription>
+                        Check if the service offers a free plan or tier.
+                      </FormDescription>
+                    </div>
+                  </FormItem>
+                )}
+              />
+              <DialogFooter>
+                <Button type="submit">Add Service</Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isEditServiceDialogOpen} onOpenChange={setIsEditServiceDialogOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Edit Service</DialogTitle>
+            <DialogDescription>
+              Update the service details and configuration.
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...serviceForm}>
+            <form onSubmit={serviceForm.handleSubmit(handleEditServiceSubmit)} className="space-y-6">
+              <FormField
+                control={serviceForm.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter service name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={serviceForm.control}
+                name="category"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Category</FormLabel>
+                    <Select 
+                      onValueChange={field.onChange} 
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a category" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="INTEGRATIONS">Integrations</SelectItem>
+                        <SelectItem value="REASONING">Reasoning</SelectItem>
+                        <SelectItem value="DB">Database</SelectItem>
+                        <SelectItem value="DOCUMENT COMPOSITION">Document Composition</SelectItem>
+                        <SelectItem value="SCRAPING - CRAWLING">Scraping & Crawling</SelectItem>
+                        <SelectItem value="LLM PROVIDER">LLM Provider</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={serviceForm.control}
+                name="costStructure"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Cost Structure</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g., Per request, Monthly subscription" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={serviceForm.control}
+                name="costPerUnit"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Cost per Unit</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g., $0.001 per token, $10 per month" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={serviceForm.control}
+                name="hasFreetier"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                    <FormControl>
+                      <input
+                        type="checkbox"
+                        checked={field.value}
+                        onChange={field.onChange}
+                        className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel>Has Free Tier</FormLabel>
+                      <FormDescription>
+                        Check if the service offers a free plan or tier.
+                      </FormDescription>
+                    </div>
+                  </FormItem>
+                )}
+              />
+              <DialogFooter>
+                <Button type="submit">Update Service</Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isDeleteServiceDialogOpen} onOpenChange={setIsDeleteServiceDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete Service</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this service? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-gray-700">
+              Service: <strong>{servicesList.find(s => s.id === selectedService)?.name}</strong>
+            </p>
+          </div>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setIsDeleteServiceDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={handleDeleteServiceSubmit}
+            >
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* LLM Dialogs */}
+      <Dialog open={isAddLLMDialogOpen} onOpenChange={setIsAddLLMDialogOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Add New LLM Model</DialogTitle>
+            <DialogDescription>
+              Add a new LLM model with its details, costs, and capabilities.
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...llmForm}>
+            <form onSubmit={llmForm.handleSubmit(handleAddLLMSubmit)} className="space-y-6">
+              <FormField
+                control={llmForm.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter model name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={llmForm.control}
+                name="provider"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Provider</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g., OpenAI, Anthropic, Google" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={llmForm.control}
+                  name="inputCost"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Input Cost (per token)</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="number" 
+                          step="0.000001" 
+                          min="0"
+                          placeholder="0.000001" 
+                          {...field}
+                          onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={llmForm.control}
+                  name="outputCost"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Output Cost (per token)</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="number" 
+                          step="0.000001" 
+                          min="0"
+                          placeholder="0.000001" 
+                          {...field}
+                          onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <FormField
+                control={llmForm.control}
+                name="maxContext"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Max Context</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g., 8K, 16K, 32K tokens" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div>
+                <FormLabel>Strengths</FormLabel>
+                <div className="space-y-2 mt-2">
+                  {llmForm.watch("strengths").map((strength, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <Input
+                        value={strength}
+                        onChange={(e) => {
+                          const updatedStrengths = [...llmForm.getValues().strengths];
+                          updatedStrengths[index] = e.target.value;
+                          llmForm.setValue('strengths', updatedStrengths);
+                        }}
+                        placeholder="Enter a strength"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleRemoveStrengthField(index)}
+                        className="h-8 w-8 p-0"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleAddStrengthField}
+                    className="mt-2"
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Strength
+                  </Button>
+                </div>
+              </div>
+              <div>
+                <FormLabel>Limitations</FormLabel>
+                <div className="space-y-2 mt-2">
+                  {llmForm.watch("limitations").map((limitation, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <Input
+                        value={limitation}
+                        onChange={(e) => {
+                          const updatedLimitations = [...llmForm.getValues().limitations];
+                          updatedLimitations[index] = e.target.value;
+                          llmForm.setValue('limitations', updatedLimitations);
+                        }}
+                        placeholder="Enter a limitation"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleRemoveLimitationField(index)}
+                        className="h-8 w-8 p-0"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleAddLimitationField}
+                    className="mt-2"
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Limitation
+                  </Button>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button type="submit">Add LLM Model</Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isEditLLMDialogOpen} onOpenChange={setIsEditLLMDialogOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Edit LLM Model</DialogTitle>
+            <DialogDescription>
+              Update the LLM model details, costs, and capabilities.
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...llmForm}>
+            <form onSubmit={llmForm.handleSubmit(handleEditLLMSubmit)} className="space-y-6">
+              <FormField
+                control={llmForm.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter model name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={llmForm.control}
+                name="provider"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Provider</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g., OpenAI, Anthropic, Google" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={llmForm.control}
+                  name="inputCost"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Input Cost (per token)</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="number" 
+                          step="0.000001" 
+                          min="0"
+                          placeholder="0.000001" 
+                          {...field}
+                          onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={llmForm.control}
+                  name="outputCost"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Output Cost (per token)</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="number" 
+                          step="0.000001" 
+                          min="0"
+                          placeholder="0.000001" 
+                          {...field}
+                          onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <FormField
+                control={llmForm.control}
+                name="maxContext"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Max Context</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g., 8K, 16K, 32K tokens" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div>
+                <FormLabel>Strengths</FormLabel>
+                <div className="space-y-2 mt-2">
+                  {llmForm.watch("strengths").map((strength, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <Input
+                        value={strength}
+                        onChange={(e) => {
+                          const updatedStrengths = [...llmForm.getValues().strengths];
+                          updatedStrengths[index] = e.target.value;
+                          llmForm.setValue('strengths', updatedStrengths);
+                        }}
+                        placeholder="Enter a strength"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleRemoveStrengthField(index)}
+                        className="h-8 w-8 p-0"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleAddStrengthField}
+                    className="mt-2"
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Strength
+                  </Button>
+                </div>
+              </div>
+              <div>
+                <FormLabel>Limitations</FormLabel>
+                <div className="space-y-2 mt-2">
+                  {llmForm.watch("limitations").map((limitation, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <Input
+                        value={limitation}
+                        onChange={(e) => {
+                          const updatedLimitations = [...llmForm.getValues().limitations];
+                          updatedLimitations[index] = e.target.value;
+                          llmForm.setValue('limitations', updatedLimitations);
+                        }}
+                        placeholder="Enter a limitation"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleRemoveLimitationField(index)}
+                        className="h-8 w-8 p-0"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleAddLimitationField}
+                    className="mt-2"
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Limitation
+                  </Button>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button type="submit">Update LLM Model</Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isDeleteLLMDialogOpen} onOpenChange={setIsDeleteLLMDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete LLM Model</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this LLM model? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-gray-700">
+              Model: <strong>{llmModelsList.find(m => m.id === selectedLLM)?.name}</strong>
+            </p>
+          </div>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setIsDeleteLLMDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={handleDeleteLLMSubmit}
+            >
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
+
+export default ServicesLLM;
