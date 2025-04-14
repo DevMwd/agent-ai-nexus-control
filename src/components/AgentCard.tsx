@@ -35,6 +35,7 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent }) => {
 
   // Check if agent.logo is a string with length > 10, which likely means it's a data URL
   const isLogoImage = typeof agent.logo === 'string' && agent.logo.length > 10;
+  const logoInitials = agent.title.substring(0, 2).toUpperCase();
   
   return (
     <Card className="bg-white rounded-2xl shadow-sm overflow-hidden">
@@ -46,11 +47,11 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent }) => {
               {isLogoImage ? (
                 <Avatar className="w-16 h-16">
                   <AvatarImage src={agent.logo} alt={agent.title} className="object-cover" />
-                  <AvatarFallback>{agent.title.substring(0, 2).toUpperCase()}</AvatarFallback>
+                  <AvatarFallback>{logoInitials}</AvatarFallback>
                 </Avatar>
               ) : (
                 <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center text-xl font-semibold">
-                  {agent.logo}
+                  {logoInitials}
                 </div>
               )}
               <div>

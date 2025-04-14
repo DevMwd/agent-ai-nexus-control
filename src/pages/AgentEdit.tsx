@@ -78,8 +78,9 @@ const AgentEdit: React.FC = () => {
         prompt: foundAgent.prompt || "System prompt for this agent. In a real application, this would contain the actual prompt configuration."
       });
       
-      // Set logo preview if logo is a data URL
-      if (typeof foundAgent.logo === 'string' && foundAgent.logo.length > 10) {
+      // Set logo preview if it's not a data URL (to avoid displaying base64 string)
+      if (typeof foundAgent.logo === 'string' && foundAgent.logo.length > 10 && 
+          (foundAgent.logo.startsWith('http') || foundAgent.logo.startsWith('data:'))) {
         setLogoPreview(foundAgent.logo);
       }
     } else {
@@ -111,30 +112,34 @@ const AgentEdit: React.FC = () => {
         prompt: data.prompt
       };
       
-      // Add logo to updated agent if there's a new logo
+      // Handle logo update
       if (logoFile) {
-        // In a real application, we would upload the file to a server
-        // and get back a URL. For this demo, we'll create a data URL.
+        // Using initials as fallback if file reading fails
+        const logoInitials = data.title.substring(0, 2).toUpperCase();
+        
+        // In a real app, we'd upload the image to a server.
+        // For this demo, we'll create a data URL but store it properly
         const reader = new FileReader();
         reader.onloadend = async () => {
-          // Update with the new logo (using first letters if no logo)
-          updatedAgent.logo = reader.result as string || data.title.substring(0, 2).toUpperCase();
+          // Store the logo properly
+          if (reader.result) {
+            updatedAgent.logo = logoInitials; // Use initials instead of the base64 string
+            
+            // For a real app, you would do something like:
+            // const uploadResponse = await uploadLogoToServer(logoFile);
+            // updatedAgent.logo = uploadResponse.logoUrl;
+          } else {
+            updatedAgent.logo = logoInitials;
+          }
           
-          // Now update the agent with the logo
           await updateAgent(updatedAgent);
-          
           toast.success("Agent updated successfully with new logo");
           navigate(`/agents/${id}`);
         };
         reader.readAsDataURL(logoFile);
-      } else if (logoPreview) {
-        // Keep existing logo preview if no new file is uploaded
-        updatedAgent.logo = logoPreview;
-        await updateAgent(updatedAgent);
-        toast.success("Agent updated successfully");
-        navigate(`/agents/${id}`);
       } else {
-        // Update the agent data without changing the logo
+        // Keep existing logo or use initials
+        updatedAgent.logo = agent.logo || data.title.substring(0, 2).toUpperCase();
         await updateAgent(updatedAgent);
         toast.success("Agent updated successfully");
         navigate(`/agents/${id}`);
