@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 // Define types for our agent and related data
@@ -61,6 +62,7 @@ export interface AIAgent {
   scores: OptimizationScore;
   nodes: AgentNode[];
   sessions: AgentSession[];
+  prompt?: string;
 }
 
 export interface LLMModelDetails {
@@ -81,6 +83,7 @@ interface AgentContextType {
   llmModels: LLMModelDetails[];
   currentAgent: AIAgent | null;
   setCurrentAgent: (agent: AIAgent | null) => void;
+  updateAgent: (updatedAgent: Partial<AIAgent> & { id: string }) => void;
 }
 
 const AgentContext = createContext<AgentContextType | undefined>(undefined);
@@ -264,16 +267,31 @@ const mockAgents: AIAgent[] = [
 ];
 
 export const AgentProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [agents, setAgents] = useState<AIAgent[]>(mockAgents);
   const [currentAgent, setCurrentAgent] = useState<AIAgent | null>(null);
+
+  const updateAgent = (updatedAgent: Partial<AIAgent> & { id: string }) => {
+    setAgents(prevAgents => 
+      prevAgents.map(agent => 
+        agent.id === updatedAgent.id ? { ...agent, ...updatedAgent } : agent
+      )
+    );
+    
+    // Also update currentAgent if it's the one being modified
+    if (currentAgent && currentAgent.id === updatedAgent.id) {
+      setCurrentAgent(prev => prev ? { ...prev, ...updatedAgent } : prev);
+    }
+  };
 
   return (
     <AgentContext.Provider
       value={{
-        agents: mockAgents,
+        agents,
         services: mockServices,
         llmModels: mockLLMModels,
         currentAgent,
         setCurrentAgent,
+        updateAgent,
       }}
     >
       {children}

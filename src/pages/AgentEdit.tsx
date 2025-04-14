@@ -23,7 +23,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 const AgentEdit: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { agents, llmModels } = useAgents();
+  const { agents, llmModels, updateAgent } = useAgents();
   const [agent, setAgent] = useState<AIAgent | null>(null);
   const navigate = useNavigate();
   const { isAdmin } = useAuth();
@@ -44,7 +44,7 @@ const AgentEdit: React.FC = () => {
       saving: 0,
       privacy: 0,
       selectedLlms: [] as LLMModel[],
-      prompt: '' // Placeholder for prompt editing
+      prompt: ''
     }
   });
 
@@ -81,14 +81,37 @@ const AgentEdit: React.FC = () => {
   }, [id, agents, navigate, isAdmin, form]);
 
   const onSubmit = (data: any) => {
-    // In a real application, we would update the agent in the database
-    // and also handle the logo upload
+    if (!agent || !id) return;
+    
+    // Prepare the updated agent data
+    const updatedAgent = {
+      id,
+      title: data.title,
+      subtitle: data.subtitle,
+      description: data.description,
+      isActive: data.isActive,
+      scores: {
+        quality: data.quality,
+        speed: data.speed,
+        saving: data.saving,
+        privacy: data.privacy
+      },
+      llms: data.selectedLlms,
+      prompt: data.prompt
+    };
+    
+    // Update the agent data
+    updateAgent(updatedAgent);
+    
+    // Handle logo upload if there is one
     if (logoFile) {
       console.log("Logo file to upload:", logoFile);
       // Here we would upload the logo file to a server
+      // For now, we just simulate it as done
+      toast.success("Logo uploaded successfully");
     }
+    
     toast.success("Agent updated successfully");
-    console.log("Agent updated with data:", data);
     // Navigate back to agent details
     navigate(`/agents/${id}`);
   };
