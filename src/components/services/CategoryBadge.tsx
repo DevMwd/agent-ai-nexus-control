@@ -14,6 +14,15 @@ const CategoryBadge: React.FC<CategoryBadgeProps> = ({ category }) => {
       case 'DOCUMENT COMPOSITION': return 'bg-purple-100 text-purple-800';
       case 'SCRAPING - CRAWLING': return 'bg-green-100 text-green-800';
       case 'LLM PROVIDER': return 'bg-indigo-100 text-indigo-800';
+      // Add provider-specific colors
+      case 'OpenAI': return 'bg-emerald-100 text-emerald-800';
+      case 'Anthropic': return 'bg-violet-100 text-violet-800';
+      case 'Google': return 'bg-blue-100 text-blue-800';
+      case 'Meta': return 'bg-sky-100 text-sky-800';
+      case 'Mistral AI': return 'bg-amber-100 text-amber-800';
+      case 'DeepSeek': return 'bg-rose-100 text-rose-800';
+      case '01.AI': return 'bg-teal-100 text-teal-800';
+      case 'Alibaba': return 'bg-orange-100 text-orange-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };

@@ -351,11 +351,14 @@ const ServicesLLM: React.FC = () => {
   return (
     <div className="container mx-auto px-6 py-8">
       <Tabs defaultValue="services" onValueChange={setActiveTab}>
-        <TabsList className="bg-gray-100 p-1 rounded-lg">
-          <TabsTrigger value="services" className="rounded-md">Services</TabsTrigger>
-          <TabsTrigger value="llm" className="rounded-md">LLM Models</TabsTrigger>
-          <TabsTrigger value="categories" className="rounded-md">Categories</TabsTrigger>
-        </TabsList>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold">Services & Models</h1>
+          <TabsList className="bg-gray-100 p-1 rounded-lg">
+            <TabsTrigger value="services" className="rounded-md">Services</TabsTrigger>
+            <TabsTrigger value="llm" className="rounded-md">LLM Models</TabsTrigger>
+            <TabsTrigger value="categories" className="rounded-md">Categories</TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="services" className="mt-6">
           <ServicesTab

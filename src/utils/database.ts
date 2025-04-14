@@ -269,6 +269,262 @@ export const initializeDatabase = (
     const enhancedLLMModels = [
       ...mockLLMModels,
       {
+        id: '12',
+        name: 'GPT-4o',
+        provider: 'OpenAI',
+        inputCost: 0.0000025,
+        outputCost: 0.00001,
+        maxContext: '128K tokens',
+        strengths: [
+          'Capacità multimodali avanzate',
+          'Prestazioni elevate su compiti complessi',
+          'Eccellente ragionamento e comprensione contestuale'
+        ],
+        limitations: [
+          'Costo più elevato rispetto a modelli meno potenti',
+          'Può risultare eccessivo per compiti semplici'
+        ]
+      },
+      {
+        id: '13',
+        name: 'Claude 3 Opus',
+        provider: 'Anthropic',
+        inputCost: 0.000015,
+        outputCost: 0.000075,
+        maxContext: '200K tokens',
+        strengths: [
+          'Prestazioni al top della categoria',
+          'Eccellente per ragionamento complesso',
+          'Contesto molto ampio'
+        ],
+        limitations: [
+          'Costo molto elevato',
+          'Velocità di risposta più lenta rispetto a modelli più leggeri'
+        ]
+      },
+      {
+        id: '14',
+        name: 'Claude 3 Sonnet',
+        provider: 'Anthropic',
+        inputCost: 0.000003,
+        outputCost: 0.000015,
+        maxContext: '200K tokens',
+        strengths: [
+          'Ottimo equilibrio tra prestazioni e costi',
+          'Contesto ampio',
+          'Buone capacità di ragionamento'
+        ],
+        limitations: [
+          'Meno potente rispetto a Opus',
+          'Potrebbe non eccellere in compiti estremamente complessi'
+        ]
+      },
+      {
+        id: '15',
+        name: 'Claude 3 Haiku',
+        provider: 'Anthropic',
+        inputCost: 0.00000025,
+        outputCost: 0.00000125,
+        maxContext: '200K tokens',
+        strengths: [
+          'Risposte rapide ed efficienti',
+          'Costo molto contenuto',
+          'Contesto ampio'
+        ],
+        limitations: [
+          'Meno potente rispetto a Sonnet e Opus',
+          'Non ottimale per compiti complessi'
+        ]
+      },
+      {
+        id: '16',
+        name: 'Claude 3.5 Haiku',
+        provider: 'Anthropic',
+        inputCost: 0.00000025,
+        outputCost: 0.00000125,
+        maxContext: '200K tokens',
+        strengths: [
+          'Ottimizzato per assistenza clienti',
+          'Eccellente per applicazioni didattiche',
+          'Risposta rapida con costo contenuto'
+        ],
+        limitations: [
+          'Limitato in compiti di ragionamento avanzato',
+          'Performance inferiori su attività creative complesse'
+        ]
+      },
+      {
+        id: '17',
+        name: 'Claude 3.5 Sonnet',
+        provider: 'Anthropic',
+        inputCost: 0.000003,
+        outputCost: 0.000015,
+        maxContext: '200K tokens',
+        strengths: [
+          'Miglioramenti significativi rispetto alla versione precedente',
+          'Eccellente per compiti aziendali',
+          'Buon equilibrio prestazioni/costo'
+        ],
+        limitations: [
+          'Meno potente rispetto a Opus',
+          'Prestazioni inferiori su compiti molto specializzati'
+        ]
+      },
+      {
+        id: '18',
+        name: 'GPT-4.5',
+        provider: 'OpenAI',
+        inputCost: 0.000075,
+        outputCost: 0.00015,
+        maxContext: '128K tokens',
+        strengths: [
+          'Comprensione linguistica avanzata',
+          'Supporto per analisi di immagini',
+          'Eccellente per compiti complessi e creativi'
+        ],
+        limitations: [
+          'Costo molto elevato',
+          'Può essere lento su richieste complesse'
+        ]
+      },
+      {
+        id: '19',
+        name: 'DeepSeek V3',
+        provider: 'DeepSeek',
+        inputCost: 0.00000027,
+        outputCost: 0.0000011,
+        maxContext: '128K tokens',
+        strengths: [
+          'Open-source con prestazioni elevate',
+          'Costo notevolmente inferiore rispetto a GPT-4o',
+          'Buona comprensione tecnica e scientifica'
+        ],
+        limitations: [
+          'Meno multimodale rispetto ai modelli OpenAI',
+          'Supporto e documentazione meno estesi'
+        ]
+      },
+      {
+        id: '20',
+        name: 'Gemini 2.0 Flash',
+        provider: 'Google',
+        inputCost: 0.00000015,
+        outputCost: 0.0000006,
+        maxContext: '1M tokens',
+        strengths: [
+          'Costo ultra-basso',
+          'Contesto enorme fino a 1 milione di token',
+          'Ottimo per attività semplici ad alto volume'
+        ],
+        limitations: [
+          'Performance inferiori su compiti complessi',
+          'Meno preciso dei modelli premium'
+        ]
+      },
+      {
+        id: '21',
+        name: 'Gemini 1.5 Pro',
+        provider: 'Google',
+        inputCost: 0.0000035,
+        outputCost: 0.0000105,
+        maxContext: '128K tokens',
+        strengths: [
+          'Eccellente integrazione con servizi Google',
+          'Buone prestazioni multimodali',
+          'Buon equilibrio tra costo e qualità'
+        ],
+        limitations: [
+          'Meno adatto per compiti altamente specializzati',
+          'Meno personalizzabile rispetto ad alcuni competitor'
+        ]
+      },
+      {
+        id: '22',
+        name: 'Mistral Large',
+        provider: 'Mistral AI',
+        inputCost: 0.000008,
+        outputCost: 0.000008,
+        maxContext: '32K tokens',
+        strengths: [
+          'Prestazioni elevate',
+          'Eccellente comprensione in diverse lingue',
+          'Costo inferiore a GPT-4'
+        ],
+        limitations: [
+          'Contesto più limitato rispetto ad altri modelli top',
+          'Meno capacità multimodali'
+        ]
+      },
+      {
+        id: '23',
+        name: 'Mistral 7B',
+        provider: 'Mistral AI',
+        inputCost: 0,
+        outputCost: 0,
+        maxContext: '8K tokens',
+        strengths: [
+          'Completamente gratuito',
+          'Leggero e veloce',
+          'Può essere eseguito localmente'
+        ],
+        limitations: [
+          'Contesto limitato a 8K token',
+          'Performance inferiori su compiti complessi',
+          'Limitata capacità di ragionamento avanzato'
+        ]
+      },
+      {
+        id: '24',
+        name: 'LLaMA 3.1 70B',
+        provider: 'Meta',
+        inputCost: 0,
+        outputCost: 0,
+        maxContext: '128K tokens',
+        strengths: [
+          'Open-source e gratuito',
+          'Prestazioni elevate paragonabili a modelli commerciali',
+          'Ampio contesto fino a 128K token'
+        ],
+        limitations: [
+          'Richiede hardware potente per l\'esecuzione locale',
+          'Può richiedere fine-tuning per casi d\'uso specifici'
+        ]
+      },
+      {
+        id: '25',
+        name: 'Yi 34B',
+        provider: '01.AI',
+        inputCost: 0,
+        outputCost: 0,
+        maxContext: '65K tokens',
+        strengths: [
+          'Open-source e gratuito',
+          'Prestazioni sorprendenti per un modello di dimensioni medie',
+          'Buon supporto multilingue'
+        ],
+        limitations: [
+          'Meno conosciuto rispetto ad altri modelli',
+          'Supporto più limitato della community'
+        ]
+      },
+      {
+        id: '26',
+        name: 'Qwen',
+        provider: 'Alibaba',
+        inputCost: 0,
+        outputCost: 0,
+        maxContext: '32K tokens',
+        strengths: [
+          'Eccellente supporto per il cinese',
+          'Prestazioni elevate su diverse attività',
+          'Open-source e gratuito'
+        ],
+        limitations: [
+          'Ottimizzato principalmente per il cinese',
+          'Meno efficace in alcuni domini specializzati occidentali'
+        ]
+      },
+      {
         id: '5',
         name: 'Gemini Pro',
         provider: 'Google',
