@@ -6,7 +6,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { AgentProvider } from "./contexts/AgentContext";
-import Index from "./pages/Home";
+import Home from "./pages/Home";
+import Agents from "./pages/Agents";
 import NotFound from "./pages/NotFound";
 import Header from "./components/Header";
 import Login from "./pages/Login";
@@ -30,10 +31,10 @@ const RequireAuth = ({ children }: { children: React.ReactNode }) => {
 
 const MainLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <>
+    <div className="max-w-screen overflow-x-hidden">
       <Header />
-      <main>{children}</main>
-    </>
+      <main className="container mx-auto">{children}</main>
+    </div>
   );
 };
 
@@ -52,7 +53,17 @@ const App = () => (
                 element={
                   <RequireAuth>
                     <MainLayout>
-                      <Index />
+                      <Home />
+                    </MainLayout>
+                  </RequireAuth>
+                } 
+              />
+              <Route 
+                path="/agents" 
+                element={
+                  <RequireAuth>
+                    <MainLayout>
+                      <Agents />
                     </MainLayout>
                   </RequireAuth>
                 } 

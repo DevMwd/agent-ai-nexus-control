@@ -1,35 +1,73 @@
+
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAgents } from '@/contexts/AgentContext';
-import { Edit, ArrowLeft, Settings, Plus } from 'lucide-react';
+import { Edit, ArrowLeft, Settings, Plus, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Check, X } from 'lucide-react';
+import { Check } from 'lucide-react';
+import { toast } from '@/components/ui/use-toast';
 
 const ServicesLLM: React.FC = () => {
   const [activeTab, setActiveTab] = useState("services");
   const { services, llmModels } = useAgents();
 
+  const handleEditService = (id: string) => {
+    toast({
+      title: "Edit Service",
+      description: "Service editing functionality will be implemented in a future update.",
+    });
+  };
+
+  const handleManageCategories = () => {
+    setActiveTab("categories");
+    toast({
+      title: "Manage Categories",
+      description: "Switched to the Categories tab. Full category management will be available in a future update.",
+    });
+  };
+
+  const handleNewService = () => {
+    toast({
+      title: "New Service",
+      description: "New service creation functionality will be implemented in a future update.",
+    });
+  };
+
+  const handleSelectModel = (modelId: string) => {
+    toast({
+      title: "Model Selected",
+      description: `Model selection functionality will be implemented in a future update.`,
+    });
+  };
+
+  const handleAddCategory = () => {
+    toast({
+      title: "Add Category",
+      description: "Category creation functionality will be implemented in a future update.",
+    });
+  };
+
   return (
     <div className="container mx-auto px-6 py-8">
       <Tabs defaultValue="services" onValueChange={setActiveTab}>
         <TabsList className="bg-gray-100 p-1 rounded-lg">
-          <TabsTrigger value="services" className="rounded-md">Servizi</TabsTrigger>
+          <TabsTrigger value="services" className="rounded-md">Services</TabsTrigger>
           <TabsTrigger value="llm" className="rounded-md">LLM Models</TabsTrigger>
           <TabsTrigger value="categories" className="rounded-md">Categories</TabsTrigger>
         </TabsList>
 
         <TabsContent value="services" className="mt-6">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold">Servizi</h1>
+            <h1 className="text-3xl font-bold">Services</h1>
             <div className="flex gap-4">
-              <Button variant="outline" className="flex items-center gap-2" onClick={() => {}}>
+              <Button variant="outline" className="flex items-center gap-2" onClick={handleManageCategories}>
                 <Settings className="w-5 h-5" />
-                <span>Gestisci Categorie</span>
+                <span>Manage Categories</span>
               </Button>
-              <Button className="bg-action-primary flex items-center gap-2">
+              <Button variant="action" className="flex items-center gap-2" onClick={handleNewService}>
                 <Plus className="w-5 h-5" />
-                <span>Nuovo Servizio</span>
+                <span>New Service</span>
               </Button>
             </div>
           </div>
@@ -38,12 +76,12 @@ const ServicesLLM: React.FC = () => {
             <table className="w-full">
               <thead>
                 <tr className="bg-gray-50 border-b">
-                  <th className="text-left p-4 text-gray-700">Nome</th>
-                  <th className="text-left p-4 text-gray-700">Categoria</th>
-                  <th className="text-left p-4 text-gray-700">Struttura Costi</th>
-                  <th className="text-left p-4 text-gray-700">Costo per Unità</th>
+                  <th className="text-left p-4 text-gray-700">Name</th>
+                  <th className="text-left p-4 text-gray-700">Category</th>
+                  <th className="text-left p-4 text-gray-700">Cost Structure</th>
+                  <th className="text-left p-4 text-gray-700">Cost per Unit</th>
                   <th className="text-left p-4 text-gray-700">Free Tier</th>
-                  <th className="text-left p-4 text-gray-700">Azioni</th>
+                  <th className="text-left p-4 text-gray-700">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -57,15 +95,15 @@ const ServicesLLM: React.FC = () => {
                     <td className="p-4">{service.costPerUnit}</td>
                     <td className="p-4">
                       {service.hasFreetier ? (
-                        <span className="text-green-500">Sì</span>
+                        <span className="text-green-500">Yes</span>
                       ) : (
                         <span className="text-gray-500">No</span>
                       )}
                     </td>
                     <td className="p-4">
-                      <Button variant="ghost" className="text-gray-600 hover:text-action-primary">
+                      <Button variant="ghost" className="text-gray-600 hover:text-action-primary" onClick={() => handleEditService(service.id)}>
                         <Edit className="w-5 h-5" />
-                        <span className="ml-1">Modifica</span>
+                        <span className="ml-1">Edit</span>
                       </Button>
                     </td>
                   </tr>
@@ -81,7 +119,7 @@ const ServicesLLM: React.FC = () => {
               <div className="mb-6">
                 <Link to="/services-llm" className="flex items-center text-gray-600 hover:text-action-primary">
                   <ArrowLeft className="w-5 h-5 mr-2" />
-                  <span>Gestione Modelli LLM</span>
+                  <span>LLM Models Management</span>
                 </Link>
               </div>
 
@@ -89,7 +127,7 @@ const ServicesLLM: React.FC = () => {
                 <Tabs defaultValue="browse">
                   <TabsList className="bg-gray-100 p-1 rounded-lg inline-flex">
                     <TabsTrigger value="browse" className="rounded-md">Browse LLMs</TabsTrigger>
-                    <TabsTrigger value="tested" className="rounded-md">LLMs Testati (0)</TabsTrigger>
+                    <TabsTrigger value="tested" className="rounded-md">Tested LLMs (0)</TabsTrigger>
                   </TabsList>
                 </Tabs>
               </div>
@@ -97,7 +135,7 @@ const ServicesLLM: React.FC = () => {
               <div className="relative mb-6">
                 <input
                   type="text"
-                  placeholder="Cerca modelli LLM..."
+                  placeholder="Search LLM models..."
                   className="w-full border border-gray-300 rounded-lg py-3 px-4 pl-12"
                 />
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3">
@@ -128,7 +166,7 @@ const ServicesLLM: React.FC = () => {
                     </div>
 
                     <div className="mb-6">
-                      <h4 className="text-gray-700 font-medium mb-2">Costi</h4>
+                      <h4 className="text-gray-700 font-medium mb-2">Costs</h4>
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <div className="text-gray-500 text-sm">Input</div>
@@ -139,14 +177,14 @@ const ServicesLLM: React.FC = () => {
                           <div>${model.outputCost.toFixed(6)} / token</div>
                         </div>
                         <div>
-                          <div className="text-gray-500 text-sm">Contesto max</div>
+                          <div className="text-gray-500 text-sm">Max context</div>
                           <div>{model.maxContext}</div>
                         </div>
                       </div>
                     </div>
 
                     <div className="mb-6">
-                      <h4 className="text-gray-700 font-medium mb-2">Punti di forza</h4>
+                      <h4 className="text-gray-700 font-medium mb-2">Strengths</h4>
                       <ul className="space-y-2">
                         {model.strengths.map((strength, idx) => (
                           <li key={idx} className="flex items-start gap-2">
@@ -158,7 +196,7 @@ const ServicesLLM: React.FC = () => {
                     </div>
 
                     <div className="mb-6">
-                      <h4 className="text-gray-700 font-medium mb-2">Limitazioni</h4>
+                      <h4 className="text-gray-700 font-medium mb-2">Limitations</h4>
                       <ul className="space-y-2">
                         {model.limitations.map((limitation, idx) => (
                           <li key={idx} className="flex items-start gap-2">
@@ -169,9 +207,12 @@ const ServicesLLM: React.FC = () => {
                       </ul>
                     </div>
 
-                    <button className="w-full bg-white border border-action-primary text-action-primary font-medium py-2 rounded-lg hover:bg-action-primary hover:text-white transition-colors">
-                      Seleziona
-                    </button>
+                    <Button 
+                      onClick={() => handleSelectModel(model.id)}
+                      className="w-full bg-white border border-action-primary text-action-primary font-medium py-2 rounded-lg hover:bg-action-primary hover:text-white transition-colors"
+                    >
+                      Select
+                    </Button>
                   </div>
                 ))}
               </div>
@@ -193,7 +234,10 @@ const ServicesLLM: React.FC = () => {
               <CategoryCard name="DOCUMENT COMPOSITION" color="red" />
               <CategoryCard name="SCRAPING - CRAWLING" color="green" />
               <CategoryCard name="LLM PROVIDER" color="purple" />
-              <div className="border border-dashed border-gray-300 rounded-lg p-4 flex items-center justify-center cursor-pointer hover:bg-gray-50">
+              <div 
+                className="border border-dashed border-gray-300 rounded-lg p-4 flex items-center justify-center cursor-pointer hover:bg-gray-50"
+                onClick={handleAddCategory}
+              >
                 <Plus className="w-5 h-5 text-gray-500 mr-2" />
                 <span className="text-gray-500">Add New Category</span>
               </div>
