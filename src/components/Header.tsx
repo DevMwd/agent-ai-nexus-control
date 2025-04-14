@@ -19,12 +19,15 @@ const Header: React.FC = () => {
   ];
 
   return (
-    <header className="bg-white py-4 px-6 mx-auto my-4 max-w-[95%] rounded-full shadow-sm">
+    <header className="py-4 px-6 mx-auto my-4 max-w-[95%] rounded-full">
       <div className="container mx-auto flex items-center justify-between">
         <div className="flex items-center">
           <Link to="/" className="flex items-center">
-            <div className="text-indigo-900 font-bold text-2xl mr-2">ACTION</div>
-            <div className="text-gray-500 text-xs">Powered by <span className="text-indigo-900">BlueSky</span></div>
+            <img 
+              src="/lovable-uploads/4b76f71e-b416-4608-a612-3a4715b5dde1.png" 
+              alt="BlueSky Logo" 
+              className="h-10 mr-2" 
+            />
           </Link>
         </div>
         
@@ -48,8 +51,8 @@ const Header: React.FC = () => {
         </nav>
         
         <div>
-          <Link to="/profile" className="p-2 rounded-full bg-white border border-gray-200">
-            <User className="w-6 h-6" />
+          <Link to="/profile" className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
+            <User className="w-6 h-6 text-indigo-900" />
           </Link>
         </div>
       </div>

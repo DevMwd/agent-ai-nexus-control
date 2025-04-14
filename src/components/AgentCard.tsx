@@ -1,12 +1,12 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MessageCircle, Pencil, Check, X } from 'lucide-react';
 import { AIAgent, ServiceCategory } from '@/contexts/AgentContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { PieChart, Pie, Cell } from 'recharts';
+import { PieChart, Pie, Cell, Tooltip } from 'recharts';
 
 interface AgentCardProps {
   agent: AIAgent;
@@ -71,90 +71,100 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent }) => {
           </div>
         </div>
 
-        {/* Agent description */}
+        {/* Agent description and related services side by side */}
         <div className="px-6 pb-4">
-          <p className="text-gray-600 text-sm">{agent.description}</p>
-        </div>
-
-        {/* Related services */}
-        <div className="px-6 pb-4">
-          <h4 className="text-sm font-medium mb-2">Related services:</h4>
-          <div className="flex gap-2">
-            {agent.services.slice(0, 3).map((service, index) => (
-              <div key={index} className="p-2 bg-gray-100 rounded-full">
-                <span className="text-xs">{service.name.charAt(0)}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Applied service categories */}
-        <div className="px-6 pb-4">
-          <h4 className="text-sm font-medium mb-2">Applied service categories</h4>
-          <div className="flex flex-wrap gap-2 mb-3">
-            {Object.entries(agent.categoriesDistribution)
-              .filter(([_, value]) => value > 0)
-              .map(([category]) => {
-                const categoryType = category as ServiceCategory;
-                let bgColor = 'bg-blue-100';
-                let textColor = 'text-blue-700';
-                
-                switch (categoryType) {
-                  case 'INTEGRATIONS':
-                    bgColor = 'bg-blue-100';
-                    textColor = 'text-blue-700';
-                    break;
-                  case 'REASONING':
-                    bgColor = 'bg-red-100';
-                    textColor = 'text-red-700';
-                    break;
-                  case 'DB':
-                    bgColor = 'bg-yellow-100';
-                    textColor = 'text-yellow-700';
-                    break;
-                  case 'DOCUMENT COMPOSITION':
-                    bgColor = 'bg-purple-100';
-                    textColor = 'text-purple-700';
-                    break;
-                  case 'SCRAPING - CRAWLING':
-                    bgColor = 'bg-green-100';
-                    textColor = 'text-green-700';
-                    break;
-                  case 'LLM PROVIDER':
-                    bgColor = 'bg-indigo-100';
-                    textColor = 'text-indigo-700';
-                    break;
-                }
-                
-                return (
-                  <div 
-                    key={category} 
-                    className={`px-3 py-1 rounded-full text-xs ${bgColor} ${textColor} font-medium uppercase`}
-                  >
-                    {category}
+          <div className="flex flex-col md:flex-row md:gap-6">
+            <div className="md:w-2/3">
+              <p className="text-gray-600 text-sm">{agent.description}</p>
+            </div>
+            <div className="md:w-1/3 mt-3 md:mt-0">
+              <h4 className="text-sm font-medium mb-2">Related services:</h4>
+              <div className="flex gap-2">
+                {agent.services.slice(0, 3).map((service, index) => (
+                  <div key={index} className="p-2 bg-gray-100 rounded-full">
+                    <span className="text-xs">{service.name.charAt(0)}</span>
                   </div>
-                );
-              })}
-          </div>
-          
-          {/* Pie chart for categories */}
-          <div className="h-24 flex justify-center">
-            <PieChart width={100} height={100}>
-              <Pie
-                data={categoryData}
-                cx={50}
-                cy={50}
-                innerRadius={25}
-                outerRadius={40}
-                fill="#8884d8"
-                paddingAngle={5}
-                dataKey="value"
-              >
-                {categoryData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[entry.name]} />
                 ))}
-              </Pie>
-            </PieChart>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Applied service categories and pie chart side by side */}
+        <div className="px-6 pb-4">
+          <div className="flex flex-col md:flex-row md:gap-6 items-start">
+            <div className="md:w-2/3">
+              <h4 className="text-sm font-medium mb-2">Applied service categories</h4>
+              <div className="flex flex-wrap gap-2 mb-3">
+                {Object.entries(agent.categoriesDistribution)
+                  .filter(([_, value]) => value > 0)
+                  .map(([category]) => {
+                    const categoryType = category as ServiceCategory;
+                    let bgColor = 'bg-blue-100';
+                    let textColor = 'text-blue-700';
+                    
+                    switch (categoryType) {
+                      case 'INTEGRATIONS':
+                        bgColor = 'bg-blue-100';
+                        textColor = 'text-blue-700';
+                        break;
+                      case 'REASONING':
+                        bgColor = 'bg-red-100';
+                        textColor = 'text-red-700';
+                        break;
+                      case 'DB':
+                        bgColor = 'bg-yellow-100';
+                        textColor = 'text-yellow-700';
+                        break;
+                      case 'DOCUMENT COMPOSITION':
+                        bgColor = 'bg-purple-100';
+                        textColor = 'text-purple-700';
+                        break;
+                      case 'SCRAPING - CRAWLING':
+                        bgColor = 'bg-green-100';
+                        textColor = 'text-green-700';
+                        break;
+                      case 'LLM PROVIDER':
+                        bgColor = 'bg-indigo-100';
+                        textColor = 'text-indigo-700';
+                        break;
+                    }
+                    
+                    return (
+                      <div 
+                        key={category} 
+                        className={`px-3 py-1 rounded-full text-xs ${bgColor} ${textColor} font-medium uppercase`}
+                      >
+                        {category}
+                      </div>
+                    );
+                  })}
+              </div>
+            </div>
+            
+            {/* Pie chart for categories with tooltip */}
+            <div className="md:w-1/3 h-24 flex justify-center">
+              <PieChart width={100} height={100}>
+                <Pie
+                  data={categoryData}
+                  cx={50}
+                  cy={50}
+                  innerRadius={25}
+                  outerRadius={40}
+                  fill="#8884d8"
+                  paddingAngle={5}
+                  dataKey="value"
+                >
+                  {categoryData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[entry.name]} />
+                  ))}
+                </Pie>
+                <Tooltip 
+                  formatter={(value, name) => [`${value}%`, name]}
+                  contentStyle={{ background: 'white', border: '1px solid #ccc', borderRadius: '4px' }}
+                />
+              </PieChart>
+            </div>
           </div>
         </div>
 

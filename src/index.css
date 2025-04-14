@@ -46,6 +46,9 @@
 
     --action-primary: #1A1F52;
     --action-light: #F6F7FB;
+    
+    --bluesky-blue: #4285F4;
+    --bluesky-dark: #1A1F2C;
   }
 
   .dark {
@@ -84,6 +87,9 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+    
+    --bluesky-blue: #4285F4;
+    --bluesky-dark: #1A1F2C;
   }
 }
 
