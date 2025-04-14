@@ -25,18 +25,13 @@ const Header: React.FC = () => {
           <Link to="/" className="flex flex-col items-center mr-4">
             <div className="flex items-center">
               <img 
-                src="/lovable-uploads/01831893-d608-4d45-9158-c42712954af4.png" 
-                alt="Action Logo" 
-                className="h-12" 
+                src="/lovable-uploads/695db59c-0b86-4a3f-afbe-6cf313ac93e5.png" 
+                alt="BlueSky Logo" 
+                className="h-16" 
               />
             </div>
             <div className="flex items-center mt-1">
-              <span className="text-xs text-gray-500">Powered by</span>
-              <img 
-                src="/lovable-uploads/4b76f71e-b416-4608-a612-3a4715b5dde1.png" 
-                alt="BlueSky Logo" 
-                className="h-4 ml-1" 
-              />
+              <span className="text-xs text-gray-500">Powered by BlueSky</span>
             </div>
           </Link>
         </div>

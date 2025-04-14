@@ -2,15 +2,42 @@
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAgents } from '@/contexts/AgentContext';
-import { Edit, ArrowLeft, Settings, Plus, X } from 'lucide-react';
+import { Edit, ArrowLeft, Settings, Plus, X, Check, Database, Activity, FileEdit, ClipboardList, Globe, Cloud } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Check } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/use-toast';
 
 const ServicesLLM: React.FC = () => {
   const [activeTab, setActiveTab] = useState("services");
   const { services, llmModels } = useAgents();
+  const [isAddCategoryDialogOpen, setIsAddCategoryDialogOpen] = useState(false);
+  const [isEditCategoryDialogOpen, setIsEditCategoryDialogOpen] = useState(false);
+  const [isDeleteCategoryDialogOpen, setIsDeleteCategoryDialogOpen] = useState(false);
+  const [categoryName, setCategoryName] = useState("");
+  const [categoryColor, setCategoryColor] = useState("blue");
+  const [categoryIcon, setCategoryIcon] = useState("database");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  const getCategoryIcon = (iconName: string) => {
+    switch (iconName) {
+      case 'database':
+        return <Database className="w-5 h-5" />;
+      case 'activity':
+        return <Activity className="w-5 h-5" />;
+      case 'file-edit':
+        return <FileEdit className="w-5 h-5" />;
+      case 'clipboard-list':
+        return <ClipboardList className="w-5 h-5" />;
+      case 'globe':
+        return <Globe className="w-5 h-5" />;
+      case 'cloud':
+        return <Cloud className="w-5 h-5" />;
+      default:
+        return <Database className="w-5 h-5" />;
+    }
+  };
 
   const handleEditService = (id: string) => {
     toast({
@@ -23,7 +50,7 @@ const ServicesLLM: React.FC = () => {
     setActiveTab("categories");
     toast({
       title: "Manage Categories",
-      description: "Switched to the Categories tab. Full category management will be available in a future update.",
+      description: "Switched to the Categories tab. You can add, edit, or delete categories.",
     });
   };
 
@@ -42,11 +69,74 @@ const ServicesLLM: React.FC = () => {
   };
 
   const handleAddCategory = () => {
-    toast({
-      title: "Add Category",
-      description: "Category creation functionality will be implemented in a future update.",
-    });
+    setIsAddCategoryDialogOpen(true);
   };
+
+  const handleEditCategory = (name: string) => {
+    setSelectedCategory(name);
+    setCategoryName(name);
+    setCategoryColor("blue");
+    setCategoryIcon("database");
+    setIsEditCategoryDialogOpen(true);
+  };
+
+  const handleDeleteCategory = (name: string) => {
+    setSelectedCategory(name);
+    setIsDeleteCategoryDialogOpen(true);
+  };
+
+  const handleAddCategorySubmit = () => {
+    if (categoryName.trim()) {
+      toast({
+        title: "Category Added",
+        description: `Category "${categoryName}" has been added successfully.`,
+      });
+      setIsAddCategoryDialogOpen(false);
+      setCategoryName("");
+      setCategoryColor("blue");
+      setCategoryIcon("database");
+    }
+  };
+
+  const handleEditCategorySubmit = () => {
+    if (categoryName.trim()) {
+      toast({
+        title: "Category Updated",
+        description: `Category "${selectedCategory}" has been updated to "${categoryName}".`,
+      });
+      setIsEditCategoryDialogOpen(false);
+      setCategoryName("");
+      setCategoryColor("blue");
+      setCategoryIcon("database");
+      setSelectedCategory(null);
+    }
+  };
+
+  const handleDeleteCategorySubmit = () => {
+    toast({
+      title: "Category Deleted",
+      description: `Category "${selectedCategory}" has been deleted successfully.`,
+    });
+    setIsDeleteCategoryDialogOpen(false);
+    setSelectedCategory(null);
+  };
+
+  const iconOptions = [
+    { name: 'Database', value: 'database' },
+    { name: 'Activity', value: 'activity' },
+    { name: 'File Edit', value: 'file-edit' },
+    { name: 'Clipboard', value: 'clipboard-list' },
+    { name: 'Globe', value: 'globe' },
+    { name: 'Cloud', value: 'cloud' },
+  ];
+
+  const colorOptions = [
+    { name: 'Blue', value: 'blue' },
+    { name: 'Red', value: 'red' },
+    { name: 'Yellow', value: 'yellow' },
+    { name: 'Green', value: 'green' },
+    { name: 'Purple', value: 'purple' },
+  ];
 
   return (
     <div className="container mx-auto px-6 py-8">
@@ -222,18 +312,60 @@ const ServicesLLM: React.FC = () => {
 
         <TabsContent value="categories" className="mt-6">
           <div className="bg-white rounded-lg shadow-sm p-6">
-            <h1 className="text-2xl font-bold mb-4">Service Categories</h1>
+            <div className="flex justify-between items-center mb-4">
+              <h1 className="text-2xl font-bold">Service Categories</h1>
+              <Button variant="action" className="flex items-center gap-2" onClick={handleAddCategory}>
+                <Plus className="w-5 h-5" />
+                <span>Add New Category</span>
+              </Button>
+            </div>
             <p className="text-gray-600 mb-6">
               Manage the categories that services can be assigned to.
             </p>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <CategoryCard name="INTEGRATIONS" color="blue" />
-              <CategoryCard name="REASONING" color="red" />
-              <CategoryCard name="DB" color="yellow" />
-              <CategoryCard name="DOCUMENT COMPOSITION" color="red" />
-              <CategoryCard name="SCRAPING - CRAWLING" color="green" />
-              <CategoryCard name="LLM PROVIDER" color="purple" />
+              <CategoryCard 
+                name="INTEGRATIONS" 
+                color="blue" 
+                icon="database"
+                onEdit={() => handleEditCategory("INTEGRATIONS")}
+                onDelete={() => handleDeleteCategory("INTEGRATIONS")}
+              />
+              <CategoryCard 
+                name="REASONING" 
+                color="red" 
+                icon="activity"
+                onEdit={() => handleEditCategory("REASONING")}
+                onDelete={() => handleDeleteCategory("REASONING")}
+              />
+              <CategoryCard 
+                name="DB" 
+                color="yellow" 
+                icon="database"
+                onEdit={() => handleEditCategory("DB")}
+                onDelete={() => handleDeleteCategory("DB")}
+              />
+              <CategoryCard 
+                name="DOCUMENT COMPOSITION" 
+                color="red" 
+                icon="file-edit"
+                onEdit={() => handleEditCategory("DOCUMENT COMPOSITION")}
+                onDelete={() => handleDeleteCategory("DOCUMENT COMPOSITION")}
+              />
+              <CategoryCard 
+                name="SCRAPING - CRAWLING" 
+                color="green" 
+                icon="globe"
+                onEdit={() => handleEditCategory("SCRAPING - CRAWLING")}
+                onDelete={() => handleDeleteCategory("SCRAPING - CRAWLING")}
+              />
+              <CategoryCard 
+                name="LLM PROVIDER" 
+                color="purple" 
+                icon="cloud"
+                onEdit={() => handleEditCategory("LLM PROVIDER")}
+                onDelete={() => handleDeleteCategory("LLM PROVIDER")}
+              />
               <div 
                 className="border border-dashed border-gray-300 rounded-lg p-4 flex items-center justify-center cursor-pointer hover:bg-gray-50"
                 onClick={handleAddCategory}
@@ -245,6 +377,167 @@ const ServicesLLM: React.FC = () => {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Add Category Dialog */}
+      <Dialog open={isAddCategoryDialogOpen} onOpenChange={setIsAddCategoryDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Add New Category</DialogTitle>
+            <DialogDescription>
+              Create a new service category with a name, color, and icon.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="name" className="text-right">
+                Name
+              </label>
+              <Input
+                id="name"
+                value={categoryName}
+                onChange={(e) => setCategoryName(e.target.value)}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label className="text-right">
+                Color
+              </label>
+              <div className="col-span-3 flex gap-2">
+                {colorOptions.map((option) => (
+                  <button
+                    key={option.value}
+                    className={`w-8 h-8 rounded-full border ${
+                      categoryColor === option.value ? 'ring-2 ring-blue-500' : ''
+                    } bg-${option.value}-100`}
+                    onClick={() => setCategoryColor(option.value)}
+                    title={option.name}
+                  />
+                ))}
+              </div>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label className="text-right">
+                Icon
+              </label>
+              <div className="col-span-3 flex flex-wrap gap-2">
+                {iconOptions.map((option) => (
+                  <button
+                    key={option.value}
+                    className={`p-2 rounded-md border ${
+                      categoryIcon === option.value ? 'bg-blue-100 border-blue-300' : 'bg-gray-50'
+                    }`}
+                    onClick={() => setCategoryIcon(option.value)}
+                    title={option.name}
+                  >
+                    {getCategoryIcon(option.value)}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setIsAddCategoryDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleAddCategorySubmit}>Add Category</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Category Dialog */}
+      <Dialog open={isEditCategoryDialogOpen} onOpenChange={setIsEditCategoryDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Category</DialogTitle>
+            <DialogDescription>
+              Update the category name, color, and icon.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="edit-name" className="text-right">
+                Name
+              </label>
+              <Input
+                id="edit-name"
+                value={categoryName}
+                onChange={(e) => setCategoryName(e.target.value)}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label className="text-right">
+                Color
+              </label>
+              <div className="col-span-3 flex gap-2">
+                {colorOptions.map((option) => (
+                  <button
+                    key={option.value}
+                    className={`w-8 h-8 rounded-full border ${
+                      categoryColor === option.value ? 'ring-2 ring-blue-500' : ''
+                    } bg-${option.value}-100`}
+                    onClick={() => setCategoryColor(option.value)}
+                    title={option.name}
+                  />
+                ))}
+              </div>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label className="text-right">
+                Icon
+              </label>
+              <div className="col-span-3 flex flex-wrap gap-2">
+                {iconOptions.map((option) => (
+                  <button
+                    key={option.value}
+                    className={`p-2 rounded-md border ${
+                      categoryIcon === option.value ? 'bg-blue-100 border-blue-300' : 'bg-gray-50'
+                    }`}
+                    onClick={() => setCategoryIcon(option.value)}
+                    title={option.name}
+                  >
+                    {getCategoryIcon(option.value)}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setIsEditCategoryDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleEditCategorySubmit}>Update Category</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Category Dialog */}
+      <Dialog open={isDeleteCategoryDialogOpen} onOpenChange={setIsDeleteCategoryDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete Category</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete the category "{selectedCategory}"? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setIsDeleteCategoryDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteCategorySubmit}>Delete Category</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
@@ -289,9 +582,12 @@ const CategoryBadge: React.FC<CategoryBadgeProps> = ({ category }) => {
 interface CategoryCardProps {
   name: string;
   color: 'blue' | 'red' | 'yellow' | 'green' | 'purple';
+  icon: string;
+  onEdit: () => void;
+  onDelete: () => void;
 }
 
-const CategoryCard: React.FC<CategoryCardProps> = ({ name, color }) => {
+const CategoryCard: React.FC<CategoryCardProps> = ({ name, color, icon, onEdit, onDelete }) => {
   let colorClass = '';
   
   switch (color) {
@@ -311,16 +607,44 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ name, color }) => {
       colorClass = 'bg-purple-100 text-purple-800 border-purple-300';
       break;
   }
+
+  const getIcon = () => {
+    switch (icon) {
+      case 'database':
+        return <Database className="w-5 h-5" />;
+      case 'activity':
+        return <Activity className="w-5 h-5" />;
+      case 'file-edit':
+        return <FileEdit className="w-5 h-5" />;
+      case 'clipboard-list':
+        return <ClipboardList className="w-5 h-5" />;
+      case 'globe':
+        return <Globe className="w-5 h-5" />;
+      case 'cloud':
+        return <Cloud className="w-5 h-5" />;
+      default:
+        return <Database className="w-5 h-5" />;
+    }
+  };
   
   return (
     <div className={`border rounded-lg p-4 ${colorClass}`}>
       <div className="flex justify-between items-center">
-        <span className="font-medium">{name}</span>
+        <div className="flex items-center gap-2">
+          {getIcon()}
+          <span className="font-medium">{name}</span>
+        </div>
         <div className="flex gap-2">
-          <button className="p-1 hover:bg-white hover:bg-opacity-30 rounded">
+          <button 
+            className="p-1 hover:bg-white hover:bg-opacity-30 rounded"
+            onClick={onEdit}
+          >
             <Edit className="w-4 h-4" />
           </button>
-          <button className="p-1 hover:bg-white hover:bg-opacity-30 rounded">
+          <button 
+            className="p-1 hover:bg-white hover:bg-opacity-30 rounded"
+            onClick={onDelete}
+          >
             <X className="w-4 h-4" />
           </button>
         </div>

@@ -23,7 +23,7 @@ const Login: React.FC = () => {
       navigate('/');
       toast({
         title: 'Login Successful',
-        description: 'Welcome to Action AI Agent platform',
+        description: 'Welcome to the AI Agent Management Platform',
       });
     } catch (error) {
       toast({
@@ -41,13 +41,11 @@ const Login: React.FC = () => {
       <div className="mb-8 text-center">
         <div className="flex flex-col items-center justify-center">
           <img 
-            src="/lovable-uploads/4b76f71e-b416-4608-a612-3a4715b5dde1.png" 
+            src="/lovable-uploads/695db59c-0b86-4a3f-afbe-6cf313ac93e5.png" 
             alt="BlueSky Logo" 
-            className="h-16 mb-4" 
+            className="h-20 mb-4" 
           />
-          <h1 className="text-4xl font-bold text-action-primary mb-2">ACTION</h1>
           <p className="text-gray-600">AI Agent Management Platform</p>
-          <p className="text-sm text-gray-500 mt-1">Powered by BlueSky</p>
         </div>
       </div>
       
