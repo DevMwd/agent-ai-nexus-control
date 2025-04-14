@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAgents, AIAgent, LLMModel, LLMModelDetails } from '@/contexts/AgentContext';
-import { ArrowLeft, Save } from 'lucide-react';
+import { ArrowLeft, Save, Upload, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -19,6 +19,7 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormDescription } fr
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 const AgentEdit: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -26,6 +27,10 @@ const AgentEdit: React.FC = () => {
   const [agent, setAgent] = useState<AIAgent | null>(null);
   const navigate = useNavigate();
   const { isAdmin } = useAuth();
+  
+  // State for logo upload
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
   
   // Form state
   const form = useForm({
@@ -77,6 +82,11 @@ const AgentEdit: React.FC = () => {
 
   const onSubmit = (data: any) => {
     // In a real application, we would update the agent in the database
+    // and also handle the logo upload
+    if (logoFile) {
+      console.log("Logo file to upload:", logoFile);
+      // Here we would upload the logo file to a server
+    }
     toast.success("Agent updated successfully");
     console.log("Agent updated with data:", data);
     // Navigate back to agent details
@@ -90,6 +100,23 @@ const AgentEdit: React.FC = () => {
     } else {
       form.setValue('selectedLlms', [...currentLlms, llm]);
     }
+  };
+  
+  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setLogoFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLogoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  
+  const clearLogoPreview = () => {
+    setLogoPreview(null);
+    setLogoFile(null);
   };
 
   if (!agent) {
@@ -106,10 +133,42 @@ const AgentEdit: React.FC = () => {
       </div>
 
       <div className="flex items-center gap-6 mb-8">
-        <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center text-xl font-semibold">
-          {agent.logo}
+        <div className="relative">
+          {logoPreview ? (
+            <div className="relative w-20 h-20">
+              <Avatar className="w-20 h-20">
+                <AvatarImage src={logoPreview} alt="Agent logo preview" className="object-cover" />
+                <AvatarFallback>{agent.logo}</AvatarFallback>
+              </Avatar>
+              <button 
+                onClick={clearLogoPreview}
+                className="absolute -top-2 -right-2 bg-white rounded-full p-1 shadow-sm border border-gray-200"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          ) : (
+            <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center text-xl font-semibold">
+              {agent.logo}
+            </div>
+          )}
         </div>
-        <h1 className="text-3xl font-bold">Edit {agent.title}</h1>
+        <div>
+          <h1 className="text-3xl font-bold">Edit {agent.title}</h1>
+          <div className="mt-2">
+            <label htmlFor="logo-upload" className="cursor-pointer flex items-center gap-2 text-sm text-indigo-600 hover:text-indigo-800">
+              <Upload className="w-4 h-4" />
+              <span>Upload logo</span>
+              <input 
+                id="logo-upload" 
+                type="file" 
+                className="hidden" 
+                accept="image/*"
+                onChange={handleLogoChange}
+              />
+            </label>
+          </div>
+        </div>
       </div>
 
       <Form {...form}>
