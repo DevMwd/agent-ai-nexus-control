@@ -1,7 +1,8 @@
+
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAgents, AIAgent, LLMModel, LLMModelDetails } from '@/contexts/AgentContext';
-import { ArrowLeft, Save, Upload, X } from 'lucide-react';
+import { ArrowLeft, Save, Upload, X, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -336,25 +337,35 @@ const AgentEdit: React.FC = () => {
               </p>
               
               <div className="grid grid-cols-1 gap-4">
-                {llmModels.map((llm) => (
-                  <div key={llm.id} className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200 hover:bg-gray-50">
-                    <input
-                      type="checkbox"
-                      id={`llm-${llm.id}`}
-                      checked={form.watch('selectedLlms').includes(llm.name as LLMModel)}
-                      onChange={() => handleLlmToggle(llm.name as LLMModel)}
-                      className="h-5 w-5 rounded border-gray-300 text-action-primary focus:ring-action-primary"
-                    />
-                    <div className="flex-1">
-                      <label htmlFor={`llm-${llm.id}`} className="text-sm font-medium">{llm.name}</label>
-                      <p className="text-xs text-gray-500">Provider: {llm.provider}</p>
+                {llmModels.map((llm) => {
+                  const isSelected = form.watch('selectedLlms').includes(llm.name as LLMModel);
+                  
+                  return (
+                    <div 
+                      key={llm.id} 
+                      className={`flex items-center space-x-3 p-3 rounded-lg border ${isSelected ? 'border-action-primary bg-action-50' : 'border-gray-200 hover:bg-gray-50'}`}
+                      onClick={() => handleLlmToggle(llm.name as LLMModel)}
+                    >
+                      <div className="flex items-center justify-center h-5 w-5">
+                        {isSelected ? (
+                          <div className="h-5 w-5 rounded bg-action-primary flex items-center justify-center">
+                            <Check className="h-3 w-3 text-white" />
+                          </div>
+                        ) : (
+                          <div className="h-5 w-5 rounded border border-gray-300"></div>
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <label className="text-sm font-medium cursor-pointer">{llm.name}</label>
+                        <p className="text-xs text-gray-500">Provider: {llm.provider}</p>
+                      </div>
+                      <div className="text-right text-xs">
+                        <p>Input: €{llm.inputCost.toFixed(6)}/token</p>
+                        <p>Output: €{llm.outputCost.toFixed(6)}/token</p>
+                      </div>
                     </div>
-                    <div className="text-right text-xs">
-                      <p>Input: €{llm.inputCost.toFixed(6)}/token</p>
-                      <p>Output: €{llm.outputCost.toFixed(6)}/token</p>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
             
