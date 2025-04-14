@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { agentsDB, servicesDB, llmModelsDB, initializeDatabase } from '@/utils/database';
 
@@ -215,7 +216,7 @@ const createMockAgent = (id: string, title: string, version: string, subtitle: s
     logo: 'SB',
     isActive,
     services: mockServices.slice(0, 3),
-    llms: ['GPT-4o Mini'], // Always use GPT-4o Mini as default
+    llms: [], // Set to empty array to test default behavior
     totalCost: 187.20,
     servicesCost: 187.20,
     llmCost: 187.20,
@@ -255,7 +256,7 @@ const createMockAgent = (id: string, title: string, version: string, subtitle: s
         llmCost: 25.20,
         servicesCost: 12.24,
         services: mockServices.slice(0, 2),
-        llms: ['GPT-4o Mini']
+        llms: []
       }
     ]
   };

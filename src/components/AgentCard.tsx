@@ -36,7 +36,7 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent }) => {
     (agent.logo.startsWith('http') || agent.logo.startsWith('data:'));
   
   const displayLLMs = agent.llms.length > 0 
-    ? agent.llms.filter(llm => !['gpt-4o', 'lama'].includes(llm.toLowerCase()))
+    ? agent.llms 
     : ['GPT-4o Mini'];
 
   return (
