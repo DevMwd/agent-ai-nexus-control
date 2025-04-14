@@ -22,17 +22,27 @@ const Header: React.FC = () => {
     <header className="py-4 px-6 mx-auto my-4 max-w-[95%] rounded-full">
       <div className="container mx-auto flex items-center justify-between">
         <div className="flex items-center">
-          <Link to="/" className="flex items-center">
-            <img 
-              src="/lovable-uploads/4b76f71e-b416-4608-a612-3a4715b5dde1.png" 
-              alt="BlueSky Logo" 
-              className="h-10 mr-2" 
-            />
+          <Link to="/" className="flex flex-col items-center mr-4">
+            <div className="flex items-center">
+              <img 
+                src="/lovable-uploads/01831893-d608-4d45-9158-c42712954af4.png" 
+                alt="Action Logo" 
+                className="h-12" 
+              />
+            </div>
+            <div className="flex items-center mt-1">
+              <span className="text-xs text-gray-500">Powered by</span>
+              <img 
+                src="/lovable-uploads/4b76f71e-b416-4608-a612-3a4715b5dde1.png" 
+                alt="BlueSky Logo" 
+                className="h-4 ml-1" 
+              />
+            </div>
           </Link>
         </div>
         
         <nav className="flex items-center justify-center">
-          <div className="flex items-center bg-gray-100 rounded-full p-1">
+          <div className="flex items-center rounded-full p-1">
             {navItems.map((item) => (
               <Link
                 key={item.path}
@@ -51,7 +61,7 @@ const Header: React.FC = () => {
         </nav>
         
         <div>
-          <Link to="/profile" className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
+          <Link to="/profile" className="p-2 rounded-full bg-white hover:bg-gray-100 transition-colors shadow-sm">
             <User className="w-6 h-6 text-indigo-900" />
           </Link>
         </div>

@@ -34,7 +34,7 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent }) => {
   };
   
   return (
-    <Card className="bg-white rounded-xl shadow-sm overflow-hidden">
+    <Card className="bg-white rounded-2xl shadow-sm overflow-hidden">
       <div className="relative">
         {/* Agent header with status icon */}
         <div className="p-6 pb-2">
@@ -107,32 +107,32 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent }) => {
                     switch (categoryType) {
                       case 'INTEGRATIONS':
                         bgColor = 'bg-blue-100';
-                        textColor = 'text-blue-700';
+                        textColor = 'text-category-blue';
                         icon = <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="7" height="7" x="3" y="3" rx="1" /><rect width="7" height="7" x="14" y="3" rx="1" /><rect width="7" height="7" x="14" y="14" rx="1" /><rect width="7" height="7" x="3" y="14" rx="1" /></svg>;
                         break;
                       case 'REASONING':
                         bgColor = 'bg-red-100';
-                        textColor = 'text-red-700';
+                        textColor = 'text-category-red';
                         icon = <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>;
                         break;
                       case 'DB':
                         bgColor = 'bg-yellow-100';
-                        textColor = 'text-yellow-700';
+                        textColor = 'text-category-yellow';
                         icon = <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3" /><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" /><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" /></svg>;
                         break;
                       case 'DOCUMENT COMPOSITION':
                         bgColor = 'bg-purple-100';
-                        textColor = 'text-purple-700';
+                        textColor = 'text-category-red';
                         icon = <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" /><polyline points="14 2 14 8 20 8" /></svg>;
                         break;
                       case 'SCRAPING - CRAWLING':
                         bgColor = 'bg-green-100';
-                        textColor = 'text-green-700';
+                        textColor = 'text-category-green';
                         icon = <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="2" x2="22" y1="12" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></svg>;
                         break;
                       case 'LLM PROVIDER':
                         bgColor = 'bg-indigo-100';
-                        textColor = 'text-indigo-700';
+                        textColor = 'text-category-purple';
                         icon = <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" /><polyline points="3.29 7 12 12 20.71 7" /><line x1="12" x2="12" y1="22" y2="12" /></svg>;
                         break;
                     }
@@ -169,7 +169,7 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent }) => {
                 </Pie>
                 <Tooltip 
                   formatter={(value, name) => [`${value}%`, name]}
-                  contentStyle={{ background: 'white', border: '1px solid #ccc', borderRadius: '4px' }}
+                  contentStyle={{ background: 'white', border: '1px solid #ccc', borderRadius: '8px' }}
                 />
               </PieChart>
             </div>
@@ -214,7 +214,7 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent }) => {
             agent.isActive 
               ? 'bg-indigo-900 text-white hover:bg-indigo-800' 
               : 'bg-indigo-100 text-indigo-900 hover:bg-indigo-200'
-          } transition-colors rounded-b-xl`}
+          } transition-colors rounded-b-2xl`}
         >
           <div className="flex items-center justify-center gap-2">
             <MessageCircle className="w-5 h-5" />

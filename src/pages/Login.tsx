@@ -37,14 +37,21 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-action-light">
+    <div className="min-h-screen flex flex-col justify-center items-center bg-[#e3eaf8]">
       <div className="mb-8 text-center">
-        <h1 className="text-4xl font-bold text-action-primary mb-2">ACTION</h1>
-        <p className="text-gray-600">AI Agent Management Platform</p>
-        <p className="text-sm text-gray-500 mt-1">Powered by BlueSky</p>
+        <div className="flex flex-col items-center justify-center">
+          <img 
+            src="/lovable-uploads/4b76f71e-b416-4608-a612-3a4715b5dde1.png" 
+            alt="BlueSky Logo" 
+            className="h-16 mb-4" 
+          />
+          <h1 className="text-4xl font-bold text-action-primary mb-2">ACTION</h1>
+          <p className="text-gray-600">AI Agent Management Platform</p>
+          <p className="text-sm text-gray-500 mt-1">Powered by BlueSky</p>
+        </div>
       </div>
       
-      <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
+      <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-md">
         <h2 className="text-2xl font-semibold mb-6 text-center">Login</h2>
         
         <form onSubmit={handleSubmit}>
@@ -59,7 +66,7 @@ const Login: React.FC = () => {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               required
-              className="w-full"
+              className="w-full rounded-xl"
             />
           </div>
           
@@ -74,7 +81,7 @@ const Login: React.FC = () => {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
               required
-              className="w-full"
+              className="w-full rounded-xl"
             />
             <div className="mt-1 text-right">
               <a href="#" className="text-sm text-blue-600 hover:underline">
@@ -85,7 +92,7 @@ const Login: React.FC = () => {
           
           <Button 
             type="submit" 
-            className="w-full bg-action-primary hover:bg-opacity-90"
+            className="w-full bg-action-primary hover:bg-opacity-90 rounded-xl"
             disabled={isLoading}
           >
             {isLoading ? 'Logging in...' : 'Sign in'}
