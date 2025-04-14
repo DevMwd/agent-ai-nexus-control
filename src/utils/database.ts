@@ -1,4 +1,3 @@
-
 // Database utility for MySQL connection
 
 // Using a TypeORM-like approach for database operations
@@ -103,7 +102,7 @@ export const agentsDB = {
   }
 };
 
-// Database operations for Services
+// Enhanced Database operations for Services
 export const servicesDB = {
   getAll: async (): Promise<Service[]> => {
     try {
@@ -113,10 +112,61 @@ export const servicesDB = {
       console.error('Error fetching services:', error);
       return [];
     }
+  },
+  
+  getById: async (id: string): Promise<Service | null> => {
+    try {
+      const services = getLocalStorage('services') || [];
+      return services.find((service: Service) => service.id === id) || null;
+    } catch (error) {
+      console.error('Error fetching service by ID:', error);
+      return null;
+    }
+  },
+  
+  create: async (service: Service): Promise<Service | null> => {
+    try {
+      const services = getLocalStorage('services') || [];
+      const updatedServices = [...services, service];
+      setLocalStorage('services', updatedServices);
+      return service;
+    } catch (error) {
+      console.error('Error creating service:', error);
+      return null;
+    }
+  },
+  
+  update: async (updatedService: Partial<Service> & { id: string }): Promise<Service | null> => {
+    try {
+      const services = getLocalStorage('services') || [];
+      const updatedServices = services.map((service: Service) => 
+        service.id === updatedService.id ? { ...service, ...updatedService } : service
+      );
+      setLocalStorage('services', updatedServices);
+      
+      // Return the updated service
+      const updated = updatedServices.find((service: Service) => service.id === updatedService.id);
+      return updated || null;
+    } catch (error) {
+      console.error('Error updating service:', error);
+      return null;
+    }
+  },
+  
+  delete: async (id: string): Promise<boolean> => {
+    try {
+      const services = getLocalStorage('services') || [];
+      const updatedServices = services.filter((service: Service) => service.id !== id);
+      setLocalStorage('services', updatedServices);
+      return true;
+    } catch (error) {
+      console.error('Error deleting service:', error);
+      return false;
+    }
   }
 };
 
-// Database operations for LLM Models
+// Enhanced Database operations for LLM Models
 export const llmModelsDB = {
   getAll: async (): Promise<LLMModelDetails[]> => {
     try {
@@ -126,10 +176,77 @@ export const llmModelsDB = {
       console.error('Error fetching LLM models:', error);
       return [];
     }
+  },
+  
+  getById: async (id: string): Promise<LLMModelDetails | null> => {
+    try {
+      const models = getLocalStorage('llmModels') || [];
+      return models.find((model: LLMModelDetails) => model.id === id) || null;
+    } catch (error) {
+      console.error('Error fetching LLM model by ID:', error);
+      return null;
+    }
+  },
+  
+  create: async (model: LLMModelDetails): Promise<LLMModelDetails | null> => {
+    try {
+      const models = getLocalStorage('llmModels') || [];
+      const updatedModels = [...models, model];
+      setLocalStorage('llmModels', updatedModels);
+      return model;
+    } catch (error) {
+      console.error('Error creating LLM model:', error);
+      return null;
+    }
+  },
+  
+  update: async (updatedModel: Partial<LLMModelDetails> & { id: string }): Promise<LLMModelDetails | null> => {
+    try {
+      const models = getLocalStorage('llmModels') || [];
+      const updatedModels = models.map((model: LLMModelDetails) => 
+        model.id === updatedModel.id ? { ...model, ...updatedModel } : model
+      );
+      setLocalStorage('llmModels', updatedModels);
+      
+      // Return the updated model
+      const updated = updatedModels.find((model: LLMModelDetails) => model.id === updatedModel.id);
+      return updated || null;
+    } catch (error) {
+      console.error('Error updating LLM model:', error);
+      return null;
+    }
+  },
+  
+  delete: async (id: string): Promise<boolean> => {
+    try {
+      const models = getLocalStorage('llmModels') || [];
+      const updatedModels = models.filter((model: LLMModelDetails) => model.id !== id);
+      setLocalStorage('llmModels', updatedModels);
+      return true;
+    } catch (error) {
+      console.error('Error deleting LLM model:', error);
+      return false;
+    }
+  },
+  
+  search: async (query: string): Promise<LLMModelDetails[]> => {
+    try {
+      const models = getLocalStorage('llmModels') || [];
+      if (!query) return models;
+      
+      const lowercaseQuery = query.toLowerCase();
+      return models.filter((model: LLMModelDetails) => 
+        model.name.toLowerCase().includes(lowercaseQuery) ||
+        model.provider.toLowerCase().includes(lowercaseQuery)
+      );
+    } catch (error) {
+      console.error('Error searching LLM models:', error);
+      return [];
+    }
   }
 };
 
-// Initialize the database with mock data
+// Enhanced database initialization with more LLM models
 export const initializeDatabase = (
   mockAgents: AIAgent[], 
   mockServices: Service[], 
@@ -148,7 +265,130 @@ export const initializeDatabase = (
     setLocalStorage('services', mockServices);
   }
   if (!existingLLMModels) {
-    setLocalStorage('llmModels', mockLLMModels);
+    // Add more LLM models if we're initializing for the first time
+    const enhancedLLMModels = [
+      ...mockLLMModels,
+      {
+        id: '5',
+        name: 'Gemini Pro',
+        provider: 'Google',
+        inputCost: 0.000007,
+        outputCost: 0.000014,
+        maxContext: '32K tokens',
+        strengths: [
+          'Eccellente per compiti multimodali',
+          'Buon equilibrio tra costo e performance',
+          'Ottimizzato per applicazioni Google'
+        ],
+        limitations: [
+          'Limitazioni geografiche in alcuni paesi',
+          'Meno specializzato in ragionamento complesso rispetto a GPT-4'
+        ]
+      },
+      {
+        id: '6',
+        name: 'Gemini Ultra',
+        provider: 'Google',
+        inputCost: 0.000014,
+        outputCost: 0.000042,
+        maxContext: '128K tokens',
+        strengths: [
+          'Prestazioni all\'avanguardia in compiti multimodali',
+          'Eccellente per ragionamento complesso',
+          'Ottima comprensione di contesti ampi'
+        ],
+        limitations: [
+          'Costo più elevato rispetto a Gemini Pro',
+          'Disponibilità più limitata'
+        ]
+      },
+      {
+        id: '7',
+        name: 'DeepSeek-Coder',
+        provider: 'DeepSeek',
+        inputCost: 0.000006,
+        outputCost: 0.000030,
+        maxContext: '32K tokens',
+        strengths: [
+          'Specializzato in generazione di codice',
+          'Ottimizzato per completamento e correzione di codice',
+          'Supporto per molti linguaggi di programmazione'
+        ],
+        limitations: [
+          'Meno versatile per compiti non relativi al codice',
+          'Base di conoscenza più limitata rispetto a modelli generici'
+        ]
+      },
+      {
+        id: '8',
+        name: 'Llama 3 (70B)',
+        provider: 'Meta',
+        inputCost: 0.000007,
+        outputCost: 0.000013,
+        maxContext: '8K tokens',
+        strengths: [
+          'Buone performance generali',
+          'Licenza aperta per uso commerciale',
+          'Facilmente personalizzabile'
+        ],
+        limitations: [
+          'Contesto più limitato rispetto ai competitor',
+          'Dipende dall\'infrastruttura di deployment'
+        ]
+      },
+      {
+        id: '9',
+        name: 'Claude 3 Haiku',
+        provider: 'Anthropic',
+        inputCost: 0.000005,
+        outputCost: 0.000015,
+        maxContext: '48K tokens',
+        strengths: [
+          'Veloce e conveniente',
+          'Buon equilibrio tra efficienza e performance',
+          'Eccellente per applicazioni in tempo reale'
+        ],
+        limitations: [
+          'Meno potente rispetto a Claude 3 Opus',
+          'Non ottimale per ragionamenti molto complessi'
+        ]
+      },
+      {
+        id: '10',
+        name: 'Mistral Large',
+        provider: 'Mistral AI',
+        inputCost: 0.000007,
+        outputCost: 0.000021,
+        maxContext: '32K tokens',
+        strengths: [
+          'Eccellente comprensione del contesto',
+          'Ottimo per analisi di documenti',
+          'Buone capacità di ragionamento'
+        ],
+        limitations: [
+          'Meno capacità multimodali rispetto ai competitor',
+          'API meno mature rispetto a OpenAI'
+        ]
+      },
+      {
+        id: '11',
+        name: 'Mixtral 8x7B',
+        provider: 'Mistral AI',
+        inputCost: 0.000002,
+        outputCost: 0.000008,
+        maxContext: '32K tokens',
+        strengths: [
+          'Ottimo rapporto qualità/prezzo',
+          'Architettura MoE (Mixture of Experts)',
+          'Buone performance in molteplici lingue'
+        ],
+        limitations: [
+          'Meno potente dei modelli più grandi',
+          'Limitazioni su alcuni compiti specialistici'
+        ]
+      }
+    ];
+    setLocalStorage('llmModels', enhancedLLMModels);
   }
 };
 

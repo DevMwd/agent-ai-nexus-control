@@ -1,17 +1,30 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAgents } from '@/contexts/AgentContext';
-import { Edit, ArrowLeft, Settings, Plus, X, Check, Database, Activity, FileEdit, ClipboardList, Globe, Cloud } from 'lucide-react';
+import { Edit, ArrowLeft, Settings, Plus, X, Check, Database, Activity, FileEdit, ClipboardList, Globe, Cloud, Trash2, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/use-toast';
+import { v4 as uuidv4 } from 'uuid';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
+import { servicesDB, llmModelsDB } from '@/utils/database';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 const ServicesLLM: React.FC = () => {
   const [activeTab, setActiveTab] = useState("services");
   const { services, llmModels } = useAgents();
+  const [servicesList, setServicesList] = useState(services);
+  const [llmModelsList, setLLMModelsList] = useState(llmModels);
+  const [filteredLLMModels, setFilteredLLMModels] = useState(llmModels);
+  const [searchTerm, setSearchTerm] = useState('');
+  
+  // Category state
   const [isAddCategoryDialogOpen, setIsAddCategoryDialogOpen] = useState(false);
   const [isEditCategoryDialogOpen, setIsEditCategoryDialogOpen] = useState(false);
   const [isDeleteCategoryDialogOpen, setIsDeleteCategoryDialogOpen] = useState(false);
@@ -19,6 +32,44 @@ const ServicesLLM: React.FC = () => {
   const [categoryColor, setCategoryColor] = useState("blue");
   const [categoryIcon, setCategoryIcon] = useState("database");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  
+  // Service state
+  const [isAddServiceDialogOpen, setIsAddServiceDialogOpen] = useState(false);
+  const [isEditServiceDialogOpen, setIsEditServiceDialogOpen] = useState(false);
+  const [isDeleteServiceDialogOpen, setIsDeleteServiceDialogOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<string | null>(null);
+  const [serviceToEdit, setServiceToEdit] = useState<any>(null);
+  
+  // LLM model state
+  const [isAddLLMDialogOpen, setIsAddLLMDialogOpen] = useState(false);
+  const [isEditLLMDialogOpen, setIsEditLLMDialogOpen] = useState(false);
+  const [isDeleteLLMDialogOpen, setIsDeleteLLMDialogOpen] = useState(false);
+  const [selectedLLM, setSelectedLLM] = useState<string | null>(null);
+  const [llmToEdit, setLLMToEdit] = useState<any>(null);
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      const dbServices = await servicesDB.getAll();
+      const dbLLMModels = await llmModelsDB.getAll();
+      setServicesList(dbServices);
+      setLLMModelsList(dbLLMModels);
+      setFilteredLLMModels(dbLLMModels);
+    };
+    
+    fetchData();
+  }, []);
+  
+  useEffect(() => {
+    if (searchTerm) {
+      const filtered = llmModelsList.filter(model => 
+        model.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        model.provider.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredLLMModels(filtered);
+    } else {
+      setFilteredLLMModels(llmModelsList);
+    }
+  }, [searchTerm, llmModelsList]);
 
   const getCategoryIcon = (iconName: string) => {
     switch (iconName) {
@@ -39,32 +90,270 @@ const ServicesLLM: React.FC = () => {
     }
   };
 
+  // Define validators for our forms
+  const serviceFormSchema = z.object({
+    name: z.string().min(2, { message: "Il nome deve avere almeno 2 caratteri" }),
+    category: z.string({ required_error: "Seleziona una categoria" }),
+    costStructure: z.string().min(2, { message: "Specifica la struttura dei costi" }),
+    costPerUnit: z.string().min(2, { message: "Specifica il costo per unità" }),
+    hasFreetier: z.boolean().default(false),
+    logo: z.string().optional()
+  });
+
+  const llmFormSchema = z.object({
+    name: z.string().min(2, { message: "Il nome deve avere almeno 2 caratteri" }),
+    provider: z.string().min(2, { message: "Specifica il provider" }),
+    inputCost: z.number().min(0, { message: "Il costo deve essere positivo" }),
+    outputCost: z.number().min(0, { message: "Il costo deve essere positivo" }),
+    maxContext: z.string().min(2, { message: "Specifica il contesto massimo" }),
+    logo: z.string().optional(),
+    strengths: z.array(z.string()).min(1, { message: "Aggiungi almeno un punto di forza" }),
+    limitations: z.array(z.string()).min(1, { message: "Aggiungi almeno una limitazione" })
+  });
+
+  // Service form
+  const serviceForm = useForm<z.infer<typeof serviceFormSchema>>({
+    resolver: zodResolver(serviceFormSchema),
+    defaultValues: {
+      name: "",
+      category: "DB",
+      costStructure: "",
+      costPerUnit: "",
+      hasFreetier: false,
+      logo: ""
+    }
+  });
+
+  // LLM form
+  const llmForm = useForm<z.infer<typeof llmFormSchema>>({
+    resolver: zodResolver(llmFormSchema),
+    defaultValues: {
+      name: "",
+      provider: "",
+      inputCost: 0.000001,
+      outputCost: 0.000001,
+      maxContext: "",
+      logo: "",
+      strengths: [""],
+      limitations: [""]
+    }
+  });
+
+  // Service handlers
   const handleEditService = (id: string) => {
-    toast({
-      title: "Edit Service",
-      description: "Service editing functionality will be implemented in a future update.",
-    });
+    const service = servicesList.find(s => s.id === id);
+    if (service) {
+      setServiceToEdit(service);
+      serviceForm.reset({
+        name: service.name,
+        category: service.category,
+        costStructure: service.costStructure,
+        costPerUnit: service.costPerUnit,
+        hasFreetier: service.hasFreetier,
+        logo: service.logo || ""
+      });
+      setIsEditServiceDialogOpen(true);
+    }
   };
 
+  const handleDeleteService = (id: string) => {
+    setSelectedService(id);
+    setIsDeleteServiceDialogOpen(true);
+  };
+
+  const handleAddServiceSubmit = async (values: z.infer<typeof serviceFormSchema>) => {
+    const newService = {
+      id: uuidv4(),
+      ...values
+    };
+    
+    try {
+      await servicesDB.create(newService);
+      setServicesList(prev => [...prev, newService]);
+      setIsAddServiceDialogOpen(false);
+      serviceForm.reset();
+      toast({
+        title: "Servizio Aggiunto",
+        description: `Il servizio "${values.name}" è stato aggiunto con successo.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Errore",
+        description: "Si è verificato un errore durante l'aggiunta del servizio.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleEditServiceSubmit = async (values: z.infer<typeof serviceFormSchema>) => {
+    if (!serviceToEdit) return;
+    
+    const updatedService = {
+      id: serviceToEdit.id,
+      ...values
+    };
+    
+    try {
+      await servicesDB.update(updatedService);
+      setServicesList(prev => prev.map(service => 
+        service.id === serviceToEdit.id ? updatedService : service
+      ));
+      setIsEditServiceDialogOpen(false);
+      toast({
+        title: "Servizio Aggiornato",
+        description: `Il servizio "${values.name}" è stato aggiornato con successo.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Errore",
+        description: "Si è verificato un errore durante l'aggiornamento del servizio.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleDeleteServiceSubmit = async () => {
+    if (!selectedService) return;
+    
+    try {
+      await servicesDB.delete(selectedService);
+      setServicesList(prev => prev.filter(service => service.id !== selectedService));
+      setIsDeleteServiceDialogOpen(false);
+      toast({
+        title: "Servizio Eliminato",
+        description: "Il servizio è stato eliminato con successo.",
+      });
+    } catch (error) {
+      toast({
+        title: "Errore",
+        description: "Si è verificato un errore durante l'eliminazione del servizio.",
+        variant: "destructive"
+      });
+    }
+    
+    setSelectedService(null);
+  };
+
+  // LLM handlers
+  const handleEditLLM = (id: string) => {
+    const llm = llmModelsList.find(m => m.id === id);
+    if (llm) {
+      setLLMToEdit(llm);
+      llmForm.reset({
+        name: llm.name,
+        provider: llm.provider,
+        inputCost: llm.inputCost,
+        outputCost: llm.outputCost,
+        maxContext: llm.maxContext,
+        logo: llm.logo || "",
+        strengths: llm.strengths,
+        limitations: llm.limitations
+      });
+      setIsEditLLMDialogOpen(true);
+    }
+  };
+
+  const handleDeleteLLM = (id: string) => {
+    setSelectedLLM(id);
+    setIsDeleteLLMDialogOpen(true);
+  };
+
+  const handleAddLLMSubmit = async (values: z.infer<typeof llmFormSchema>) => {
+    const newLLM = {
+      id: uuidv4(),
+      ...values
+    };
+    
+    try {
+      await llmModelsDB.create(newLLM);
+      setLLMModelsList(prev => [...prev, newLLM]);
+      setFilteredLLMModels(prev => [...prev, newLLM]);
+      setIsAddLLMDialogOpen(false);
+      llmForm.reset();
+      toast({
+        title: "LLM Aggiunto",
+        description: `Il modello "${values.name}" è stato aggiunto con successo.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Errore",
+        description: "Si è verificato un errore durante l'aggiunta del modello LLM.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleEditLLMSubmit = async (values: z.infer<typeof llmFormSchema>) => {
+    if (!llmToEdit) return;
+    
+    const updatedLLM = {
+      id: llmToEdit.id,
+      ...values
+    };
+    
+    try {
+      await llmModelsDB.update(updatedLLM);
+      setLLMModelsList(prev => prev.map(llm => 
+        llm.id === llmToEdit.id ? updatedLLM : llm
+      ));
+      setFilteredLLMModels(prev => prev.map(llm => 
+        llm.id === llmToEdit.id ? updatedLLM : llm
+      ));
+      setIsEditLLMDialogOpen(false);
+      toast({
+        title: "LLM Aggiornato",
+        description: `Il modello "${values.name}" è stato aggiornato con successo.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Errore",
+        description: "Si è verificato un errore durante l'aggiornamento del modello LLM.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleDeleteLLMSubmit = async () => {
+    if (!selectedLLM) return;
+    
+    try {
+      await llmModelsDB.delete(selectedLLM);
+      setLLMModelsList(prev => prev.filter(llm => llm.id !== selectedLLM));
+      setFilteredLLMModels(prev => prev.filter(llm => llm.id !== selectedLLM));
+      setIsDeleteLLMDialogOpen(false);
+      toast({
+        title: "LLM Eliminato",
+        description: "Il modello LLM è stato eliminato con successo.",
+      });
+    } catch (error) {
+      toast({
+        title: "Errore",
+        description: "Si è verificato un errore durante l'eliminazione del modello LLM.",
+        variant: "destructive"
+      });
+    }
+    
+    setSelectedLLM(null);
+  };
+
+  // Category handlers
   const handleManageCategories = () => {
     setActiveTab("categories");
     toast({
-      title: "Manage Categories",
-      description: "Switched to the Categories tab. You can add, edit, or delete categories.",
+      title: "Gestione Categorie",
+      description: "Sei passato alla scheda Categorie. Puoi aggiungere, modificare o eliminare categorie.",
     });
   };
 
   const handleNewService = () => {
-    toast({
-      title: "New Service",
-      description: "New service creation functionality will be implemented in a future update.",
-    });
+    serviceForm.reset();
+    setIsAddServiceDialogOpen(true);
   };
 
   const handleSelectModel = (modelId: string) => {
     toast({
-      title: "Model Selected",
-      description: `Model selection functionality will be implemented in a future update.`,
+      title: "Modello Selezionato",
+      description: `La funzionalità di selezione del modello sarà implementata in un futuro aggiornamento.`,
     });
   };
 
@@ -88,8 +377,8 @@ const ServicesLLM: React.FC = () => {
   const handleAddCategorySubmit = () => {
     if (categoryName.trim()) {
       toast({
-        title: "Category Added",
-        description: `Category "${categoryName}" has been added successfully.`,
+        title: "Categoria Aggiunta",
+        description: `La categoria "${categoryName}" è stata aggiunta con successo.`,
       });
       setIsAddCategoryDialogOpen(false);
       setCategoryName("");
@@ -101,8 +390,8 @@ const ServicesLLM: React.FC = () => {
   const handleEditCategorySubmit = () => {
     if (categoryName.trim()) {
       toast({
-        title: "Category Updated",
-        description: `Category "${selectedCategory}" has been updated to "${categoryName}".`,
+        title: "Categoria Aggiornata",
+        description: `La categoria "${selectedCategory}" è stata aggiornata in "${categoryName}".`,
       });
       setIsEditCategoryDialogOpen(false);
       setCategoryName("");
@@ -114,11 +403,35 @@ const ServicesLLM: React.FC = () => {
 
   const handleDeleteCategorySubmit = () => {
     toast({
-      title: "Category Deleted",
-      description: `Category "${selectedCategory}" has been deleted successfully.`,
+      title: "Categoria Eliminata",
+      description: `La categoria "${selectedCategory}" è stata eliminata con successo.`,
     });
     setIsDeleteCategoryDialogOpen(false);
     setSelectedCategory(null);
+  };
+
+  const handleAddStrengthField = () => {
+    const currentStrengths = llmForm.getValues().strengths;
+    llmForm.setValue('strengths', [...currentStrengths, '']);
+  };
+
+  const handleRemoveStrengthField = (index: number) => {
+    const currentStrengths = llmForm.getValues().strengths;
+    if (currentStrengths.length > 1) {
+      llmForm.setValue('strengths', currentStrengths.filter((_, i) => i !== index));
+    }
+  };
+
+  const handleAddLimitationField = () => {
+    const currentLimitations = llmForm.getValues().limitations;
+    llmForm.setValue('limitations', [...currentLimitations, '']);
+  };
+
+  const handleRemoveLimitationField = (index: number) => {
+    const currentLimitations = llmForm.getValues().limitations;
+    if (currentLimitations.length > 1) {
+      llmForm.setValue('limitations', currentLimitations.filter((_, i) => i !== index));
+    }
   };
 
   const iconOptions = [
@@ -175,7 +488,7 @@ const ServicesLLM: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {services.map((service) => (
+                {servicesList.map((service) => (
                   <tr key={service.id} className="border-b">
                     <td className="p-4">{service.name}</td>
                     <td className="p-4">
@@ -191,10 +504,26 @@ const ServicesLLM: React.FC = () => {
                       )}
                     </td>
                     <td className="p-4">
-                      <Button variant="ghost" className="text-gray-600 hover:text-action-primary" onClick={() => handleEditService(service.id)}>
-                        <Edit className="w-5 h-5" />
-                        <span className="ml-1">Edit</span>
-                      </Button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0">
+                            <span className="sr-only">Open menu</span>
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => handleEditService(service.id)}>
+                            <Edit className="mr-2 h-4 w-4" />
+                            <span>Edit</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleDeleteService(service.id)}>
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            <span>Delete</span>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </td>
                   </tr>
                 ))}
@@ -213,13 +542,17 @@ const ServicesLLM: React.FC = () => {
                 </Link>
               </div>
 
-              <div className="mb-6">
-                <Tabs defaultValue="browse">
+              <div className="mb-6 flex justify-between items-center">
+                <Tabs defaultValue="browse" className="w-auto">
                   <TabsList className="bg-gray-100 p-1 rounded-lg inline-flex">
                     <TabsTrigger value="browse" className="rounded-md">Browse LLMs</TabsTrigger>
                     <TabsTrigger value="tested" className="rounded-md">Tested LLMs (0)</TabsTrigger>
                   </TabsList>
                 </Tabs>
+                <Button variant="action" className="flex items-center gap-2" onClick={() => setIsAddLLMDialogOpen(true)}>
+                  <Plus className="w-5 h-5" />
+                  <span>New LLM Model</span>
+                </Button>
               </div>
 
               <div className="relative mb-6">
@@ -227,16 +560,16 @@ const ServicesLLM: React.FC = () => {
                   type="text"
                   placeholder="Search LLM models..."
                   className="w-full border border-gray-300 rounded-lg py-3 px-4 pl-12"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                 />
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3">
-                  <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                  </svg>
+                  <Search className="w-6 h-6 text-gray-400" />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {llmModels.map((model) => (
+                {filteredLLMModels.map((model) => (
                   <div key={model.id} className="bg-white rounded-lg shadow-sm p-6">
                     <div className="flex justify-between items-start mb-4">
                       <div>
@@ -252,7 +585,14 @@ const ServicesLLM: React.FC = () => {
                         </div>
                         <div className="text-gray-500 text-sm mt-1">{model.provider}</div>
                       </div>
-                      <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">OpenAI</span>
+                      <div className="flex gap-2">
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => handleEditLLM(model.id)}>
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => handleDeleteLLM(model.id)}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
 
                     <div className="mb-6">
@@ -324,6 +664,7 @@ const ServicesLLM: React.FC = () => {
             </p>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              
               <CategoryCard 
                 name="INTEGRATIONS" 
                 color="blue" 
@@ -378,7 +719,8 @@ const ServicesLLM: React.FC = () => {
         </TabsContent>
       </Tabs>
 
-      {/* Add Category Dialog */}
+      {/* Category Dialogs */}
+      
       <Dialog open={isAddCategoryDialogOpen} onOpenChange={setIsAddCategoryDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -448,7 +790,6 @@ const ServicesLLM: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Edit Category Dialog */}
       <Dialog open={isEditCategoryDialogOpen} onOpenChange={setIsEditCategoryDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -465,192 +806,4 @@ const ServicesLLM: React.FC = () => {
               <Input
                 id="edit-name"
                 value={categoryName}
-                onChange={(e) => setCategoryName(e.target.value)}
-                className="col-span-3"
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label className="text-right">
-                Color
-              </label>
-              <div className="col-span-3 flex gap-2">
-                {colorOptions.map((option) => (
-                  <button
-                    key={option.value}
-                    className={`w-8 h-8 rounded-full border ${
-                      categoryColor === option.value ? 'ring-2 ring-blue-500' : ''
-                    } bg-${option.value}-100`}
-                    onClick={() => setCategoryColor(option.value)}
-                    title={option.name}
-                  />
-                ))}
-              </div>
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label className="text-right">
-                Icon
-              </label>
-              <div className="col-span-3 flex flex-wrap gap-2">
-                {iconOptions.map((option) => (
-                  <button
-                    key={option.value}
-                    className={`p-2 rounded-md border ${
-                      categoryIcon === option.value ? 'bg-blue-100 border-blue-300' : 'bg-gray-50'
-                    }`}
-                    onClick={() => setCategoryIcon(option.value)}
-                    title={option.name}
-                  >
-                    {getCategoryIcon(option.value)}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button 
-              variant="outline" 
-              onClick={() => setIsEditCategoryDialogOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button onClick={handleEditCategorySubmit}>Update Category</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Delete Category Dialog */}
-      <Dialog open={isDeleteCategoryDialogOpen} onOpenChange={setIsDeleteCategoryDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Delete Category</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete the category "{selectedCategory}"? This action cannot be undone.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button 
-              variant="outline" 
-              onClick={() => setIsDeleteCategoryDialogOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button variant="destructive" onClick={handleDeleteCategorySubmit}>Delete Category</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
-  );
-};
-
-interface CategoryBadgeProps {
-  category: string;
-}
-
-const CategoryBadge: React.FC<CategoryBadgeProps> = ({ category }) => {
-  let badgeClass = '';
-  
-  switch (category) {
-    case 'DB':
-      badgeClass = 'service-badge-db';
-      break;
-    case 'DOCUMENT COMPOSITION':
-      badgeClass = 'service-badge-document';
-      break;
-    case 'SCRAPING - CRAWLING':
-      badgeClass = 'service-badge-scraping';
-      break;
-    case 'REASONING':
-      badgeClass = 'service-badge-reasoning';
-      break;
-    case 'INTEGRATIONS':
-      badgeClass = 'service-badge-integrations';
-      break;
-    case 'LLM PROVIDER':
-      badgeClass = 'service-badge-provider';
-      break;
-    default:
-      badgeClass = 'bg-gray-100 text-gray-800';
-  }
-  
-  return (
-    <span className={`service-badge ${badgeClass}`}>
-      {category}
-    </span>
-  );
-};
-
-interface CategoryCardProps {
-  name: string;
-  color: 'blue' | 'red' | 'yellow' | 'green' | 'purple';
-  icon: string;
-  onEdit: () => void;
-  onDelete: () => void;
-}
-
-const CategoryCard: React.FC<CategoryCardProps> = ({ name, color, icon, onEdit, onDelete }) => {
-  let colorClass = '';
-  
-  switch (color) {
-    case 'blue':
-      colorClass = 'bg-blue-100 text-blue-800 border-blue-300';
-      break;
-    case 'red':
-      colorClass = 'bg-red-100 text-red-800 border-red-300';
-      break;
-    case 'yellow':
-      colorClass = 'bg-yellow-100 text-yellow-800 border-yellow-300';
-      break;
-    case 'green':
-      colorClass = 'bg-green-100 text-green-800 border-green-300';
-      break;
-    case 'purple':
-      colorClass = 'bg-purple-100 text-purple-800 border-purple-300';
-      break;
-  }
-
-  const getIcon = () => {
-    switch (icon) {
-      case 'database':
-        return <Database className="w-5 h-5" />;
-      case 'activity':
-        return <Activity className="w-5 h-5" />;
-      case 'file-edit':
-        return <FileEdit className="w-5 h-5" />;
-      case 'clipboard-list':
-        return <ClipboardList className="w-5 h-5" />;
-      case 'globe':
-        return <Globe className="w-5 h-5" />;
-      case 'cloud':
-        return <Cloud className="w-5 h-5" />;
-      default:
-        return <Database className="w-5 h-5" />;
-    }
-  };
-  
-  return (
-    <div className={`border rounded-lg p-4 ${colorClass}`}>
-      <div className="flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          {getIcon()}
-          <span className="font-medium">{name}</span>
-        </div>
-        <div className="flex gap-2">
-          <button 
-            className="p-1 hover:bg-white hover:bg-opacity-30 rounded"
-            onClick={onEdit}
-          >
-            <Edit className="w-4 h-4" />
-          </button>
-          <button 
-            className="p-1 hover:bg-white hover:bg-opacity-30 rounded"
-            onClick={onDelete}
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default ServicesLLM;
+                onChange={(e) => setCategory
