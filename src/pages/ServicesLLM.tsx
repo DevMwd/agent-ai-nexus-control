@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAgents } from '@/contexts/AgentContext';
@@ -57,7 +56,7 @@ const ServicesLLM: React.FC = () => {
                     <td className="p-4">{service.costStructure}</td>
                     <td className="p-4">{service.costPerUnit}</td>
                     <td className="p-4">
-                      {service.hasFreeier ? (
+                      {service.hasFreetier ? (
                         <span className="text-green-500">Sì</span>
                       ) : (
                         <span className="text-gray-500">No</span>

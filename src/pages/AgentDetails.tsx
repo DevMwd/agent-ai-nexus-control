@@ -1,8 +1,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { useAgents, AIAgent } from '@/contexts/AgentContext';
-import { Star, Clock, CircleDollarSign, Shield, Cog, ArrowLeft } from 'lucide-react';
+import { useAgents, AIAgent, ServiceCategory } from '@/contexts/AgentContext';
+import { Star, Clock, CircleDollarSign, Shield, Cog, ArrowLeft, Plus } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ScoreBar from '@/components/ScoreBar';
 import CategoryChart from '@/components/CategoryChart';
@@ -36,7 +36,7 @@ const AgentDetails: React.FC = () => {
   const categoryData = Object.entries(agent.categoriesDistribution)
     .filter(([_, value]) => value > 0)
     .map(([name, value]) => ({
-      name: name as any,
+      name: name as ServiceCategory,
       value
     }));
 
@@ -45,7 +45,7 @@ const AgentDetails: React.FC = () => {
     'Azure OpenAI': 31,
     'Claude 3 Opus': 24
   }).map(([name, value]) => ({
-    name,
+    name: name as any, // This is a temporary fix until we create a proper LLM type
     value
   }));
 

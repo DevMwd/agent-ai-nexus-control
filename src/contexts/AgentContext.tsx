@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 // Define types for our agent and related data
@@ -94,7 +93,7 @@ const mockServices: Service[] = [
     category: 'DB', 
     costStructure: 'Per record', 
     costPerUnit: 'A partire da $10/mese', 
-    hasFreeier: true 
+    hasFreetier: true 
   },
   { 
     id: '2', 
@@ -102,7 +101,7 @@ const mockServices: Service[] = [
     category: 'DOCUMENT COMPOSITION', 
     costStructure: 'Per documento', 
     costPerUnit: 'A partire da $0.01', 
-    hasFreeier: true 
+    hasFreetier: true 
   },
   { 
     id: '3', 
@@ -110,7 +109,7 @@ const mockServices: Service[] = [
     category: 'SCRAPING - CRAWLING', 
     costStructure: 'Per richiesta', 
     costPerUnit: 'Variabile', 
-    hasFreeier: false 
+    hasFreetier: false 
   },
   { 
     id: '4', 
@@ -118,7 +117,7 @@ const mockServices: Service[] = [
     category: 'REASONING', 
     costStructure: 'Per token', 
     costPerUnit: 'Variabile', 
-    hasFreeier: true 
+    hasFreetier: true 
   },
   { 
     id: '5', 
@@ -126,7 +125,7 @@ const mockServices: Service[] = [
     category: 'LLM PROVIDER', 
     costStructure: 'Per richiesta', 
     costPerUnit: 'Variabile', 
-    hasFreeier: true 
+    hasFreetier: true 
   },
 ];
 
