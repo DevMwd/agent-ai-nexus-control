@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,22 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// Action platform custom colors
+				action: {
+					primary: '#1A1562',
+					light: '#F0F1F8',
+					blue: '#4071FF',
+					green: '#3CAF85',
+					red: '#E63946',
+					yellow: '#FFC145',
+				},
+				category: {
+					blue: '#4071FF',
+					red: '#E63946',
+					yellow: '#FFC145',
+					green: '#3CAF85',
+					purple: '#9B6DFF',
 				}
 			},
 			borderRadius: {

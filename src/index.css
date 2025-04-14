@@ -1,10 +1,11 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 220 33% 98%;
     --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
@@ -13,7 +14,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 250 100% 24%;
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -35,19 +36,12 @@
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
@@ -98,4 +92,48 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.service-badge {
+  @apply px-3 py-1 rounded-full text-sm font-medium;
+}
+
+.service-badge-integrations {
+  @apply bg-blue-100 text-category-blue;
+}
+
+.service-badge-reasoning {
+  @apply bg-red-100 text-category-red;
+}
+
+.service-badge-db {
+  @apply bg-yellow-100 text-category-yellow;
+}
+
+.service-badge-document {
+  @apply bg-red-100 text-category-red;
+}
+
+.service-badge-scraping {
+  @apply bg-green-100 text-category-green;
+}
+
+.service-badge-provider {
+  @apply bg-purple-100 text-category-purple;
+}
+
+.progress-quality {
+  @apply bg-yellow-500;
+}
+
+.progress-speed {
+  @apply bg-blue-500;
+}
+
+.progress-saving {
+  @apply bg-green-500;
+}
+
+.progress-privacy {
+  @apply bg-red-500;
 }
