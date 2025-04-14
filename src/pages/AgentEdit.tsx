@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAgents, AIAgent, LLMModel, LLMModelDetails } from '@/contexts/AgentContext';
@@ -78,6 +77,11 @@ const AgentEdit: React.FC = () => {
         selectedLlms: foundAgent.llms,
         prompt: foundAgent.prompt || "System prompt for this agent. In a real application, this would contain the actual prompt configuration."
       });
+      
+      // Set logo preview if logo is a data URL
+      if (typeof foundAgent.logo === 'string' && foundAgent.logo.length > 10) {
+        setLogoPreview(foundAgent.logo);
+      }
     } else {
       toast.error("Agent not found");
       navigate('/agents');
@@ -114,7 +118,7 @@ const AgentEdit: React.FC = () => {
         const reader = new FileReader();
         reader.onloadend = async () => {
           // Update with the new logo (using first letters if no logo)
-          updatedAgent.logo = logoPreview || data.title.substring(0, 2).toUpperCase();
+          updatedAgent.logo = reader.result as string || data.title.substring(0, 2).toUpperCase();
           
           // Now update the agent with the logo
           await updateAgent(updatedAgent);
@@ -123,6 +127,12 @@ const AgentEdit: React.FC = () => {
           navigate(`/agents/${id}`);
         };
         reader.readAsDataURL(logoFile);
+      } else if (logoPreview) {
+        // Keep existing logo preview if no new file is uploaded
+        updatedAgent.logo = logoPreview;
+        await updateAgent(updatedAgent);
+        toast.success("Agent updated successfully");
+        navigate(`/agents/${id}`);
       } else {
         // Update the agent data without changing the logo
         await updateAgent(updatedAgent);
@@ -345,7 +355,7 @@ const AgentEdit: React.FC = () => {
               
               <div className="grid grid-cols-1 gap-4 max-h-[400px] overflow-y-auto pr-2">
                 {llmModels.map((llm) => {
-                  // Using the name field for LLM models
+                  // Use the name field for LLM models
                   const isSelected = form.watch('selectedLlms').includes(llm.name as LLMModel);
                   
                   return (

@@ -1,11 +1,10 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { MessageCircle, Pencil, Check, X } from 'lucide-react';
 import { AIAgent, ServiceCategory } from '@/contexts/AgentContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { PieChart, Pie, Cell, Tooltip } from 'recharts';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
@@ -191,6 +190,7 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent }) => {
         <div className="px-6 pb-4">
           <h4 className="text-sm font-medium mb-2">LLMs used:</h4>
           <div className="flex flex-wrap gap-2">
+            {/* Only display the LLMs that are actually configured for this agent */}
             {agent.llms.map((llm, index) => (
               <div 
                 key={index} 
