@@ -363,7 +363,7 @@ const ServicesLLM: React.FC = () => {
         <TabsContent value="services" className="mt-6">
           <ServicesTab
             servicesList={servicesList}
-            onManageCategories={handleManageCategories}
+            onManageCategories={() => setActiveTab("categories")}
             onNewService={handleNewService}
             onEditService={handleEditService}
             onDeleteService={handleDeleteService}

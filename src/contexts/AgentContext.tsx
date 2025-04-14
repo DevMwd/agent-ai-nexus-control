@@ -216,7 +216,7 @@ const createMockAgent = (id: string, title: string, version: string, subtitle: s
     logo: 'SB',
     isActive,
     services: mockServices.slice(0, 3),
-    llms: [], // Set to empty array to test default behavior
+    llms: ['GPT-4o Mini', 'Claude 3 Opus'], // Add some default LLMs
     totalCost: 187.20,
     servicesCost: 187.20,
     llmCost: 187.20,
@@ -256,7 +256,7 @@ const createMockAgent = (id: string, title: string, version: string, subtitle: s
         llmCost: 25.20,
         servicesCost: 12.24,
         services: mockServices.slice(0, 2),
-        llms: []
+        llms: ['GPT-4o Mini', 'Claude 3 Opus'] // Add some LLMs to sessions too
       }
     ]
   };
