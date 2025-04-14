@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -9,12 +9,14 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DialogFooter } from '@/components/ui/dialog';
 import { Service, ServiceCategory } from '@/contexts/AgentContext';
+import { Image, Upload } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 export const serviceFormSchema = z.object({
   name: z.string().min(2, { message: "Il nome deve avere almeno 2 caratteri" }),
   category: z.string({ required_error: "Seleziona una categoria" }),
   costStructure: z.string().min(2, { message: "Specifica la struttura dei costi" }),
-  costPerUnit: z.string().min(2, { message: "Specifica il costo per unità" }),
+  costPerUnit: z.string().min(1, { message: "Specifica il costo per unità" }),
   hasFreetier: z.boolean().default(false),
   logo: z.string().optional()
 });
@@ -41,10 +43,25 @@ const ServiceForm: React.FC<ServiceFormProps> = ({
   },
   submitLabel = "Save"
 }) => {
+  const [logoPreview, setLogoPreview] = useState<string | null>(defaultValues.logo || null);
+  
   const form = useForm<ServiceFormValues>({
     resolver: zodResolver(serviceFormSchema),
     defaultValues
   });
+
+  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        setLogoPreview(base64String);
+        form.setValue('logo', base64String);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   return (
     <Form {...form}>
@@ -62,6 +79,7 @@ const ServiceForm: React.FC<ServiceFormProps> = ({
             </FormItem>
           )}
         />
+        
         <FormField
           control={form.control}
           name="category"
@@ -90,6 +108,7 @@ const ServiceForm: React.FC<ServiceFormProps> = ({
             </FormItem>
           )}
         />
+        
         <FormField
           control={form.control}
           name="costStructure"
@@ -103,6 +122,7 @@ const ServiceForm: React.FC<ServiceFormProps> = ({
             </FormItem>
           )}
         />
+        
         <FormField
           control={form.control}
           name="costPerUnit"
@@ -110,12 +130,18 @@ const ServiceForm: React.FC<ServiceFormProps> = ({
             <FormItem>
               <FormLabel>Cost per Unit</FormLabel>
               <FormControl>
-                <Input placeholder="Cost details" {...field} />
+                <Input 
+                  type="number" 
+                  step="0.01" 
+                  placeholder="0.00" 
+                  {...field} 
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+        
         <FormField
           control={form.control}
           name="hasFreetier"
@@ -134,6 +160,54 @@ const ServiceForm: React.FC<ServiceFormProps> = ({
             </FormItem>
           )}
         />
+        
+        <FormField
+          control={form.control}
+          name="logo"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Logo</FormLabel>
+              <div className="flex items-center gap-4">
+                <div className="flex-shrink-0">
+                  <Avatar className="w-16 h-16 border border-gray-200">
+                    {logoPreview ? (
+                      <AvatarImage src={logoPreview} alt="Service logo" />
+                    ) : (
+                      <AvatarFallback>
+                        <Image className="h-8 w-8 text-gray-400" />
+                      </AvatarFallback>
+                    )}
+                  </Avatar>
+                </div>
+                <div className="flex-1">
+                  <div className="relative">
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleLogoChange}
+                      className="hidden"
+                      id="logo-upload"
+                    />
+                    <label
+                      htmlFor="logo-upload"
+                      className="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer"
+                    >
+                      <Upload className="h-4 w-4 mr-2" />
+                      Upload Logo
+                    </label>
+                    <Input
+                      {...field}
+                      type="hidden"
+                      value={field.value || ''}
+                    />
+                  </div>
+                </div>
+              </div>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
         <DialogFooter>
           <Button variant="outline" onClick={onCancel} type="button">
             Cancel

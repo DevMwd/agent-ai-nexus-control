@@ -216,7 +216,7 @@ const createMockAgent = (id: string, title: string, version: string, subtitle: s
     logo: 'SB',
     isActive,
     services: mockServices.slice(0, 3),
-    llms: ['GPT-4o Mini'], // Changed default LLM to GPT-4o Mini
+    llms: ['GPT-4o Mini'], // Default LLM is set to GPT-4o Mini only
     totalCost: 187.20,
     servicesCost: 187.20,
     llmCost: 187.20,

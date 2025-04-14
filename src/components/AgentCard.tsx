@@ -33,9 +33,12 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent }) => {
     'LLM PROVIDER': '#9B6DFF'
   };
 
-  // Check if agent.logo is a string with length > 10, which likely means it's a data URL
-  const isLogoImage = typeof agent.logo === 'string' && agent.logo.length > 10;
+  // Generate initials from agent title
   const logoInitials = agent.title.substring(0, 2).toUpperCase();
+  
+  // Check if agent.logo is a valid URL or base64 string (starting with http, https, or data:)
+  const isValidLogoUrl = typeof agent.logo === 'string' && 
+    (agent.logo.startsWith('http') || agent.logo.startsWith('data:'));
   
   return (
     <Card className="bg-white rounded-2xl shadow-sm overflow-hidden">
@@ -44,16 +47,14 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent }) => {
         <div className="p-6 pb-2">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-4">
-              {isLogoImage ? (
-                <Avatar className="w-16 h-16">
+              <Avatar className="w-16 h-16">
+                {isValidLogoUrl ? (
                   <AvatarImage src={agent.logo} alt={agent.title} className="object-cover" />
-                  <AvatarFallback>{logoInitials}</AvatarFallback>
-                </Avatar>
-              ) : (
-                <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center text-xl font-semibold">
+                ) : null}
+                <AvatarFallback className="bg-gray-200 text-gray-700 text-xl font-semibold">
                   {logoInitials}
-                </div>
-              )}
+                </AvatarFallback>
+              </Avatar>
               <div>
                 <p className="text-sm text-gray-500">{agent.subtitle}</p>
                 <h3 className="text-xl font-bold">{agent.title} {agent.version}</h3>
@@ -191,7 +192,6 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent }) => {
         <div className="px-6 pb-4">
           <h4 className="text-sm font-medium mb-2">LLMs used:</h4>
           <div className="flex flex-wrap gap-2">
-            {/* Only display the LLMs that are actually configured for this agent */}
             {agent.llms.map((llm, index) => (
               <div 
                 key={index} 
@@ -200,6 +200,11 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent }) => {
                 {llm}
               </div>
             ))}
+            {agent.llms.length === 0 && (
+              <div className="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-xs font-medium">
+                GPT-4o Mini
+              </div>
+            )}
           </div>
         </div>
 

@@ -1,10 +1,9 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Settings, Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2 } from 'lucide-react';
 import { Service } from "@/contexts/AgentContext";
 import CategoryBadge from './CategoryBadge';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 interface ServicesTabProps {
   servicesList: Service[];
@@ -26,10 +25,6 @@ const ServicesTab: React.FC<ServicesTabProps> = ({
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Services</h1>
         <div className="flex gap-4">
-          <Button variant="outline" className="flex items-center gap-2" onClick={onManageCategories}>
-            <Settings className="w-5 h-5" />
-            <span>Manage Categories</span>
-          </Button>
           <Button variant="action" className="flex items-center gap-2" onClick={onNewService}>
             <Plus className="w-5 h-5" />
             <span>New Service</span>
