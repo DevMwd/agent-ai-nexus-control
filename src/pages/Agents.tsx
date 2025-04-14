@@ -7,8 +7,19 @@ import { Plus } from 'lucide-react';
 import AgentCard from '@/components/AgentCard';
 
 const Agents: React.FC = () => {
-  const { agents } = useAgents();
+  const { agents, loading } = useAgents();
   const { isAdmin } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-6 py-8 flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading agents...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-6 py-8">

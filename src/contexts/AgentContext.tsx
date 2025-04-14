@@ -1,5 +1,6 @@
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { agentsDB, servicesDB, llmModelsDB, initializeDatabase } from '@/utils/database';
 
 // Define types for our agent and related data
 export type ServiceCategory = 'INTEGRATIONS' | 'REASONING' | 'DB' | 'DOCUMENT COMPOSITION' | 'SCRAPING - CRAWLING' | 'LLM PROVIDER';
@@ -84,6 +85,7 @@ interface AgentContextType {
   currentAgent: AIAgent | null;
   setCurrentAgent: (agent: AIAgent | null) => void;
   updateAgent: (updatedAgent: Partial<AIAgent> & { id: string }) => void;
+  loading: boolean;
 }
 
 const AgentContext = createContext<AgentContextType | undefined>(undefined);
@@ -267,19 +269,61 @@ const mockAgents: AIAgent[] = [
 ];
 
 export const AgentProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [agents, setAgents] = useState<AIAgent[]>(mockAgents);
+  const [agents, setAgents] = useState<AIAgent[]>([]);
+  const [services, setServices] = useState<Service[]>([]);
+  const [llmModels, setLLMModels] = useState<LLMModelDetails[]>([]);
   const [currentAgent, setCurrentAgent] = useState<AIAgent | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  const updateAgent = (updatedAgent: Partial<AIAgent> & { id: string }) => {
-    setAgents(prevAgents => 
-      prevAgents.map(agent => 
-        agent.id === updatedAgent.id ? { ...agent, ...updatedAgent } : agent
-      )
-    );
+  // Initialize database and load data
+  useEffect(() => {
+    const initDB = async () => {
+      try {
+        // Initialize the database with mock data
+        initializeDatabase(mockAgents, mockServices, mockLLMModels);
+        
+        // Load data from database
+        const dbAgents = await agentsDB.getAll();
+        const dbServices = await servicesDB.getAll();
+        const dbLLMModels = await llmModelsDB.getAll();
+        
+        // Update state with data from database
+        setAgents(dbAgents.length > 0 ? dbAgents : mockAgents);
+        setServices(dbServices.length > 0 ? dbServices : mockServices);
+        setLLMModels(dbLLMModels.length > 0 ? dbLLMModels : mockLLMModels);
+        
+        setLoading(false);
+      } catch (error) {
+        console.error('Error initializing database:', error);
+        // Fallback to mock data if database initialization fails
+        setAgents(mockAgents);
+        setServices(mockServices);
+        setLLMModels(mockLLMModels);
+        setLoading(false);
+      }
+    };
     
-    // Also update currentAgent if it's the one being modified
-    if (currentAgent && currentAgent.id === updatedAgent.id) {
-      setCurrentAgent(prev => prev ? { ...prev, ...updatedAgent } : prev);
+    initDB();
+  }, []);
+
+  const updateAgent = async (updatedAgent: Partial<AIAgent> & { id: string }) => {
+    try {
+      // Update agent in database
+      await agentsDB.update(updatedAgent);
+      
+      // Update state
+      setAgents(prevAgents => 
+        prevAgents.map(agent => 
+          agent.id === updatedAgent.id ? { ...agent, ...updatedAgent } : agent
+        )
+      );
+      
+      // Also update currentAgent if it's the one being modified
+      if (currentAgent && currentAgent.id === updatedAgent.id) {
+        setCurrentAgent(prev => prev ? { ...prev, ...updatedAgent } : prev);
+      }
+    } catch (error) {
+      console.error('Error updating agent:', error);
     }
   };
 
@@ -287,11 +331,12 @@ export const AgentProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     <AgentContext.Provider
       value={{
         agents,
-        services: mockServices,
-        llmModels: mockLLMModels,
+        services,
+        llmModels,
         currentAgent,
         setCurrentAgent,
         updateAgent,
+        loading
       }}
     >
       {children}

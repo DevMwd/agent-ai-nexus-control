@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAgents, AIAgent, LLMModel, LLMModelDetails } from '@/contexts/AgentContext';
@@ -23,8 +22,9 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 const AgentEdit: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { agents, llmModels, updateAgent } = useAgents();
+  const { agents, llmModels, updateAgent, loading } = useAgents();
   const [agent, setAgent] = useState<AIAgent | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const navigate = useNavigate();
   const { isAdmin } = useAuth();
   
@@ -56,6 +56,9 @@ const AgentEdit: React.FC = () => {
       return;
     }
     
+    // Wait for agents to load
+    if (loading) return;
+    
     // Find the agent by ID
     const foundAgent = agents.find(a => a.id === id);
     if (foundAgent) {
@@ -72,48 +75,57 @@ const AgentEdit: React.FC = () => {
         saving: foundAgent.scores.saving,
         privacy: foundAgent.scores.privacy,
         selectedLlms: foundAgent.llms,
-        prompt: "System prompt for this agent. In a real application, this would contain the actual prompt configuration." // Placeholder
+        prompt: foundAgent.prompt || "System prompt for this agent. In a real application, this would contain the actual prompt configuration."
       });
     } else {
       toast.error("Agent not found");
       navigate('/agents');
     }
-  }, [id, agents, navigate, isAdmin, form]);
+  }, [id, agents, navigate, isAdmin, form, loading]);
 
-  const onSubmit = (data: any) => {
+  const onSubmit = async (data: any) => {
     if (!agent || !id) return;
     
-    // Prepare the updated agent data
-    const updatedAgent = {
-      id,
-      title: data.title,
-      subtitle: data.subtitle,
-      description: data.description,
-      isActive: data.isActive,
-      scores: {
-        quality: data.quality,
-        speed: data.speed,
-        saving: data.saving,
-        privacy: data.privacy
-      },
-      llms: data.selectedLlms,
-      prompt: data.prompt
-    };
-    
-    // Update the agent data
-    updateAgent(updatedAgent);
-    
-    // Handle logo upload if there is one
-    if (logoFile) {
-      console.log("Logo file to upload:", logoFile);
-      // Here we would upload the logo file to a server
-      // For now, we just simulate it as done
-      toast.success("Logo uploaded successfully");
+    try {
+      setIsSubmitting(true);
+      
+      // Prepare the updated agent data
+      const updatedAgent = {
+        id,
+        title: data.title,
+        subtitle: data.subtitle,
+        description: data.description,
+        isActive: data.isActive,
+        scores: {
+          quality: data.quality,
+          speed: data.speed,
+          saving: data.saving,
+          privacy: data.privacy
+        },
+        llms: data.selectedLlms,
+        prompt: data.prompt
+      };
+      
+      // Update the agent data (this will save to database and update state)
+      await updateAgent(updatedAgent);
+      
+      // Handle logo upload if there is one
+      if (logoFile) {
+        console.log("Logo file to upload:", logoFile);
+        // Here we would upload the logo file to a server
+        // For now, we just simulate it as done
+        toast.success("Logo uploaded successfully");
+      }
+      
+      toast.success("Agent updated successfully");
+      // Navigate back to agent details
+      navigate(`/agents/${id}`);
+    } catch (error) {
+      console.error("Error updating agent:", error);
+      toast.error("Failed to update agent");
+    } finally {
+      setIsSubmitting(false);
     }
-    
-    toast.success("Agent updated successfully");
-    // Navigate back to agent details
-    navigate(`/agents/${id}`);
   };
 
   const handleLlmToggle = (llm: LLMModel) => {
@@ -142,8 +154,19 @@ const AgentEdit: React.FC = () => {
     setLogoFile(null);
   };
 
+  if (loading) {
+    return (
+      <div className="container mx-auto px-6 py-8 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading agent data...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!agent) {
-    return <div className="container mx-auto px-6 py-8">Loading...</div>;
+    return <div className="container mx-auto px-6 py-8">Agent not found</div>;
   }
 
   return (
@@ -354,9 +377,19 @@ const AgentEdit: React.FC = () => {
               type="submit" 
               variant="action" 
               className="flex items-center gap-2"
+              disabled={isSubmitting}
             >
-              <Save className="w-5 h-5" />
-              Save Changes
+              {isSubmitting ? (
+                <>
+                  <div className="animate-spin h-4 w-4 border-2 border-t-transparent border-white rounded-full mr-2"></div>
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="w-5 h-5" />
+                  Save Changes
+                </>
+              )}
             </Button>
           </div>
         </form>
