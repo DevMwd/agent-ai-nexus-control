@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -55,9 +56,9 @@ const Header: React.FC = () => {
         <div className="pr-0">
           <Link 
             to="/profile" 
-            className="p-3 h-14 w-14 rounded-full bg-white hover:bg-gray-100 transition-colors shadow-md flex items-center justify-center"
+            className="p-2 h-12 w-12 rounded-full bg-white hover:bg-gray-100 transition-colors shadow-md flex items-center justify-center"
           >
-            <User className="w-7 h-7 text-indigo-900" />
+            <User className="w-6 h-6 text-indigo-900" />
           </Link>
         </div>
       </div>
