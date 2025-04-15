@@ -3,6 +3,7 @@ import * as CheckboxPrimitive from "@radix-ui/react-checkbox"
 import { Check } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { Switch } from "./switch"
 
 const Checkbox = React.forwardRef<
   React.ElementRef<typeof CheckboxPrimitive.Root>,
@@ -25,4 +26,23 @@ const Checkbox = React.forwardRef<
 ))
 Checkbox.displayName = CheckboxPrimitive.Root.displayName
 
-export { Checkbox }
+const SwitchCheckbox = React.forwardRef<
+  HTMLButtonElement,
+  Omit<React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>, "checked" | "defaultChecked" | "onCheckedChange"> & {
+    checked?: boolean;
+    defaultChecked?: boolean;
+    onCheckedChange?: (checked: boolean) => void;
+  }
+>(({ checked, defaultChecked, onCheckedChange, className, ...props }, ref) => (
+  <Switch
+    ref={ref}
+    checked={checked}
+    defaultChecked={defaultChecked}
+    onCheckedChange={onCheckedChange}
+    className={className}
+    {...props}
+  />
+))
+SwitchCheckbox.displayName = "SwitchCheckbox"
+
+export { Checkbox, SwitchCheckbox }

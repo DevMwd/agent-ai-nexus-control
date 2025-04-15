@@ -11,6 +11,7 @@ import { DialogFooter } from '@/components/ui/dialog';
 import { Service, ServiceCategory } from '@/contexts/AgentContext';
 import { Image, Upload } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Switch } from '@/components/ui/switch';
 
 export const serviceFormSchema = z.object({
   name: z.string().min(2, { message: "Il nome deve avere almeno 2 caratteri" }),
@@ -153,16 +154,14 @@ const ServiceForm: React.FC<ServiceFormProps> = ({
           control={form.control}
           name="hasFreetier"
           render={({ field }) => (
-            <FormItem className="flex items-center gap-2 space-y-0">
+            <FormItem className="flex items-center space-x-2">
               <FormControl>
-                <input
-                  type="checkbox"
+                <Switch 
                   checked={field.value}
-                  onChange={field.onChange}
-                  className="h-4 w-4 rounded border-gray-300"
+                  onCheckedChange={field.onChange}
                 />
               </FormControl>
-              <FormLabel className="m-0">Has Free Tier</FormLabel>
+              <FormLabel className="cursor-pointer">Has Free Tier</FormLabel>
               <FormMessage />
             </FormItem>
           )}

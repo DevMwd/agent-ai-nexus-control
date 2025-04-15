@@ -19,6 +19,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Switch } from '@/components/ui/switch';
 
 const AgentEdit: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -273,13 +274,12 @@ const AgentEdit: React.FC = () => {
                 </div>
                 
                 <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
+                  <Switch
                     id="isActive"
-                    {...form.register('isActive')}
-                    className="h-4 w-4 rounded border-gray-300 text-action-primary focus:ring-action-primary"
+                    checked={form.watch('isActive')}
+                    onCheckedChange={(checked) => form.setValue('isActive', checked)}
                   />
-                  <Label htmlFor="isActive">Active</Label>
+                  <Label htmlFor="isActive" className="cursor-pointer">Active</Label>
                 </div>
               </div>
             </div>

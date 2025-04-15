@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,6 +9,7 @@ import { DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { X, Plus, Upload } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
 
 export const llmFormSchema = z.object({
   name: z.string().min(2, { message: "Il nome deve avere almeno 2 caratteri" }),
@@ -63,7 +63,6 @@ const LLMForm: React.FC<LLMFormProps> = ({
       const reader = new FileReader();
       reader.onloadend = () => {
         setLogoPreview(reader.result as string);
-        // Update the logo field in the form
         form.setValue('logo', reader.result as string);
       };
       reader.readAsDataURL(file);
