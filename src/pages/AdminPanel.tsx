@@ -32,7 +32,7 @@ const AdminPanel: React.FC = () => {
   const [mockAgentVisibility, setMockAgentVisibility] = useState(
     agents.map(agent => ({
       agentId: agent.id,
-      name: agent.displayName || agent.id,
+      name: agent.title || agent.id,
       visibleToAdmins: true,
       visibleToBaseUsers: agent.id.includes('1')
     }))
@@ -158,7 +158,6 @@ const AdminPanel: React.FC = () => {
     });
   };
 
-  // If not at least admin, don't show this page
   if (!isAdmin()) {
     return (
       <div className="container mx-auto px-6 py-8">
