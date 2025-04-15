@@ -8,12 +8,12 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 
 interface LLMCardProps {
   model: LLMModelDetails;
-  onEdit: (id: string) => void;
-  onDelete: (id: string) => void;
+  onEdit?: (id: string) => void;
+  onDelete?: (id: string) => void;
   onSelect: (id: string) => void;
 }
 
-const LLMCard: React.FC<LLMCardProps> = ({ model, onEdit, onDelete, onSelect }) => {
+export const LLMCard: React.FC<LLMCardProps> = ({ model, onEdit, onDelete, onSelect }) => {
   return (
     <Card className="flex flex-col h-full overflow-hidden shadow-sm hover:shadow-md transition-shadow">
       <CardContent className="p-4 sm:p-6 flex-grow">
@@ -34,19 +34,21 @@ const LLMCard: React.FC<LLMCardProps> = ({ model, onEdit, onDelete, onSelect }) 
               <div className="text-gray-500 text-xs sm:text-sm">{model.provider}</div>
             </div>
           </div>
-          <div className="flex gap-2">
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => onEdit(model.id)}>
-              <Edit className="h-4 w-4" />
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="h-8 w-8 p-0 bg-red-50 hover:bg-red-100" 
-              onClick={() => onDelete(model.id)}
-            >
-              <Trash2 className="h-4 w-4 text-red-500" />
-            </Button>
-          </div>
+          {onEdit && onDelete && (
+            <div className="flex gap-2">
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => onEdit(model.id)}>
+                <Edit className="h-4 w-4" />
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-8 w-8 p-0 bg-red-50 hover:bg-red-100" 
+                onClick={() => onDelete(model.id)}
+              >
+                <Trash2 className="h-4 w-4 text-red-500" />
+              </Button>
+            </div>
+          )}
         </div>
 
         <div className="mb-4 sm:mb-6">

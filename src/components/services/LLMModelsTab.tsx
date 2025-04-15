@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Plus, Search } from 'lucide-react';
 import { LLMModelDetails } from "@/contexts/AgentContext";
-import { LLMCard } from './LLMCard';
+import LLMCard from './LLMCard';
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 

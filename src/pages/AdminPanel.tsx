@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -33,9 +32,9 @@ const AdminPanel: React.FC = () => {
   const [mockAgentVisibility, setMockAgentVisibility] = useState(
     agents.map(agent => ({
       agentId: agent.id,
-      name: agent.name,
+      name: agent.displayName || agent.id,
       visibleToAdmins: true,
-      visibleToBaseUsers: agent.id.includes('1') // Just for demo purposes
+      visibleToBaseUsers: agent.id.includes('1')
     }))
   );
   
