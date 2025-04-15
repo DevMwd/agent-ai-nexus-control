@@ -6,6 +6,7 @@ import { servicesDB, llmModelsDB } from '@/utils/database';
 import { Service, ServiceCategory, LLMModelDetails } from '@/contexts/AgentContext';
 import { v4 as uuidv4 } from 'uuid';
 import { useToast } from "@/components/ui/use-toast";
+import { useIsMobile } from '@/hooks/use-mobile';
 
 // Import components
 import ServicesTab from '@/components/services/ServicesTab';
@@ -23,6 +24,7 @@ import { LLMFormValues } from '@/components/services/forms/LLMForm';
 
 const ServicesLLM: React.FC = () => {
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   const [activeTab, setActiveTab] = useState("services");
   const { services, llmModels } = useAgents();
   const [servicesList, setServicesList] = useState(services);
@@ -349,14 +351,14 @@ const ServicesLLM: React.FC = () => {
   ];
 
   return (
-    <div className="container mx-auto px-6 py-8">
+    <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
       <Tabs defaultValue="services" onValueChange={setActiveTab}>
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold">Services & Models</h1>
-          <TabsList className="bg-gray-100 p-1 rounded-lg">
-            <TabsTrigger value="services" className="rounded-md">Services</TabsTrigger>
-            <TabsTrigger value="llm" className="rounded-md">LLM Models</TabsTrigger>
-            <TabsTrigger value="categories" className="rounded-md">Categories</TabsTrigger>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+          <h1 className="text-2xl sm:text-3xl font-bold">Services & Models</h1>
+          <TabsList className="bg-gray-100 p-1 rounded-lg self-start sm:self-auto">
+            <TabsTrigger value="services" className="rounded-md text-xs sm:text-sm">Services</TabsTrigger>
+            <TabsTrigger value="llm" className="rounded-md text-xs sm:text-sm">LLM Models</TabsTrigger>
+            <TabsTrigger value="categories" className="rounded-md text-xs sm:text-sm">Categories</TabsTrigger>
           </TabsList>
         </div>
 

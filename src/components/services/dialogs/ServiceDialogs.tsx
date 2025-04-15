@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -18,21 +19,21 @@ export const AddServiceDialog: React.FC<AddServiceDialogProps> = ({
 }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[650px] p-0 overflow-hidden rounded-xl border-none shadow-xl">
-        <div className="bg-gradient-to-r from-action-blue to-blue-500 p-6 text-white rounded-t-xl">
+      <DialogContent className="sm:max-w-[650px] p-0 overflow-hidden rounded-xl border-none shadow-xl max-h-[90vh] overflow-y-auto">
+        <div className="bg-gradient-to-r from-action-blue to-blue-500 p-4 sm:p-6 text-white rounded-t-xl">
           <DialogHeader>
             <div className="flex items-center gap-3">
               <div className="bg-white/20 p-2 rounded-lg">
                 <Plus className="h-5 w-5" />
               </div>
-              <DialogTitle className="text-2xl">Add New Service</DialogTitle>
+              <DialogTitle className="text-xl sm:text-2xl">Add New Service</DialogTitle>
             </div>
             <DialogDescription className="text-white/80 mt-2">
               Create a new service with the following details.
             </DialogDescription>
           </DialogHeader>
         </div>
-        <div className="p-6 bg-white rounded-b-xl">
+        <div className="p-4 sm:p-6 bg-white rounded-b-xl">
           <ServiceForm 
             onSubmit={onSubmit} 
             onCancel={onClose} 
@@ -70,21 +71,21 @@ export const EditServiceDialog: React.FC<EditServiceDialogProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[650px] p-0 overflow-hidden rounded-xl border-none shadow-xl">
-        <div className="bg-gradient-to-r from-blue-600 to-cyan-500 p-6 text-white rounded-t-xl">
+      <DialogContent className="sm:max-w-[650px] p-0 overflow-hidden rounded-xl border-none shadow-xl max-h-[90vh] overflow-y-auto">
+        <div className="bg-gradient-to-r from-blue-600 to-cyan-500 p-4 sm:p-6 text-white rounded-t-xl">
           <DialogHeader>
             <div className="flex items-center gap-3">
               <div className="bg-white/20 p-2 rounded-lg">
                 <Pencil className="h-5 w-5" />
               </div>
-              <DialogTitle className="text-2xl">Edit Service</DialogTitle>
+              <DialogTitle className="text-xl sm:text-2xl">Edit Service</DialogTitle>
             </div>
             <DialogDescription className="text-white/80 mt-2">
               Update the service details.
             </DialogDescription>
           </DialogHeader>
         </div>
-        <div className="p-6 bg-white rounded-b-xl">
+        <div className="p-4 sm:p-6 bg-white rounded-b-xl">
           <ServiceForm 
             onSubmit={onSubmit} 
             onCancel={onClose} 
@@ -111,25 +112,25 @@ export const DeleteServiceDialog: React.FC<DeleteServiceDialogProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[450px] p-0 overflow-hidden rounded-xl border-none shadow-xl">
-        <div className="bg-gradient-to-r from-red-500 to-pink-600 p-6 text-white rounded-t-xl">
+        <div className="bg-gradient-to-r from-red-500 to-pink-600 p-4 sm:p-6 text-white rounded-t-xl">
           <DialogHeader>
             <div className="flex items-center gap-3">
               <div className="bg-white/20 p-2 rounded-lg">
                 <Trash2 className="h-5 w-5" />
               </div>
-              <DialogTitle className="text-2xl">Delete Service</DialogTitle>
+              <DialogTitle className="text-xl sm:text-2xl">Delete Service</DialogTitle>
             </div>
           </DialogHeader>
         </div>
-        <div className="p-6 bg-white rounded-b-xl">
-          <DialogDescription className="py-4 text-lg text-gray-700">
+        <div className="p-4 sm:p-6 bg-white rounded-b-xl">
+          <DialogDescription className="py-4 text-base sm:text-lg text-gray-700">
             Are you sure you want to delete this service? This action cannot be undone.
           </DialogDescription>
-          <DialogFooter className="pt-4">
-            <Button variant="outline" onClick={onClose} className="rounded-lg">
+          <DialogFooter className="pt-4 flex flex-col sm:flex-row gap-2">
+            <Button variant="outline" onClick={onClose} className="rounded-lg w-full sm:w-auto">
               Cancel
             </Button>
-            <Button variant="destructive" onClick={onDelete} className="rounded-lg bg-red-600 hover:bg-red-700">
+            <Button variant="destructive" onClick={onDelete} className="rounded-lg w-full sm:w-auto bg-red-600 hover:bg-red-700">
               Delete
             </Button>
           </DialogFooter>
