@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from '@/components/ui/button';
 import LLMForm, { LLMFormValues } from '../forms/LLMForm';
 import { LLMModelDetails } from '@/contexts/AgentContext';
+import { Brain, Plus, Pencil, Trash2 } from 'lucide-react';
 
 interface AddLLMDialogProps {
   isOpen: boolean;
@@ -18,18 +19,27 @@ export const AddLLMDialog: React.FC<AddLLMDialogProps> = ({
 }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px]">
-        <DialogHeader>
-          <DialogTitle>Add New LLM Model</DialogTitle>
-          <DialogDescription>
-            Enter the details for the new language model.
-          </DialogDescription>
-        </DialogHeader>
-        <LLMForm 
-          onSubmit={onSubmit} 
-          onCancel={onClose} 
-          submitLabel="Add LLM"
-        />
+      <DialogContent className="sm:max-w-[650px] p-0 overflow-hidden rounded-xl">
+        <div className="bg-gradient-to-r from-action-primary to-purple-700 p-6 text-white">
+          <DialogHeader>
+            <div className="flex items-center gap-3">
+              <div className="bg-white/20 p-2 rounded-lg">
+                <Plus className="h-5 w-5" />
+              </div>
+              <DialogTitle className="text-2xl">Add New LLM Model</DialogTitle>
+            </div>
+            <DialogDescription className="text-white/80 mt-2">
+              Enter the details for the new language model.
+            </DialogDescription>
+          </DialogHeader>
+        </div>
+        <div className="p-6">
+          <LLMForm 
+            onSubmit={onSubmit} 
+            onCancel={onClose} 
+            submitLabel="Add LLM"
+          />
+        </div>
       </DialogContent>
     </Dialog>
   );
@@ -63,20 +73,29 @@ export const EditLLMDialog: React.FC<EditLLMDialogProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px]">
-        <DialogHeader>
-          <DialogTitle>Edit LLM Model</DialogTitle>
-          <DialogDescription>
-            Update the details for this language model.
-          </DialogDescription>
-        </DialogHeader>
-        <LLMForm 
-          onSubmit={onSubmit} 
-          onCancel={onClose} 
-          defaultValues={defaultValues}
-          submitLabel="Save Changes"
-          initialLogoPreview={llm.logo || null}
-        />
+      <DialogContent className="sm:max-w-[650px] p-0 overflow-hidden rounded-xl">
+        <div className="bg-gradient-to-r from-indigo-600 to-violet-500 p-6 text-white">
+          <DialogHeader>
+            <div className="flex items-center gap-3">
+              <div className="bg-white/20 p-2 rounded-lg">
+                <Pencil className="h-5 w-5" />
+              </div>
+              <DialogTitle className="text-2xl">Edit LLM Model</DialogTitle>
+            </div>
+            <DialogDescription className="text-white/80 mt-2">
+              Update the details for this language model.
+            </DialogDescription>
+          </DialogHeader>
+        </div>
+        <div className="p-6">
+          <LLMForm 
+            onSubmit={onSubmit} 
+            onCancel={onClose} 
+            defaultValues={defaultValues}
+            submitLabel="Save Changes"
+            initialLogoPreview={llm.logo || null}
+          />
+        </div>
       </DialogContent>
     </Dialog>
   );
@@ -95,21 +114,30 @@ export const DeleteLLMDialog: React.FC<DeleteLLMDialogProps> = ({
 }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Delete LLM Model</DialogTitle>
-          <DialogDescription>
+      <DialogContent className="sm:max-w-[450px] p-0 overflow-hidden rounded-xl">
+        <div className="bg-gradient-to-r from-red-500 to-pink-600 p-6 text-white">
+          <DialogHeader>
+            <div className="flex items-center gap-3">
+              <div className="bg-white/20 p-2 rounded-lg">
+                <Trash2 className="h-5 w-5" />
+              </div>
+              <DialogTitle className="text-2xl">Delete LLM Model</DialogTitle>
+            </div>
+          </DialogHeader>
+        </div>
+        <div className="p-6">
+          <DialogDescription className="py-4 text-lg">
             Are you sure you want to delete this LLM model? This action cannot be undone.
           </DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button variant="destructive" onClick={onDelete}>
-            Delete
-          </Button>
-        </DialogFooter>
+          <DialogFooter className="pt-4">
+            <Button variant="outline" onClick={onClose} className="rounded-lg">
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={onDelete} className="rounded-lg bg-red-600 hover:bg-red-700">
+              Delete
+            </Button>
+          </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   );
