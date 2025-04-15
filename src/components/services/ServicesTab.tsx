@@ -72,17 +72,17 @@ const ServicesTab: React.FC<ServicesTabProps> = ({
               </tr>
             ) : (
               filteredServices.map((service) => (
-                <tr key={service.id} className="border-b">
+                <tr key={service.id} className="border-b hover:bg-gray-50">
                   <td className="p-4">
                     <div className="flex items-center gap-3">
                       <Avatar className="h-8 w-8">
                         <AvatarImage 
-                          src={service.logo || '/public/lovable-uploads/86b10a75-6f9b-47b2-a434-b1e8c0fe23ea.png'} 
+                          src={service.logo || '/lovable-uploads/db33afc5-52a1-4549-a340-88ce96bee0f9.png'} 
                           alt={service.name} 
                         />
                         <AvatarFallback>{service.name.substring(0, 2).toUpperCase()}</AvatarFallback>
                       </Avatar>
-                      <span>{service.name}</span>
+                      <span className="font-medium">{service.name}</span>
                     </div>
                   </td>
                   <td className="p-4">
@@ -102,8 +102,13 @@ const ServicesTab: React.FC<ServicesTabProps> = ({
                       <Button variant="ghost" size="sm" onClick={() => onEditService(service.id)}>
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="sm" onClick={() => onDeleteService(service.id)}>
-                        <Trash2 className="h-4 w-4" />
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="hover:bg-red-100" 
+                        onClick={() => onDeleteService(service.id)}
+                      >
+                        <Trash2 className="h-4 w-4 text-red-500" />
                       </Button>
                     </div>
                   </td>
