@@ -19,7 +19,7 @@ const Header: React.FC = () => {
   ];
 
   return (
-    <header className="flex justify-center items-center py-4 bg-white w-full shadow-sm">
+    <header className="flex justify-center items-center py-4 bg-[#e3eaf8] w-full">
       <div className="container flex items-center justify-between max-w-6xl px-4">
         <div className="flex items-center">
           <img 
@@ -31,7 +31,7 @@ const Header: React.FC = () => {
         </div>
         
         <div className="flex-1 flex justify-center">
-          <nav className="flex space-x-1">
+          <nav className="bg-white rounded-full px-3 py-1 shadow-md flex">
             {navItems.map((item) => {
               const isActive = location.pathname === item.path;
               return (
@@ -39,7 +39,7 @@ const Header: React.FC = () => {
                   key={item.path}
                   to={item.path}
                   className={`
-                    flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors
+                    flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors mx-1
                     ${isActive 
                       ? 'bg-indigo-100 text-indigo-700'
                       : 'text-gray-600 hover:text-indigo-700 hover:bg-gray-50'
@@ -57,7 +57,7 @@ const Header: React.FC = () => {
         <div>
           <Link 
             to="/profile" 
-            className="p-2 rounded-full bg-gray-50 hover:bg-gray-100 transition-colors shadow-sm flex items-center justify-center"
+            className="p-2 rounded-full bg-white hover:bg-gray-100 transition-colors shadow-md flex items-center justify-center"
           >
             <User className="w-5 h-5 text-indigo-900" />
           </Link>
