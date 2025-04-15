@@ -12,6 +12,7 @@ import {
   DropdownMenuSeparator, 
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { toast } from '@/components/ui/use-toast';
 
 const Header: React.FC = () => {
@@ -46,6 +47,11 @@ const Header: React.FC = () => {
   const filteredNavItems = navItems.filter(item => 
     user && item.roles.includes(user.role)
   );
+
+  // Get first letter of user's name for avatar fallback
+  const getInitials = () => {
+    return user?.name ? user.name.charAt(0).toUpperCase() : 'U';
+  };
 
   const renderNavItems = (onItemClick?: () => void) => (
     <>
@@ -87,8 +93,11 @@ const Header: React.FC = () => {
         <div className="flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="p-2 h-10 w-10 rounded-full bg-white hover:bg-gray-100 transition-colors shadow-md flex items-center justify-center">
-                <User className="w-5 h-5 text-indigo-900" />
+              <button className="p-1 h-10 w-10 rounded-full bg-white hover:bg-gray-100 transition-colors shadow-md flex items-center justify-center">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={user?.profileImage} alt={user?.name} />
+                  <AvatarFallback className="bg-indigo-200 text-indigo-900">{getInitials()}</AvatarFallback>
+                </Avatar>
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
@@ -146,8 +155,11 @@ const Header: React.FC = () => {
         <div className="pr-0">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="p-2 h-10 w-10 md:h-12 md:w-12 rounded-full bg-white hover:bg-gray-100 transition-colors shadow-md flex items-center justify-center">
-                <User className="w-5 h-5 md:w-6 md:h-6 text-indigo-900" />
+              <button className="p-1 h-10 w-10 md:h-12 md:w-12 rounded-full bg-white hover:bg-gray-100 transition-colors shadow-md flex items-center justify-center">
+                <Avatar className="h-9 w-9 md:h-10 md:w-10">
+                  <AvatarImage src={user?.profileImage} alt={user?.name} />
+                  <AvatarFallback className="bg-indigo-200 text-indigo-900">{getInitials()}</AvatarFallback>
+                </Avatar>
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">

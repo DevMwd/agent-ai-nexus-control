@@ -1,9 +1,24 @@
+
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Users, Settings, Palette, Shield, BellRing, Upload, PlusCircle, Edit, Trash, Eye, EyeOff } from 'lucide-react';
+import { 
+  Users, 
+  Settings, 
+  Palette, 
+  Shield, 
+  BellRing, 
+  Upload, 
+  PlusCircle, 
+  Edit, 
+  Trash, 
+  Eye, 
+  EyeOff, 
+  Building,
+  Link as LinkIcon
+} from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth, Organization } from '@/contexts/AuthContext';
 import { useAgents } from '@/contexts/AgentContext';
 import { 
   Dialog, 
@@ -17,6 +32,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 const AdminPanel: React.FC = () => {
   const [activeTab, setActiveTab] = useState('general');
@@ -24,9 +40,14 @@ const AdminPanel: React.FC = () => {
   const { agents } = useAgents();
   
   const [mockUsers, setMockUsers] = useState([
-    { id: '1', name: 'Admin User', email: 'admin@example.com', role: 'admin' },
-    { id: '2', name: 'Base User', email: 'user@example.com', role: 'base' },
-    { id: '3', name: 'Owner User', email: 'owner@example.com', role: 'owner' }
+    { id: '1', name: 'Admin User', email: 'admin@example.com', role: 'admin', organizationId: '1', organizationName: 'MWD' },
+    { id: '2', name: 'Base User', email: 'user@example.com', role: 'base', organizationId: '1', organizationName: 'MWD' },
+    { id: '3', name: 'Owner User', email: 'owner@example.com', role: 'owner', profileImage: '/lovable-uploads/695db59c-0b86-4a3f-afbe-6cf313ac93e5.png' }
+  ]);
+
+  const [mockOrganizations, setMockOrganizations] = useState<Organization[]>([
+    { id: '1', name: 'MWD', description: 'Digital Transformation Agency', createdAt: '2023-04-15T10:00:00Z' },
+    { id: '2', name: 'Acme Corp', description: 'Technology Solutions Provider', createdAt: '2023-05-20T14:30:00Z' }
   ]);
 
   const [mockAgentVisibility, setMockAgentVisibility] = useState(
@@ -34,14 +55,16 @@ const AdminPanel: React.FC = () => {
       agentId: agent.id,
       name: agent.title || agent.id,
       visibleToAdmins: true,
-      visibleToBaseUsers: agent.id.includes('1')
+      visibleToBaseUsers: agent.id.includes('1'),
+      visibleToOrganizations: [{ id: '1', name: 'MWD' }]
     }))
   );
   
   const [newUser, setNewUser] = useState({
     name: '',
     email: '',
-    role: 'base' as 'base' | 'admin' | 'owner'
+    role: 'base' as 'base' | 'admin' | 'owner',
+    organizationId: ''
   });
 
   const [editingUser, setEditingUser] = useState<{
@@ -49,10 +72,26 @@ const AdminPanel: React.FC = () => {
     name: string;
     email: string;
     role: 'base' | 'admin' | 'owner';
+    organizationId?: string;
+  } | null>(null);
+
+  const [newOrganization, setNewOrganization] = useState({
+    name: '',
+    description: ''
+  });
+
+  const [editingOrganization, setEditingOrganization] = useState<{
+    id: string;
+    name: string;
+    description?: string;
   } | null>(null);
 
   const [userDialogOpen, setUserDialogOpen] = useState(false);
   const [editUserDialogOpen, setEditUserDialogOpen] = useState(false);
+  const [organizationDialogOpen, setOrganizationDialogOpen] = useState(false);
+  const [editOrganizationDialogOpen, setEditOrganizationDialogOpen] = useState(false);
+  const [organizationAgentDialogOpen, setOrganizationAgentDialogOpen] = useState(false);
+  const [selectedOrganizationId, setSelectedOrganizationId] = useState('');
   
   const handleSaveSettings = () => {
     toast({
@@ -78,13 +117,28 @@ const AdminPanel: React.FC = () => {
       return;
     }
 
+    // For base and admin users, an organization is required
+    if ((newUser.role === 'base' || newUser.role === 'admin') && !newUser.organizationId) {
+      toast({
+        title: "Error",
+        description: "Please select an organization for this user.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const organization = newUser.organizationId 
+      ? mockOrganizations.find(org => org.id === newUser.organizationId) 
+      : undefined;
+
     const newMockUser = {
       id: Math.random().toString(36).substr(2, 9),
-      ...newUser
+      ...newUser,
+      organizationName: organization?.name
     };
 
     setMockUsers([...mockUsers, newMockUser]);
-    setNewUser({ name: '', email: '', role: 'base' });
+    setNewUser({ name: '', email: '', role: 'base', organizationId: '' });
     setUserDialogOpen(false);
     
     toast({
@@ -98,7 +152,8 @@ const AdminPanel: React.FC = () => {
       id: user.id,
       name: user.name,
       email: user.email,
-      role: user.role as 'base' | 'admin' | 'owner'
+      role: user.role as 'base' | 'admin' | 'owner',
+      organizationId: user.organizationId
     });
     setEditUserDialogOpen(true);
   };
@@ -106,8 +161,27 @@ const AdminPanel: React.FC = () => {
   const handleUpdateUser = () => {
     if (!editingUser) return;
     
+    // For base and admin users, an organization is required
+    if ((editingUser.role === 'base' || editingUser.role === 'admin') && !editingUser.organizationId) {
+      toast({
+        title: "Error",
+        description: "Please select an organization for this user.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const organization = editingUser.organizationId 
+      ? mockOrganizations.find(org => org.id === editingUser.organizationId) 
+      : undefined;
+
     const updatedUsers = mockUsers.map(user => 
-      user.id === editingUser.id ? editingUser : user
+      user.id === editingUser.id 
+        ? { 
+            ...editingUser, 
+            organizationName: organization?.name 
+          } 
+        : user
     );
     
     setMockUsers(updatedUsers);
@@ -140,6 +214,101 @@ const AdminPanel: React.FC = () => {
     });
   };
 
+  const handleAddOrganization = () => {
+    if (!newOrganization.name) {
+      toast({
+        title: "Error",
+        description: "Please enter an organization name.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const newOrg = {
+      id: Math.random().toString(36).substr(2, 9),
+      name: newOrganization.name,
+      description: newOrganization.description,
+      createdAt: new Date().toISOString()
+    };
+
+    setMockOrganizations([...mockOrganizations, newOrg]);
+    setNewOrganization({ name: '', description: '' });
+    setOrganizationDialogOpen(false);
+    
+    toast({
+      title: "Organization Added",
+      description: `${newOrganization.name} has been added successfully.`
+    });
+  };
+
+  const handleEditOrganization = (organization: Organization) => {
+    setEditingOrganization({
+      id: organization.id,
+      name: organization.name,
+      description: organization.description
+    });
+    setEditOrganizationDialogOpen(true);
+  };
+
+  const handleUpdateOrganization = () => {
+    if (!editingOrganization) return;
+    
+    if (!editingOrganization.name) {
+      toast({
+        title: "Error",
+        description: "Please enter an organization name.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const updatedOrganizations = mockOrganizations.map(org => 
+      org.id === editingOrganization.id 
+        ? { 
+            ...org,
+            name: editingOrganization.name,
+            description: editingOrganization.description
+          } 
+        : org
+    );
+    
+    // Update organization name in users
+    const updatedUsers = mockUsers.map(user => 
+      user.organizationId === editingOrganization.id 
+        ? { ...user, organizationName: editingOrganization.name }
+        : user
+    );
+    
+    setMockOrganizations(updatedOrganizations);
+    setMockUsers(updatedUsers);
+    setEditOrganizationDialogOpen(false);
+    
+    toast({
+      title: "Organization Updated",
+      description: `${editingOrganization.name} has been updated successfully.`
+    });
+  };
+
+  const handleDeleteOrganization = (organizationId: string) => {
+    // Check if there are users associated with this organization
+    const associatedUsers = mockUsers.filter(user => user.organizationId === organizationId);
+    if (associatedUsers.length > 0) {
+      toast({
+        title: "Cannot Delete Organization",
+        description: "There are users associated with this organization. Please reassign or delete those users first.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setMockOrganizations(mockOrganizations.filter(org => org.id !== organizationId));
+    
+    toast({
+      title: "Organization Deleted",
+      description: "The organization has been deleted successfully."
+    });
+  };
+
   const toggleAgentVisibility = (agentId: string, userType: 'admin' | 'base') => {
     setMockAgentVisibility(prev => prev.map(item => {
       if (item.agentId === agentId) {
@@ -156,6 +325,40 @@ const AdminPanel: React.FC = () => {
       title: "Visibility Updated",
       description: "Agent visibility has been updated successfully."
     });
+  };
+
+  const toggleOrganizationAgentVisibility = (agentId: string, organizationId: string) => {
+    setMockAgentVisibility(prev => prev.map(item => {
+      if (item.agentId === agentId) {
+        const orgExists = item.visibleToOrganizations.some(org => org.id === organizationId);
+        const organization = mockOrganizations.find(org => org.id === organizationId);
+        
+        if (!organization) return item;
+        
+        if (orgExists) {
+          return {
+            ...item,
+            visibleToOrganizations: item.visibleToOrganizations.filter(org => org.id !== organizationId)
+          };
+        } else {
+          return {
+            ...item,
+            visibleToOrganizations: [...item.visibleToOrganizations, { id: organizationId, name: organization.name }]
+          };
+        }
+      }
+      return item;
+    }));
+    
+    toast({
+      title: "Organization Visibility Updated",
+      description: "Agent visibility for organization has been updated successfully."
+    });
+  };
+
+  const handleManageOrganizationAgents = (organizationId: string) => {
+    setSelectedOrganizationId(organizationId);
+    setOrganizationAgentDialogOpen(true);
   };
 
   if (!isAdmin()) {
@@ -198,6 +401,14 @@ const AdminPanel: React.FC = () => {
                 active={activeTab === 'users'}
                 onClick={() => setActiveTab('users')}
               />
+              {isOwner() && (
+                <AdminNavItem
+                  icon={<Building className="w-5 h-5" />}
+                  label="Organizations"
+                  active={activeTab === 'organizations'}
+                  onClick={() => setActiveTab('organizations')}
+                />
+              )}
               {isOwner() && (
                 <AdminNavItem
                   icon={<Eye className="w-5 h-5" />}
@@ -414,6 +625,24 @@ const AdminPanel: React.FC = () => {
                               </SelectContent>
                             </Select>
                           </div>
+                          {(newUser.role === 'base' || newUser.role === 'admin') && (
+                            <div className="grid gap-2">
+                              <Label htmlFor="organization">Organization</Label>
+                              <Select 
+                                value={newUser.organizationId} 
+                                onValueChange={(value) => setNewUser({...newUser, organizationId: value})}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select an organization" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {mockOrganizations.map(org => (
+                                    <SelectItem key={org.id} value={org.id}>{org.name}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          )}
                         </div>
                         <DialogFooter>
                           <Button variant="outline" onClick={() => setUserDialogOpen(false)}>
@@ -433,13 +662,16 @@ const AdminPanel: React.FC = () => {
                     <thead className="bg-gray-50">
                       <tr>
                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Name
+                          User
                         </th>
                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Email
                         </th>
                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Role
+                        </th>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Organization
                         </th>
                         {isOwner() && (
                           <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -452,7 +684,15 @@ const AdminPanel: React.FC = () => {
                       {mockUsers.map((user) => (
                         <tr key={user.id}>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm font-medium text-gray-900">{user.name}</div>
+                            <div className="flex items-center">
+                              <Avatar className="h-8 w-8 mr-3">
+                                <AvatarImage src={user.profileImage} alt={user.name} />
+                                <AvatarFallback className="bg-indigo-200 text-indigo-900">
+                                  {user.name.charAt(0).toUpperCase()}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div className="text-sm font-medium text-gray-900">{user.name}</div>
+                            </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm text-gray-500">{user.email}</div>
@@ -467,6 +707,11 @@ const AdminPanel: React.FC = () => {
                             }`}>
                               {user.role === 'base' ? 'Base User' : user.role === 'admin' ? 'Admin' : 'Owner'}
                             </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-gray-500">
+                              {user.organizationName || 'N/A'}
+                            </div>
                           </td>
                           {isOwner() && (
                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -537,6 +782,24 @@ const AdminPanel: React.FC = () => {
                             </SelectContent>
                           </Select>
                         </div>
+                        {(editingUser.role === 'base' || editingUser.role === 'admin') && (
+                          <div className="grid gap-2">
+                            <Label htmlFor="edit-organization">Organization</Label>
+                            <Select 
+                              value={editingUser.organizationId || ''} 
+                              onValueChange={(value) => setEditingUser({...editingUser, organizationId: value})}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select an organization" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {mockOrganizations.map(org => (
+                                  <SelectItem key={org.id} value={org.id}>{org.name}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
                       </div>
                     )}
                     <DialogFooter>
@@ -552,11 +815,202 @@ const AdminPanel: React.FC = () => {
               </div>
             )}
             
+            {activeTab === 'organizations' && isOwner() && (
+              <div>
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-xl font-bold">Organizations</h2>
+                  <Dialog open={organizationDialogOpen} onOpenChange={setOrganizationDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="action" className="flex items-center gap-2">
+                        <PlusCircle className="w-4 h-4" />
+                        <span>Add Organization</span>
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-md">
+                      <DialogHeader>
+                        <DialogTitle>Add New Organization</DialogTitle>
+                      </DialogHeader>
+                      <div className="grid gap-4 py-4">
+                        <div className="grid gap-2">
+                          <Label htmlFor="org-name">Organization Name</Label>
+                          <Input 
+                            id="org-name" 
+                            value={newOrganization.name} 
+                            onChange={(e) => setNewOrganization({...newOrganization, name: e.target.value})}
+                            placeholder="Acme Inc."
+                          />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor="org-description">Description (Optional)</Label>
+                          <Input 
+                            id="org-description" 
+                            value={newOrganization.description} 
+                            onChange={(e) => setNewOrganization({...newOrganization, description: e.target.value})}
+                            placeholder="A brief description of the organization"
+                          />
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button variant="outline" onClick={() => setOrganizationDialogOpen(false)}>
+                          Cancel
+                        </Button>
+                        <Button variant="action" onClick={handleAddOrganization}>
+                          Add Organization
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+                
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Name
+                        </th>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Description
+                        </th>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Users
+                        </th>
+                        <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {mockOrganizations.map((org) => {
+                        const orgUsers = mockUsers.filter(user => user.organizationId === org.id);
+                        return (
+                          <tr key={org.id}>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm font-medium text-gray-900">{org.name}</div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-gray-500">{org.description || 'No description'}</div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-gray-500">{orgUsers.length} users</div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                              <div className="flex justify-end gap-2">
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  onClick={() => handleManageOrganizationAgents(org.id)}
+                                  className="text-indigo-600 hover:text-indigo-900"
+                                  title="Manage Agent Access"
+                                >
+                                  <LinkIcon className="w-4 h-4" />
+                                </Button>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  onClick={() => handleEditOrganization(org)}
+                                  className="text-indigo-600 hover:text-indigo-900"
+                                >
+                                  <Edit className="w-4 h-4" />
+                                </Button>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  onClick={() => handleDeleteOrganization(org.id)}
+                                  className="text-red-600 hover:text-red-900"
+                                >
+                                  <Trash className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+                
+                <Dialog open={editOrganizationDialogOpen} onOpenChange={setEditOrganizationDialogOpen}>
+                  <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>Edit Organization</DialogTitle>
+                    </DialogHeader>
+                    {editingOrganization && (
+                      <div className="grid gap-4 py-4">
+                        <div className="grid gap-2">
+                          <Label htmlFor="edit-org-name">Organization Name</Label>
+                          <Input 
+                            id="edit-org-name" 
+                            value={editingOrganization.name} 
+                            onChange={(e) => setEditingOrganization({...editingOrganization, name: e.target.value})}
+                          />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor="edit-org-description">Description (Optional)</Label>
+                          <Input 
+                            id="edit-org-description" 
+                            value={editingOrganization.description || ''} 
+                            onChange={(e) => setEditingOrganization({...editingOrganization, description: e.target.value})}
+                          />
+                        </div>
+                      </div>
+                    )}
+                    <DialogFooter>
+                      <Button variant="outline" onClick={() => setEditOrganizationDialogOpen(false)}>
+                        Cancel
+                      </Button>
+                      <Button variant="action" onClick={handleUpdateOrganization}>
+                        Save Changes
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+                
+                <Dialog open={organizationAgentDialogOpen} onOpenChange={setOrganizationAgentDialogOpen}>
+                  <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>
+                        Manage Agent Access
+                      </DialogTitle>
+                    </DialogHeader>
+                    <div className="py-4">
+                      <p className="text-sm text-gray-600 mb-4">
+                        Select which agents this organization can access:
+                      </p>
+                      {selectedOrganizationId && (
+                        <div className="space-y-3">
+                          {mockAgentVisibility.map(agent => {
+                            const isVisible = agent.visibleToOrganizations.some(
+                              org => org.id === selectedOrganizationId
+                            );
+                            return (
+                              <div key={agent.agentId} className="flex items-center justify-between">
+                                <span className="text-sm font-medium">{agent.name}</span>
+                                <Switch 
+                                  checked={isVisible}
+                                  onCheckedChange={() => toggleOrganizationAgentVisibility(agent.agentId, selectedOrganizationId)}
+                                />
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                    <DialogFooter>
+                      <Button variant="outline" onClick={() => setOrganizationAgentDialogOpen(false)}>
+                        Close
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            )}
+            
             {activeTab === 'agent-visibility' && isOwner() && (
               <div>
                 <h2 className="text-xl font-bold mb-6">Agent Visibility Settings</h2>
                 <p className="text-gray-600 mb-4">
-                  Configure which agents are visible to different user types.
+                  Configure which agents are visible to different user types and organizations.
                 </p>
                 
                 <div className="overflow-x-auto">
@@ -571,6 +1025,9 @@ const AdminPanel: React.FC = () => {
                         </th>
                         <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Visible to Base Users
+                        </th>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Organizations
                         </th>
                       </tr>
                     </thead>
@@ -593,6 +1050,22 @@ const AdminPanel: React.FC = () => {
                               onCheckedChange={() => toggleAgentVisibility(agent.agentId, 'base')}
                               className="ml-auto"
                             />
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="text-sm text-gray-600 flex flex-wrap gap-1">
+                              {agent.visibleToOrganizations.length > 0 ? (
+                                agent.visibleToOrganizations.map(org => (
+                                  <span 
+                                    key={org.id} 
+                                    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800"
+                                  >
+                                    {org.name}
+                                  </span>
+                                ))
+                              ) : (
+                                <span className="text-gray-500 text-xs">No organizations</span>
+                              )}
+                            </div>
                           </td>
                         </tr>
                       ))}

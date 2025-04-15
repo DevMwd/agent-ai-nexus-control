@@ -3,11 +3,21 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 export type UserRole = 'base' | 'admin' | 'owner';
 
+export interface Organization {
+  id: string;
+  name: string;
+  description?: string;
+  createdAt: string;
+}
+
 export interface User {
   id: string;
   name: string;
   email: string;
   role: UserRole;
+  organizationId?: string;
+  organizationName?: string;
+  profileImage?: string;
 }
 
 interface AuthContextType {
@@ -33,6 +43,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       name: 'Demo User',
       email: email,
       role: email.includes('admin') ? 'admin' : email.includes('owner') ? 'owner' : 'base',
+      profileImage: email.includes('owner') ? '/lovable-uploads/695db59c-0b86-4a3f-afbe-6cf313ac93e5.png' : undefined,
+      organizationId: email.includes('owner') ? undefined : '1',
+      organizationName: email.includes('owner') ? undefined : 'MWD'
     };
     
     setUser(mockUser);
