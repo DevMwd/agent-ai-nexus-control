@@ -19,30 +19,30 @@ const Header: React.FC = () => {
   ];
 
   return (
-    <header className="flex justify-center items-center py-4 bg-[#e3eaf8] w-full">
+    <header className="flex justify-center items-center py-4 bg-white w-full shadow-sm">
       <div className="container flex items-center justify-between max-w-6xl px-4">
-        <div className="flex flex-col items-center">
+        <div className="flex items-center">
           <img 
             src="/lovable-uploads/5ad87de6-d908-46b1-8423-928baae021c6.png" 
             alt="Action Logo" 
-            className="h-8" 
+            className="h-8 mr-2" 
           />
           <span className="text-xs text-gray-600">Powered by BlueSky</span>
         </div>
         
         <div className="flex-1 flex justify-center">
-          <div className="bg-white rounded-full px-2 py-1 shadow-md">
-            {navItems.map((item, index) => {
+          <nav className="flex space-x-1">
+            {navItems.map((item) => {
               const isActive = location.pathname === item.path;
               return (
                 <Link
                   key={item.path}
                   to={item.path}
                   className={`
-                    flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors mx-1
+                    flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors
                     ${isActive 
                       ? 'bg-indigo-100 text-indigo-700'
-                      : 'text-gray-600 hover:text-indigo-700'
+                      : 'text-gray-600 hover:text-indigo-700 hover:bg-gray-50'
                     }
                   `}
                 >
@@ -51,13 +51,13 @@ const Header: React.FC = () => {
                 </Link>
               );
             })}
-          </div>
+          </nav>
         </div>
         
         <div>
           <Link 
             to="/profile" 
-            className="p-3 rounded-full bg-white hover:bg-gray-100 transition-colors shadow-md flex items-center justify-center"
+            className="p-2 rounded-full bg-gray-50 hover:bg-gray-100 transition-colors shadow-sm flex items-center justify-center"
           >
             <User className="w-5 h-5 text-indigo-900" />
           </Link>
