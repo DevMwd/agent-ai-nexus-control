@@ -21,7 +21,7 @@ const Header: React.FC = () => {
   return (
     <header className="flex justify-center items-center py-4 bg-[#e3eaf8] w-full">
       <div className="container flex items-center justify-between px-6 max-w-6xl">
-        <div className="flex items-center -ml-28">
+        <div className="flex items-center -ml-20">
           <img 
             src="/lovable-uploads/5ad87de6-d908-46b1-8423-928baae021c6.png" 
             alt="Action Logo" 
@@ -30,7 +30,7 @@ const Header: React.FC = () => {
         </div>
         
         <div className="flex-1 flex justify-center">
-          <nav className="bg-white rounded-full px-8 py-1.5 shadow-md flex max-w-4xl w-full">
+          <nav className="bg-white rounded-full px-6 py-1.5 shadow-md flex justify-center max-w-3xl w-full">
             {navItems.map((item) => {
               const isActive = location.pathname === item.path;
               return (
@@ -38,7 +38,7 @@ const Header: React.FC = () => {
                   key={item.path}
                   to={item.path}
                   className={`
-                    flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium transition-colors mx-1
+                    flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors mx-1
                     ${isActive 
                       ? 'bg-indigo-100 text-indigo-700'
                       : 'text-gray-600 hover:text-indigo-700 hover:bg-gray-50'
