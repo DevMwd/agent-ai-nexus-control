@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -20,7 +19,7 @@ export const AddLLMDialog: React.FC<AddLLMDialogProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[650px] p-0 overflow-hidden rounded-xl border-none shadow-xl">
-        <div className="bg-gradient-to-r from-action-primary to-purple-700 p-6 text-white">
+        <div className="bg-gradient-to-r from-action-primary to-purple-700 p-6 text-white rounded-t-xl">
           <DialogHeader>
             <div className="flex items-center gap-3">
               <div className="bg-white/20 p-2 rounded-lg">
@@ -33,7 +32,7 @@ export const AddLLMDialog: React.FC<AddLLMDialogProps> = ({
             </DialogDescription>
           </DialogHeader>
         </div>
-        <div className="p-6 bg-white">
+        <div className="p-6 bg-white rounded-b-xl">
           <LLMForm 
             onSubmit={onSubmit} 
             onCancel={onClose} 
@@ -74,7 +73,7 @@ export const EditLLMDialog: React.FC<EditLLMDialogProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[650px] p-0 overflow-hidden rounded-xl border-none shadow-xl">
-        <div className="bg-gradient-to-r from-indigo-600 to-violet-500 p-6 text-white">
+        <div className="bg-gradient-to-r from-indigo-600 to-violet-500 p-6 text-white rounded-t-xl">
           <DialogHeader>
             <div className="flex items-center gap-3">
               <div className="bg-white/20 p-2 rounded-lg">
@@ -87,7 +86,7 @@ export const EditLLMDialog: React.FC<EditLLMDialogProps> = ({
             </DialogDescription>
           </DialogHeader>
         </div>
-        <div className="p-6 bg-white">
+        <div className="p-6 bg-white rounded-b-xl">
           <LLMForm 
             onSubmit={onSubmit} 
             onCancel={onClose} 
@@ -115,7 +114,7 @@ export const DeleteLLMDialog: React.FC<DeleteLLMDialogProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[450px] p-0 overflow-hidden rounded-xl border-none shadow-xl">
-        <div className="bg-gradient-to-r from-red-500 to-pink-600 p-6 text-white">
+        <div className="bg-gradient-to-r from-red-500 to-pink-600 p-6 text-white rounded-t-xl">
           <DialogHeader>
             <div className="flex items-center gap-3">
               <div className="bg-white/20 p-2 rounded-lg">
@@ -125,7 +124,7 @@ export const DeleteLLMDialog: React.FC<DeleteLLMDialogProps> = ({
             </div>
           </DialogHeader>
         </div>
-        <div className="p-6 bg-white">
+        <div className="p-6 bg-white rounded-b-xl">
           <DialogDescription className="py-4 text-lg text-gray-700">
             Are you sure you want to delete this LLM model? This action cannot be undone.
           </DialogDescription>

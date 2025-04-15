@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
-  Folder, FolderPlus, PencilRuler, Trash2, Database, Activity, FileEdit, ClipboardList, Globe,
+  Folder, FolderPlus, PencilRuler, Trash2,
+  Database, Activity, FileEdit, ClipboardList, Globe,
   Cloud, Brain, Code, Settings, BarChart, ShoppingCart, Share2, ZapOff, Zap, FileText, Heart,
   ChartPie, ChartLine, ArrowUpDown, Boxes, CreditCard, CircleDollarSign, LucideIcon, Mail, MessageSquare
 } from 'lucide-react';
@@ -125,7 +126,7 @@ export const CategoryDialog: React.FC<CategoryDialogProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden rounded-xl border-none shadow-xl">
-        <div className={`${gradientClass} p-6 text-white`}>
+        <div className={`${gradientClass} p-6 text-white rounded-t-xl`}>
           <DialogHeader>
             <div className="flex items-center gap-3">
               <div className="bg-white/20 p-2 rounded-lg">
@@ -136,7 +137,7 @@ export const CategoryDialog: React.FC<CategoryDialogProps> = ({
             {description && <DialogDescription className="text-white/80 mt-2">{description}</DialogDescription>}
           </DialogHeader>
         </div>
-        <div className="p-6 bg-white">
+        <div className="p-6 bg-white rounded-b-xl">
           <div className="space-y-5">
             <div className="space-y-2">
               <Label htmlFor="categoryName" className="text-base font-medium">Category Name</Label>
@@ -227,7 +228,7 @@ export const DeleteCategoryDialog: React.FC<DeleteCategoryDialogProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[450px] p-0 overflow-hidden rounded-xl border-none shadow-xl">
-        <div className="bg-gradient-to-r from-red-500 to-pink-600 p-6 text-white">
+        <div className="bg-gradient-to-r from-red-500 to-pink-600 p-6 text-white rounded-t-xl">
           <DialogHeader>
             <div className="flex items-center gap-3">
               <div className="bg-white/20 p-2 rounded-lg">
@@ -237,7 +238,7 @@ export const DeleteCategoryDialog: React.FC<DeleteCategoryDialogProps> = ({
             </div>
           </DialogHeader>
         </div>
-        <div className="p-6 bg-white">
+        <div className="p-6 bg-white rounded-b-xl">
           <DialogDescription className="py-4 text-lg text-gray-700">
             Are you sure you want to delete the category "{categoryName}"? This action cannot be undone.
           </DialogDescription>
