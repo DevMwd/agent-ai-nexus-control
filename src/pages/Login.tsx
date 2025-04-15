@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -44,14 +43,12 @@ const Login: React.FC = () => {
 
   const handleForgotPassword = (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, this would send a password reset link
     setResetEmailSent(true);
     toast({
       title: 'Reset Link Sent',
       description: `Password reset instructions have been sent to ${resetEmail}`,
     });
     
-    // Reset the form after 3 seconds
     setTimeout(() => {
       setResetEmailSent(false);
       setForgotPasswordOpen(false);
@@ -66,8 +63,9 @@ const Login: React.FC = () => {
           <img 
             src="/lovable-uploads/695db59c-0b86-4a3f-afbe-6cf313ac93e5.png" 
             alt="BlueSky Logo" 
-            className="h-36 mb-4" 
+            className="h-36 mb-2" 
           />
+          <span className="text-sm text-gray-600">Powered by BlueSky</span>
         </div>
       </div>
       
@@ -133,7 +131,6 @@ const Login: React.FC = () => {
         </div>
       </div>
 
-      {/* Forgot Password Dialog */}
       <Dialog open={forgotPasswordOpen} onOpenChange={setForgotPasswordOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
