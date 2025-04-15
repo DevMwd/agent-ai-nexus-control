@@ -19,10 +19,18 @@ const Header: React.FC = () => {
   ];
 
   return (
-    <header className="flex justify-center items-center py-4 bg-white w-full">
-      <div className="container flex items-center justify-between max-w-6xl">
-        <nav className="flex-1 flex justify-center">
-          <div className="bg-[#e3eaf8] rounded-full p-1.5 shadow-sm">
+    <header className="flex justify-center items-center py-4 bg-[#e3eaf8] w-full">
+      <div className="container flex items-center justify-between max-w-6xl px-4">
+        <div className="flex items-center">
+          <img 
+            src="/lovable-uploads/5ad87de6-d908-46b1-8423-928baae021c6.png" 
+            alt="Action Logo" 
+            className="h-8 mr-2" 
+          />
+        </div>
+        
+        <div className="flex-1 flex justify-center">
+          <div className="bg-white rounded-full p-1 shadow-sm">
             {navItems.map((item) => (
               <Link
                 key={item.path}
@@ -40,12 +48,12 @@ const Header: React.FC = () => {
               </Link>
             ))}
           </div>
-        </nav>
+        </div>
         
-        <div className="ml-4">
+        <div>
           <Link 
             to="/profile" 
-            className="p-3 rounded-full bg-[#e3eaf8] hover:bg-gray-100 transition-colors shadow-sm flex items-center justify-center"
+            className="p-2 rounded-full bg-white hover:bg-gray-100 transition-colors shadow-sm flex items-center justify-center"
           >
             <User className="w-5 h-5 text-indigo-900" />
           </Link>

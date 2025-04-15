@@ -66,7 +66,7 @@ const Login: React.FC = () => {
           <img 
             src="/lovable-uploads/695db59c-0b86-4a3f-afbe-6cf313ac93e5.png" 
             alt="BlueSky Logo" 
-            className="h-28 mb-4" 
+            className="h-36 mb-4" 
           />
         </div>
       </div>
