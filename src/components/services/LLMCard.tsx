@@ -70,34 +70,38 @@ const LLMCard: React.FC<LLMCardProps> = ({ model, onEdit, onDelete, onSelect }) 
 
         <div className="mb-4">
           <h4 className="text-gray-700 font-medium mb-2">Strengths</h4>
-          {model.strengths && model.strengths.length > 0 ? (
-            <ul className="space-y-2">
-              {model.strengths.map((strength, idx) => (
-                <li key={idx} className="flex items-start gap-2">
-                  <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                  <span>{strength}</span>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <div className="text-gray-400 italic">No strengths specified</div>
-          )}
+          <div className="min-h-[80px]">
+            {model.strengths && model.strengths.length > 0 ? (
+              <ul className="space-y-2">
+                {model.strengths.map((strength, idx) => (
+                  <li key={idx} className="flex items-start gap-2">
+                    <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                    <span>{strength}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="text-gray-400 italic">No strengths specified</div>
+            )}
+          </div>
         </div>
 
         <div className="mb-4">
           <h4 className="text-gray-700 font-medium mb-2">Limitations</h4>
-          {model.limitations && model.limitations.length > 0 ? (
-            <ul className="space-y-2">
-              {model.limitations.map((limitation, idx) => (
-                <li key={idx} className="flex items-start gap-2">
-                  <X className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
-                  <span>{limitation}</span>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <div className="text-gray-400 italic">No limitations specified</div>
-          )}
+          <div className="min-h-[80px]">
+            {model.limitations && model.limitations.length > 0 ? (
+              <ul className="space-y-2">
+                {model.limitations.map((limitation, idx) => (
+                  <li key={idx} className="flex items-start gap-2">
+                    <X className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                    <span>{limitation}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="text-gray-400 italic">No limitations specified</div>
+            )}
+          </div>
         </div>
       </CardContent>
       
@@ -114,3 +118,4 @@ const LLMCard: React.FC<LLMCardProps> = ({ model, onEdit, onDelete, onSelect }) 
 };
 
 export default LLMCard;
+
