@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -65,7 +66,6 @@ const Login: React.FC = () => {
             alt="BlueSky Logo" 
             className="h-36 mb-2" 
           />
-          <span className="text-sm text-gray-600">Powered by BlueSky</span>
         </div>
       </div>
       

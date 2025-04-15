@@ -25,9 +25,8 @@ const Header: React.FC = () => {
           <img 
             src="/lovable-uploads/5ad87de6-d908-46b1-8423-928baae021c6.png" 
             alt="Action Logo" 
-            className="h-10 mr-2" 
+            className="h-10" 
           />
-          <span className="text-xs text-gray-600">Powered by BlueSky</span>
         </div>
         
         <div className="flex-1 flex justify-center">
@@ -57,9 +56,9 @@ const Header: React.FC = () => {
         <div>
           <Link 
             to="/profile" 
-            className="p-2 rounded-full bg-white hover:bg-gray-100 transition-colors shadow-md flex items-center justify-center"
+            className="p-3 h-12 w-12 rounded-full bg-white hover:bg-gray-100 transition-colors shadow-md flex items-center justify-center"
           >
-            <User className="w-5 h-5 text-indigo-900" />
+            <User className="w-6 h-6 text-indigo-900" />
           </Link>
         </div>
       </div>
