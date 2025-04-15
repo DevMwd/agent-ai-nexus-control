@@ -112,6 +112,18 @@
   .responsive-dialog {
     @apply max-h-[90vh] overflow-y-auto;
   }
+
+  .flex-responsive {
+    @apply flex flex-col sm:flex-row;
+  }
+
+  .text-responsive {
+    @apply text-sm sm:text-base;
+  }
+
+  .grid-responsive {
+    @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4;
+  }
 }
 
 .service-badge {
@@ -156,4 +168,19 @@
 
 .progress-privacy {
   @apply bg-red-500;
+}
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  .dialog-form-grid {
+    @apply grid-cols-1 gap-4;
+  }
+  
+  .card-responsive {
+    @apply p-3;
+  }
+  
+  .heading-responsive {
+    @apply text-xl;
+  }
 }

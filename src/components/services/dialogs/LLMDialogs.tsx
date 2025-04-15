@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -19,20 +20,20 @@ export const AddLLMDialog: React.FC<AddLLMDialogProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[650px] p-0 overflow-hidden rounded-xl border-none shadow-xl">
-        <div className="bg-gradient-to-r from-action-primary to-purple-700 p-6 text-white rounded-t-xl">
+        <div className="bg-gradient-to-r from-action-primary to-purple-700 p-4 sm:p-6 text-white rounded-t-xl">
           <DialogHeader>
             <div className="flex items-center gap-3">
               <div className="bg-white/20 p-2 rounded-lg">
                 <Plus className="h-5 w-5" />
               </div>
-              <DialogTitle className="text-2xl">Add New LLM Model</DialogTitle>
+              <DialogTitle className="text-xl sm:text-2xl">Add New LLM Model</DialogTitle>
             </div>
             <DialogDescription className="text-white/80 mt-2">
               Enter the details for the new language model.
             </DialogDescription>
           </DialogHeader>
         </div>
-        <div className="p-6 bg-white rounded-b-xl">
+        <div className="p-4 sm:p-6 bg-white rounded-b-xl">
           <LLMForm 
             onSubmit={onSubmit} 
             onCancel={onClose} 
@@ -73,20 +74,20 @@ export const EditLLMDialog: React.FC<EditLLMDialogProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[650px] p-0 overflow-hidden rounded-xl border-none shadow-xl">
-        <div className="bg-gradient-to-r from-indigo-600 to-violet-500 p-6 text-white rounded-t-xl">
+        <div className="bg-gradient-to-r from-indigo-600 to-violet-500 p-4 sm:p-6 text-white rounded-t-xl">
           <DialogHeader>
             <div className="flex items-center gap-3">
               <div className="bg-white/20 p-2 rounded-lg">
                 <Pencil className="h-5 w-5" />
               </div>
-              <DialogTitle className="text-2xl">Edit LLM Model</DialogTitle>
+              <DialogTitle className="text-xl sm:text-2xl">Edit LLM Model</DialogTitle>
             </div>
             <DialogDescription className="text-white/80 mt-2">
               Update the details for this language model.
             </DialogDescription>
           </DialogHeader>
         </div>
-        <div className="p-6 bg-white rounded-b-xl">
+        <div className="p-4 sm:p-6 bg-white rounded-b-xl">
           <LLMForm 
             onSubmit={onSubmit} 
             onCancel={onClose} 
@@ -114,25 +115,25 @@ export const DeleteLLMDialog: React.FC<DeleteLLMDialogProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[450px] p-0 overflow-hidden rounded-xl border-none shadow-xl">
-        <div className="bg-gradient-to-r from-red-500 to-pink-600 p-6 text-white rounded-t-xl">
+        <div className="bg-gradient-to-r from-red-500 to-pink-600 p-4 sm:p-6 text-white rounded-t-xl">
           <DialogHeader>
             <div className="flex items-center gap-3">
               <div className="bg-white/20 p-2 rounded-lg">
                 <Trash2 className="h-5 w-5" />
               </div>
-              <DialogTitle className="text-2xl">Delete LLM Model</DialogTitle>
+              <DialogTitle className="text-xl sm:text-2xl">Delete LLM Model</DialogTitle>
             </div>
           </DialogHeader>
         </div>
-        <div className="p-6 bg-white rounded-b-xl">
-          <DialogDescription className="py-4 text-lg text-gray-700">
+        <div className="p-4 sm:p-6 bg-white rounded-b-xl">
+          <DialogDescription className="py-4 text-base sm:text-lg text-gray-700">
             Are you sure you want to delete this LLM model? This action cannot be undone.
           </DialogDescription>
           <DialogFooter className="pt-4">
-            <Button variant="outline" onClick={onClose} className="rounded-lg">
+            <Button variant="outline" onClick={onClose} className="rounded-lg w-full sm:w-auto">
               Cancel
             </Button>
-            <Button variant="destructive" onClick={onDelete} className="rounded-lg bg-red-600 hover:bg-red-700">
+            <Button variant="destructive" onClick={onDelete} className="rounded-lg bg-red-600 hover:bg-red-700 w-full sm:w-auto mt-2 sm:mt-0">
               Delete
             </Button>
           </DialogFooter>

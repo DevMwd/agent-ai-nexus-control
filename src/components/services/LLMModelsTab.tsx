@@ -39,9 +39,9 @@ const LLMModelsTab: React.FC<LLMModelsTabProps> = ({
 
   return (
     <div>
-      <div className="mb-6 flex justify-between items-center">
-        <h1 className="text-3xl font-bold">LLM Models</h1>
-        <Button variant="action" className="flex items-center gap-2" onClick={onAddLLM}>
+      <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <h1 className="text-2xl sm:text-3xl font-bold">LLM Models</h1>
+        <Button variant="action" className="flex w-full sm:w-auto items-center gap-2" onClick={onAddLLM}>
           <Plus className="w-5 h-5" />
           <span>New LLM Model</span>
         </Button>
@@ -57,7 +57,7 @@ const LLMModelsTab: React.FC<LLMModelsTabProps> = ({
         <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
         {filteredModels.map((model) => (
           <LLMCard 
             key={model.id}
