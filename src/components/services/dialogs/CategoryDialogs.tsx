@@ -7,7 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   Folder, FolderPlus, PencilRuler, Trash2, Database, Activity, FileEdit, ClipboardList, Globe,
-  Cloud, Brain, Code, Settings, Chart, BarChart, ShoppingCart, Share2, ZapOff, Zap, FileText, Heart
+  Cloud, Brain, Code, Settings, BarChart, ShoppingCart, Share2, ZapOff, Zap, FileText, Heart,
+  ChartPie, ChartLine, ArrowUpDown, Boxes, CreditCard, CircleDollarSign, LucideIcon, Mail, MessageSquare
 } from 'lucide-react';
 
 interface CategoryDialogProps {
@@ -76,7 +77,8 @@ export const CategoryDialog: React.FC<CategoryDialogProps> = ({
       case 'brain': return <Brain className="h-4 w-4" />;
       case 'code': return <Code className="h-4 w-4" />;
       case 'settings': return <Settings className="h-4 w-4" />;
-      case 'chart': return <Chart className="h-4 w-4" />;
+      case 'chart-pie': return <ChartPie className="h-4 w-4" />;
+      case 'chart-line': return <ChartLine className="h-4 w-4" />;
       case 'bar-chart': return <BarChart className="h-4 w-4" />;
       case 'shopping-cart': return <ShoppingCart className="h-4 w-4" />;
       case 'share': return <Share2 className="h-4 w-4" />;
@@ -85,6 +87,12 @@ export const CategoryDialog: React.FC<CategoryDialogProps> = ({
       case 'file-text': return <FileText className="h-4 w-4" />;
       case 'heart': return <Heart className="h-4 w-4" />;
       case 'folder': return <Folder className="h-4 w-4" />;
+      case 'arrow-up-down': return <ArrowUpDown className="h-4 w-4" />;
+      case 'boxes': return <Boxes className="h-4 w-4" />;
+      case 'credit-card': return <CreditCard className="h-4 w-4" />;
+      case 'circle-dollar-sign': return <CircleDollarSign className="h-4 w-4" />;
+      case 'mail': return <Mail className="h-4 w-4" />;
+      case 'message-square': return <MessageSquare className="h-4 w-4" />;
       default: return <Folder className="h-4 w-4" />;
     }
   };
@@ -100,7 +108,8 @@ export const CategoryDialog: React.FC<CategoryDialogProps> = ({
     { name: 'Brain', value: 'brain' },
     { name: 'Code', value: 'code' },
     { name: 'Settings', value: 'settings' },
-    { name: 'Chart', value: 'chart' },
+    { name: 'Chart Pie', value: 'chart-pie' },
+    { name: 'Chart Line', value: 'chart-line' },
     { name: 'Bar Chart', value: 'bar-chart' },
     { name: 'Shopping Cart', value: 'shopping-cart' },
     { name: 'Share', value: 'share' },
@@ -109,6 +118,12 @@ export const CategoryDialog: React.FC<CategoryDialogProps> = ({
     { name: 'File Text', value: 'file-text' },
     { name: 'Heart', value: 'heart' },
     { name: 'Folder', value: 'folder' },
+    { name: 'Arrow Up Down', value: 'arrow-up-down' },
+    { name: 'Boxes', value: 'boxes' },
+    { name: 'Credit Card', value: 'credit-card' },
+    { name: 'Circle Dollar Sign', value: 'circle-dollar-sign' },
+    { name: 'Mail', value: 'mail' },
+    { name: 'Message Square', value: 'message-square' },
   ];
 
   return (
