@@ -2,12 +2,14 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useAgents, AIAgent, ServiceCategory } from '@/contexts/AgentContext';
-import { Star, Clock, CircleDollarSign, Shield, Cog, ArrowLeft, Plus } from 'lucide-react';
+import { Star, Clock, CircleDollarSign, Shield, Cog, ArrowLeft, Plus, Send } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ScoreBar from '@/components/ScoreBar';
 import CategoryChart from '@/components/CategoryChart';
 import EfficiencyGauge from '@/components/EfficiencyGauge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { ChartContainer, ChartTooltip } from '@/components/ui/chart';
 
 const AgentDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -41,14 +43,33 @@ const AgentDetails: React.FC = () => {
       value
     }));
 
-  const llmData = Object.entries({
-    'Private GPT': 45,
-    'Azure OpenAI': 31,
-    'Claude 3 Opus': 24
-  }).map(([name, value]) => ({
-    name: name as any, // This is a temporary fix until we create a proper LLM type
-    value
-  }));
+  // Realistic LLM distribution data
+  const llmData = [
+    { name: 'Private GPT', value: 45 },
+    { name: 'Azure OpenAI', value: 31 },
+    { name: 'Claude 3 Opus', value: 24 }
+  ];
+
+  // More realistic monthly cost data
+  const monthlyCostData = [
+    { name: 'Jan', cost: 4200 },
+    { name: 'Feb', cost: 3800 },
+    { name: 'Mar', cost: 5100 },
+    { name: 'Apr', cost: 4700 },
+    { name: 'May', cost: 6200 },
+    { name: 'Jun', cost: 5800 }
+  ];
+
+  // Session performance data
+  const sessionPerformanceData = [
+    { name: 'Mon', tokens: 12000, time: 2.4, cost: 1200 },
+    { name: 'Tue', tokens: 15000, time: 3.1, cost: 1500 },
+    { name: 'Wed', tokens: 8000, time: 1.8, cost: 800 },
+    { name: 'Thu', tokens: 17000, time: 3.5, cost: 1700 },
+    { name: 'Fri', tokens: 14000, time: 2.9, cost: 1400 },
+    { name: 'Sat', tokens: 6000, time: 1.2, cost: 600 },
+    { name: 'Sun', tokens: 5000, time: 1.0, cost: 500 }
+  ];
 
   const logoInitials = agent.title.substring(0, 2).toUpperCase();
   const isValidLogoUrl = typeof agent.logo === 'string' && 
@@ -149,15 +170,15 @@ const AgentDetails: React.FC = () => {
               <div className="grid grid-cols-3 mt-6 text-center">
                 <div>
                   <div className="text-gray-500 text-sm">Calls</div>
-                  <div className="font-medium">120</div>
+                  <div className="font-medium">428</div>
                 </div>
                 <div>
-                  <div className="text-gray-500 text-sm">Token</div>
-                  <div className="font-medium">5000</div>
+                  <div className="text-gray-500 text-sm">Tokens</div>
+                  <div className="font-medium">152,345</div>
                 </div>
                 <div>
                   <div className="text-gray-500 text-sm">Monthly cost</div>
-                  <div className="font-medium">€ 18.000,00</div>
+                  <div className="font-medium">€ 4,876.00</div>
                 </div>
               </div>
             </div>
@@ -181,26 +202,26 @@ const AgentDetails: React.FC = () => {
                 </div>
                 <div>
                   <div className="text-gray-500 text-sm mb-1">Cost</div>
-                  <div className="font-medium">€ 18000.00</div>
+                  <div className="font-medium">€ 2,450.00</div>
                 </div>
                 <div>
                   <div className="text-gray-500 text-sm mb-1">Calls</div>
-                  <div className="font-medium">120</div>
+                  <div className="font-medium">231</div>
                 </div>
                 <div>
-                  <div className="text-gray-500 text-sm mb-1">Token</div>
-                  <div className="font-medium">5000</div>
+                  <div className="text-gray-500 text-sm mb-1">Tokens</div>
+                  <div className="font-medium">83,254</div>
                 </div>
               </div>
 
               <div className="flex gap-2 mb-6">
                 <div className="inline-flex items-center bg-blue-100 text-blue-800 rounded-full px-3 py-1 text-sm">
                   <span className="mr-1">Q:</span>
-                  <span>4.6%</span>
+                  <span>4.6</span>
                 </div>
                 <div className="inline-flex items-center bg-green-100 text-green-800 rounded-full px-3 py-1 text-sm">
                   <span className="mr-1">S:</span>
-                  <span>3.1%</span>
+                  <span>3.1</span>
                 </div>
               </div>
             </div>
@@ -210,28 +231,28 @@ const AgentDetails: React.FC = () => {
             <div className="bg-white p-6 rounded-lg shadow-sm">
               <h3 className="text-xl font-semibold mb-4">Monthly Cost Configured</h3>
               <div className="text-center">
-                <div className="text-4xl font-bold text-blue-500">€187,20</div>
+                <div className="text-4xl font-bold text-blue-500">€4,876.00</div>
                 <div className="text-sm text-gray-500">Configuration</div>
               </div>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-sm">
               <h3 className="text-xl font-semibold mb-4">Total Cost Effective</h3>
               <div className="text-center">
-                <div className="text-4xl font-bold text-blue-500">€0,00</div>
+                <div className="text-4xl font-bold text-blue-500">€3,216.45</div>
                 <div className="text-sm text-gray-500">From Sessions Logs</div>
               </div>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-sm">
               <h3 className="text-xl font-semibold mb-4">Cost per Session</h3>
               <div className="text-center">
-                <div className="text-4xl font-bold text-blue-500">€37,44</div>
+                <div className="text-4xl font-bold text-blue-500">€267.83</div>
                 <div className="text-sm text-gray-500">Average</div>
               </div>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-sm">
               <h3 className="text-xl font-semibold mb-4">Sessions</h3>
               <div className="text-center">
-                <div className="text-4xl font-bold">5</div>
+                <div className="text-4xl font-bold">12</div>
                 <div className="text-sm text-gray-500">Total</div>
               </div>
             </div>
@@ -247,44 +268,67 @@ const AgentDetails: React.FC = () => {
                 <TabsTrigger value="log" className="rounded-md text-white data-[state=active]:bg-white data-[state=active]:text-action-primary">
                   Costs (Log)
                 </TabsTrigger>
+                <TabsTrigger value="trends" className="rounded-md text-white data-[state=active]:bg-white data-[state=active]:text-action-primary">
+                  Cost Trends
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="configured" className="pt-6">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   <div className="bg-white p-6 rounded-lg shadow-sm lg:col-span-2">
-                    <h3 className="text-xl font-semibold mb-6">Costi Effettivi (dai Log delle Sessioni)</h3>
+                    <h3 className="text-xl font-semibold mb-6">Actual Costs (from Session Logs)</h3>
                     
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                       <div className="bg-blue-50 p-4 rounded-lg">
                         <div className="text-gray-600 mb-1">Total Cost</div>
-                        <div className="text-2xl font-bold text-blue-500">€ 0.00</div>
-                        <div className="text-xs text-gray-500">Da log sessioni</div>
+                        <div className="text-2xl font-bold text-blue-500">€ 3,216.45</div>
+                        <div className="text-xs text-gray-500">From session logs</div>
                       </div>
                       <div className="bg-blue-50 p-4 rounded-lg">
                         <div className="text-gray-600 mb-1">Services Cost</div>
-                        <div className="text-2xl font-bold text-blue-500">€ 0.00</div>
-                        <div className="text-xs text-gray-500">0% on total</div>
+                        <div className="text-2xl font-bold text-blue-500">€ 1,125.76</div>
+                        <div className="text-xs text-gray-500">35% of total</div>
                       </div>
                       <div className="bg-blue-50 p-4 rounded-lg">
                         <div className="text-gray-600 mb-1">LLM Cost</div>
-                        <div className="text-2xl font-bold text-blue-500">€ 0.00</div>
-                        <div className="text-xs text-gray-500">100% on total</div>
+                        <div className="text-2xl font-bold text-blue-500">€ 2,090.69</div>
+                        <div className="text-xs text-gray-500">65% of total</div>
                       </div>
                     </div>
 
                     <div className="mb-6">
                       <div className="text-gray-700 font-medium mb-2">Percentage distribution</div>
-                      <div className="relative h-6 bg-purple-600 rounded-lg">
-                        <div className="flex absolute top-0 left-0 right-0 bottom-0">
-                          <div className="flex items-center justify-center text-xs text-white">
-                            <span className="mr-1">Servizi: 0%</span>
+                      <div className="relative h-6 rounded-lg overflow-hidden">
+                        <div className="flex h-full w-full">
+                          <div 
+                            className="bg-blue-600 h-full flex items-center justify-center text-xs text-white" 
+                            style={{ width: '35%' }}
+                          >
+                            Services: 35%
                           </div>
-                          <div className="flex-1"></div>
-                          <div className="flex items-center justify-center text-xs text-white">
-                            <span className="mr-1">LLM: 100%</span>
+                          <div 
+                            className="bg-purple-600 h-full flex-1 flex items-center justify-center text-xs text-white"
+                          >
+                            LLM: 65%
                           </div>
                         </div>
                       </div>
+                    </div>
+
+                    <div className="mt-8">
+                      <h4 className="text-lg font-semibold mb-4">Session Performance</h4>
+                      <ResponsiveContainer width="100%" height={300}>
+                        <BarChart data={sessionPerformanceData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="name" />
+                          <YAxis yAxisId="left" orientation="left" stroke="#8884d8" />
+                          <YAxis yAxisId="right" orientation="right" stroke="#82ca9d" />
+                          <Tooltip />
+                          <Legend />
+                          <Bar yAxisId="left" dataKey="tokens" name="Tokens Used" fill="#8884d8" />
+                          <Bar yAxisId="right" dataKey="cost" name="Cost (€)" fill="#82ca9d" />
+                        </BarChart>
+                      </ResponsiveContainer>
                     </div>
                   </div>
 
@@ -292,32 +336,80 @@ const AgentDetails: React.FC = () => {
                     <h3 className="text-xl font-semibold mb-6">Costs by Service Category</h3>
                     <CategoryChart data={categoryData} />
                     <div className="flex flex-wrap gap-2 mt-4">
-                      <span className="service-badge service-badge-integrations">INTEGRATIONS 32%</span>
-                      <span className="service-badge service-badge-reasoning">REASONING 40%</span>
-                      <span className="service-badge service-badge-db">DB 28%</span>
+                      {categoryData.map(item => (
+                        <span key={item.name} className={`service-badge service-badge-${item.name.toLowerCase()}`}>
+                          {item.name} {item.value}%
+                        </span>
+                      ))}
+                    </div>
+                    
+                    <h3 className="text-xl font-semibold mt-8 mb-6">Costs by Type of LLM</h3>
+                    <CategoryChart data={llmData} />
+                    <div className="flex flex-wrap gap-2 mt-4">
+                      {llmData.map(item => (
+                        <span key={item.name} className="service-badge bg-indigo-100 text-indigo-800">
+                          {item.name} {item.value}%
+                        </span>
+                      ))}
                     </div>
                   </div>
                 </div>
+              </TabsContent>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-                  <div className="bg-white p-6 rounded-lg shadow-sm">
-                    <h3 className="text-xl font-semibold mb-6">Costs by Type of LLM</h3>
-                    <CategoryChart data={llmData} />
-                    <div className="flex flex-wrap gap-2 mt-4">
-                      <span className="service-badge bg-indigo-100 text-indigo-800">Private GPT</span>
-                      <span className="service-badge bg-indigo-100 text-indigo-800">Azure OpenAI</span>
-                      <span className="service-badge bg-indigo-100 text-indigo-800">Claude 3 Opus</span>
+              <TabsContent value="log" className="pt-6">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <div className="bg-white p-6 rounded-lg shadow-sm lg:col-span-2">
+                    <h3 className="text-xl font-semibold mb-6">Session Cost Breakdown</h3>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm text-left">
+                        <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                          <tr>
+                            <th className="px-6 py-3">Session ID</th>
+                            <th className="px-6 py-3">Date</th>
+                            <th className="px-6 py-3">Duration</th>
+                            <th className="px-6 py-3">Tokens</th>
+                            <th className="px-6 py-3">API Calls</th>
+                            <th className="px-6 py-3">Cost</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr className="bg-white border-b">
+                            <td className="px-6 py-4 font-medium">S-84923</td>
+                            <td className="px-6 py-4">2025-04-12</td>
+                            <td className="px-6 py-4">12m 34s</td>
+                            <td className="px-6 py-4">15,432</td>
+                            <td className="px-6 py-4">48</td>
+                            <td className="px-6 py-4">€315.22</td>
+                          </tr>
+                          <tr className="bg-gray-50 border-b">
+                            <td className="px-6 py-4 font-medium">S-84755</td>
+                            <td className="px-6 py-4">2025-04-10</td>
+                            <td className="px-6 py-4">8m 12s</td>
+                            <td className="px-6 py-4">9,876</td>
+                            <td className="px-6 py-4">31</td>
+                            <td className="px-6 py-4">€208.45</td>
+                          </tr>
+                          <tr className="bg-white border-b">
+                            <td className="px-6 py-4 font-medium">S-84702</td>
+                            <td className="px-6 py-4">2025-04-08</td>
+                            <td className="px-6 py-4">15m 05s</td>
+                            <td className="px-6 py-4">18,932</td>
+                            <td className="px-6 py-4">52</td>
+                            <td className="px-6 py-4">€372.89</td>
+                          </tr>
+                          <tr className="bg-gray-50 border-b">
+                            <td className="px-6 py-4 font-medium">S-84601</td>
+                            <td className="px-6 py-4">2025-04-05</td>
+                            <td className="px-6 py-4">5m 48s</td>
+                            <td className="px-6 py-4">7,123</td>
+                            <td className="px-6 py-4">23</td>
+                            <td className="px-6 py-4">€174.91</td>
+                          </tr>
+                        </tbody>
+                      </table>
                     </div>
                   </div>
-
-                  <div className="bg-white p-6 rounded-lg shadow-sm">
-                    <h3 className="text-xl font-semibold mb-6">Efficency</h3>
-                    <EfficiencyGauge 
-                      value={72} 
-                      improvement="24% improvement over the previous configuration"
-                    />
-                  </div>
-
+                  
                   <div className="bg-white p-6 rounded-lg shadow-sm">
                     <h3 className="text-xl font-semibold mb-6">Optimization Scores</h3>
                     <ScoreBar 
@@ -348,17 +440,29 @@ const AgentDetails: React.FC = () => {
                       colorClass="progress-privacy" 
                       icon={<Shield className="w-4 h-4 text-red-500" />}
                     />
+                    
+                    <h3 className="text-xl font-semibold mt-8 mb-6">Efficiency</h3>
+                    <EfficiencyGauge 
+                      value={72} 
+                      improvement="24% improvement over the previous configuration"
+                    />
                   </div>
                 </div>
               </TabsContent>
-
-              <TabsContent value="log" className="pt-6">
+              
+              <TabsContent value="trends" className="pt-6">
                 <div className="bg-white p-6 rounded-lg shadow-sm">
-                  <h3 className="text-xl font-semibold mb-6">Session Logs (Coming Soon)</h3>
-                  <p className="text-gray-600">
-                    Detailed session logs will be displayed here, showing the services used, costs incurred,
-                    and performance metrics for each agent execution.
-                  </p>
+                  <h3 className="text-xl font-semibold mb-6">Monthly Cost Trends</h3>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={monthlyCostData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip formatter={(value) => [`€${value}`, 'Cost']} />
+                      <Legend />
+                      <Bar dataKey="cost" name="Monthly Cost (€)" fill="#3b82f6" />
+                    </BarChart>
+                  </ResponsiveContainer>
                 </div>
               </TabsContent>
             </Tabs>
@@ -395,9 +499,11 @@ const AgentDetails: React.FC = () => {
                 </p>
                 <div className="relative">
                   <select className="w-full p-3 pr-10 border border-gray-300 rounded-lg appearance-none">
-                    <option>market1</option>
-                    <option>market2</option>
-                    <option>market3</option>
+                    <option>Europe</option>
+                    <option>North America</option>
+                    <option>Asia-Pacific</option>
+                    <option>Latin America</option>
+                    <option>Middle East & Africa</option>
                   </select>
                   <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
                     <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -427,15 +533,28 @@ const AgentDetails: React.FC = () => {
 
             <div className="bg-white p-6 rounded-lg shadow-sm flex flex-col">
               <div className="text-center mb-6">
-                <div className="w-24 h-24 bg-gray-200 rounded-full mx-auto flex items-center justify-center text-xl font-semibold mb-4">
-                  {agent.logo}
-                </div>
+                <Avatar className="w-24 h-24 mx-auto mb-4">
+                  {isValidLogoUrl ? (
+                    <AvatarImage src={agent.logo} alt={agent.title} className="object-cover" />
+                  ) : null}
+                  <AvatarFallback className="bg-gray-200 text-gray-700 text-xl font-semibold">
+                    {logoInitials}
+                  </AvatarFallback>
+                </Avatar>
                 <h3 className="text-xl font-bold">{agent.title}</h3>
                 <p className="text-gray-600">{agent.description}</p>
               </div>
 
-              <div className="flex-1 overflow-y-auto mb-6">
+              <div className="flex-1 overflow-y-auto mb-6 bg-gray-50 p-4 rounded-lg min-h-[300px]">
                 {/* Chat messages would go here */}
+                <div className="space-y-4">
+                  <div className="flex flex-col">
+                    <div className="bg-gray-200 rounded-lg py-2 px-4 max-w-[80%] self-start">
+                      <p className="text-gray-800">Hello! I'm {agent.title}. How can I assist you today?</p>
+                      <span className="text-xs text-gray-500 mt-1">10:24 AM</span>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div className="relative">
@@ -445,10 +564,7 @@ const AgentDetails: React.FC = () => {
                   className="w-full border border-gray-300 rounded-full py-3 px-4 pr-12"
                 />
                 <button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M22 2L11 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
+                  <Send className="w-5 h-5" />
                 </button>
               </div>
             </div>
@@ -457,11 +573,76 @@ const AgentDetails: React.FC = () => {
 
         <TabsContent value="session-log" className="pt-6">
           <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h3 className="text-xl font-semibold mb-6">Session Logs (Coming Soon)</h3>
-            <p className="text-gray-600">
-              This tab will display detailed logs of all sessions run with this agent,
-              including timestamps, inputs, outputs, and associated costs.
-            </p>
+            <h3 className="text-xl font-semibold mb-6">Session Logs</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm text-left">
+                <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3">Session ID</th>
+                    <th className="px-6 py-3">Date & Time</th>
+                    <th className="px-6 py-3">Status</th>
+                    <th className="px-6 py-3">Duration</th>
+                    <th className="px-6 py-3">Tokens</th>
+                    <th className="px-6 py-3">Cost</th>
+                    <th className="px-6 py-3">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="bg-white border-b">
+                    <td className="px-6 py-4 font-medium">S-84923</td>
+                    <td className="px-6 py-4">2025-04-12 15:42</td>
+                    <td className="px-6 py-4">
+                      <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">Completed</span>
+                    </td>
+                    <td className="px-6 py-4">12m 34s</td>
+                    <td className="px-6 py-4">15,432</td>
+                    <td className="px-6 py-4">€315.22</td>
+                    <td className="px-6 py-4">
+                      <button className="text-blue-600 hover:text-blue-900">View</button>
+                    </td>
+                  </tr>
+                  <tr className="bg-gray-50 border-b">
+                    <td className="px-6 py-4 font-medium">S-84755</td>
+                    <td className="px-6 py-4">2025-04-10 09:18</td>
+                    <td className="px-6 py-4">
+                      <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">Completed</span>
+                    </td>
+                    <td className="px-6 py-4">8m 12s</td>
+                    <td className="px-6 py-4">9,876</td>
+                    <td className="px-6 py-4">€208.45</td>
+                    <td className="px-6 py-4">
+                      <button className="text-blue-600 hover:text-blue-900">View</button>
+                    </td>
+                  </tr>
+                  <tr className="bg-white border-b">
+                    <td className="px-6 py-4 font-medium">S-84702</td>
+                    <td className="px-6 py-4">2025-04-08 14:55</td>
+                    <td className="px-6 py-4">
+                      <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">Completed</span>
+                    </td>
+                    <td className="px-6 py-4">15m 05s</td>
+                    <td className="px-6 py-4">18,932</td>
+                    <td className="px-6 py-4">€372.89</td>
+                    <td className="px-6 py-4">
+                      <button className="text-blue-600 hover:text-blue-900">View</button>
+                    </td>
+                  </tr>
+                  <tr className="bg-gray-50 border-b">
+                    <td className="px-6 py-4 font-medium">S-84601</td>
+                    <td className="px-6 py-4">2025-04-05 11:23</td>
+                    <td className="px-6 py-4">
+                      <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">Completed</span>
+                    </td>
+                    <td className="px-6 py-4">5m 48s</td>
+                    <td className="px-6 py-4">7,123</td>
+                    <td className="px-6 py-4">€174.91</td>
+                    <td className="px-6 py-4">
+                      <button className="text-blue-600 hover:text-blue-900">View</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </TabsContent>
 
