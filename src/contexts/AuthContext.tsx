@@ -1,9 +1,9 @@
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
-type UserRole = 'base' | 'admin' | 'owner';
+export type UserRole = 'base' | 'admin' | 'owner';
 
-interface User {
+export interface User {
   id: string;
   name: string;
   email: string;
@@ -17,6 +17,7 @@ interface AuthContextType {
   logout: () => void;
   isAdmin: () => boolean;
   isOwner: () => boolean;
+  isBaseUser: () => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -49,6 +50,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return user?.role === 'owner';
   };
 
+  const isBaseUser = () => {
+    return user?.role === 'base';
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -58,6 +63,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         logout,
         isAdmin,
         isOwner,
+        isBaseUser,
       }}
     >
       {children}

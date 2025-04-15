@@ -1,29 +1,55 @@
 
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { Home, Activity, Cog, Clock, User, Menu } from 'lucide-react';
+import { Home, Activity, Cog, Clock, User, Menu, LogOut } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger 
+} from '@/components/ui/dropdown-menu';
+import { toast } from '@/components/ui/use-toast';
 
 const Header: React.FC = () => {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, logout, isAdmin, isOwner } = useAuth();
   const location = useLocation();
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
 
   if (!isAuthenticated) return null;
 
+  const handleLogout = () => {
+    logout();
+    toast({
+      title: "Logged out",
+      description: "You have been successfully logged out.",
+    });
+    navigate('/login');
+  };
+
+  // Only show nav items based on user role
   const navItems = [
-    { path: '/', label: 'Home', icon: <Home className="w-5 h-5" /> },
-    { path: '/agents', label: 'Agents', icon: <Activity className="w-5 h-5" /> },
-    { path: '/services-llm', label: 'Services and LLM', icon: <Cog className="w-5 h-5" /> },
-    { path: '/admin', label: 'Admin panel', icon: <Cog className="w-5 h-5" /> },
-    { path: '/session-logs', label: 'Session Logs', icon: <Clock className="w-5 h-5" /> },
+    { path: '/', label: 'Home', icon: <Home className="w-5 h-5" />, roles: ['base', 'admin', 'owner'] },
+    { path: '/agents', label: 'Agents', icon: <Activity className="w-5 h-5" />, roles: ['base', 'admin', 'owner'] },
+    // Only show Services and LLM to admin and owner
+    { path: '/services-llm', label: 'Services and LLM', icon: <Cog className="w-5 h-5" />, roles: ['admin', 'owner'] },
+    // Only show Admin panel to admin and owner
+    { path: '/admin', label: 'Admin panel', icon: <Cog className="w-5 h-5" />, roles: ['admin', 'owner'] },
+    { path: '/session-logs', label: 'Session Logs', icon: <Clock className="w-5 h-5" />, roles: ['base', 'admin', 'owner'] },
   ];
+
+  // Filter nav items based on user role
+  const filteredNavItems = navItems.filter(item => 
+    user && item.roles.includes(user.role)
+  );
 
   const renderNavItems = (onItemClick?: () => void) => (
     <>
-      {navItems.map((item) => {
+      {filteredNavItems.map((item) => {
         const isActive = location.pathname === item.path;
         return (
           <Link
@@ -59,12 +85,26 @@ const Header: React.FC = () => {
         </div>
         
         <div className="flex items-center gap-2">
-          <Link 
-            to="/profile" 
-            className="p-2 h-10 w-10 rounded-full bg-white hover:bg-gray-100 transition-colors shadow-md flex items-center justify-center"
-          >
-            <User className="w-5 h-5 text-indigo-900" />
-          </Link>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="p-2 h-10 w-10 rounded-full bg-white hover:bg-gray-100 transition-colors shadow-md flex items-center justify-center">
+                <User className="w-5 h-5 text-indigo-900" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuItem asChild>
+                <Link to="/profile" className="cursor-pointer">
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Profile</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleLogout} className="text-red-500 cursor-pointer">
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Logout</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           
           <Sheet>
             <SheetTrigger asChild>
@@ -104,12 +144,26 @@ const Header: React.FC = () => {
         </div>
         
         <div className="pr-0">
-          <Link 
-            to="/profile" 
-            className="p-2 h-10 w-10 md:h-12 md:w-12 rounded-full bg-white hover:bg-gray-100 transition-colors shadow-md flex items-center justify-center"
-          >
-            <User className="w-5 h-5 md:w-6 md:h-6 text-indigo-900" />
-          </Link>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="p-2 h-10 w-10 md:h-12 md:w-12 rounded-full bg-white hover:bg-gray-100 transition-colors shadow-md flex items-center justify-center">
+                <User className="w-5 h-5 md:w-6 md:h-6 text-indigo-900" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuItem asChild>
+                <Link to="/profile" className="cursor-pointer">
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Profile</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleLogout} className="text-red-500 cursor-pointer">
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Logout</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </header>

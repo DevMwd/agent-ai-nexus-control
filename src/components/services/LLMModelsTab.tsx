@@ -3,9 +3,9 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Plus, Search } from 'lucide-react';
 import { LLMModelDetails } from "@/contexts/AgentContext";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import LLMCard from './LLMCard';
+import { LLMCard } from './LLMCard';
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface LLMModelsTabProps {
   llmModels: LLMModelDetails[];
@@ -24,6 +24,7 @@ const LLMModelsTab: React.FC<LLMModelsTabProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredModels, setFilteredModels] = useState(llmModels);
+  const { user, isOwner } = useAuth();
 
   React.useEffect(() => {
     if (searchTerm) {
@@ -41,10 +42,12 @@ const LLMModelsTab: React.FC<LLMModelsTabProps> = ({
     <div>
       <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h1 className="text-2xl sm:text-3xl font-bold">LLM Models</h1>
-        <Button variant="action" className="flex w-full sm:w-auto items-center gap-2" onClick={onAddLLM}>
-          <Plus className="w-5 h-5" />
-          <span>New LLM Model</span>
-        </Button>
+        {isOwner() && (
+          <Button variant="action" className="flex w-full sm:w-auto items-center gap-2" onClick={onAddLLM}>
+            <Plus className="w-5 h-5" />
+            <span>New LLM Model</span>
+          </Button>
+        )}
       </div>
 
       <div className="relative mb-6">
@@ -62,8 +65,8 @@ const LLMModelsTab: React.FC<LLMModelsTabProps> = ({
           <LLMCard 
             key={model.id}
             model={model}
-            onEdit={onEditLLM}
-            onDelete={onDeleteLLM}
+            onEdit={isOwner() ? onEditLLM : undefined}
+            onDelete={isOwner() ? onDeleteLLM : undefined}
             onSelect={onSelectLLM}
           />
         ))}
