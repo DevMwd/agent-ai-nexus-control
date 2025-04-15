@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -25,7 +24,7 @@ const Header: React.FC = () => {
           <img 
             src="/lovable-uploads/a2223f4d-ac62-4db3-b61f-6c61a7f3beab.png" 
             alt="BlueSky Agent AI Logo" 
-            className="h-16" // Increased from h-10 to h-16
+            className="h-20"
           />
         </div>
         
@@ -56,9 +55,9 @@ const Header: React.FC = () => {
         <div className="pr-0">
           <Link 
             to="/profile" 
-            className="p-4 h-16 w-16 rounded-full bg-white hover:bg-gray-100 transition-colors shadow-md flex items-center justify-center"
+            className="p-3 h-14 w-14 rounded-full bg-white hover:bg-gray-100 transition-colors shadow-md flex items-center justify-center"
           >
-            <User className="w-8 h-8 text-indigo-900" /> {/* Increased icon size from w-6 h-6 to w-8 h-8 */}
+            <User className="w-7 h-7 text-indigo-900" />
           </Link>
         </div>
       </div>
@@ -67,4 +66,3 @@ const Header: React.FC = () => {
 };
 
 export default Header;
-
