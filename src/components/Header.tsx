@@ -19,19 +19,19 @@ const Header: React.FC = () => {
   ];
 
   return (
-    <header className="flex justify-center items-center py-4 bg-[#e3eaf8] w-full">
+    <header className="flex justify-center items-center py-6 bg-[#e3eaf8] w-full">
       <div className="container flex items-center justify-between max-w-6xl px-4">
         <div className="flex items-center">
           <img 
             src="/lovable-uploads/5ad87de6-d908-46b1-8423-928baae021c6.png" 
             alt="Action Logo" 
-            className="h-8 mr-2" 
+            className="h-10 mr-2" 
           />
           <span className="text-xs text-gray-600">Powered by BlueSky</span>
         </div>
         
         <div className="flex-1 flex justify-center">
-          <nav className="bg-white rounded-full px-3 py-1 shadow-md flex">
+          <nav className="bg-white rounded-full px-4 py-2 shadow-md flex">
             {navItems.map((item) => {
               const isActive = location.pathname === item.path;
               return (
@@ -39,7 +39,7 @@ const Header: React.FC = () => {
                   key={item.path}
                   to={item.path}
                   className={`
-                    flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors mx-1
+                    flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium transition-colors mx-1
                     ${isActive 
                       ? 'bg-indigo-100 text-indigo-700'
                       : 'text-gray-600 hover:text-indigo-700 hover:bg-gray-50'
