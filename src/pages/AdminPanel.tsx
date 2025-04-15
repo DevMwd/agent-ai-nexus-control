@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { 
@@ -14,7 +14,9 @@ import {
   Eye, 
   EyeOff, 
   Building,
-  Link as LinkIcon
+  Link as LinkIcon,
+  Search,
+  Filter
 } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import { useAuth, Organization } from '@/contexts/AuthContext';
@@ -32,6 +34,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 
 interface MockUser {
   id: string;
@@ -101,6 +104,20 @@ const AdminPanel: React.FC = () => {
   const [editOrganizationDialogOpen, setEditOrganizationDialogOpen] = useState(false);
   const [organizationAgentDialogOpen, setOrganizationAgentDialogOpen] = useState(false);
   const [selectedOrganizationId, setSelectedOrganizationId] = useState('');
+  const [selectedOrganizationName, setSelectedOrganizationName] = useState('');
+  const [agentFilter, setAgentFilter] = useState('');
+  const [filteredAgents, setFilteredAgents] = useState(mockAgentVisibility);
+  
+  useEffect(() => {
+    if (agentFilter.trim() === '') {
+      setFilteredAgents(mockAgentVisibility);
+    } else {
+      const filtered = mockAgentVisibility.filter(agent => 
+        agent.name.toLowerCase().includes(agentFilter.toLowerCase())
+      );
+      setFilteredAgents(filtered);
+    }
+  }, [agentFilter, mockAgentVisibility]);
   
   const handleSaveSettings = () => {
     toast({
@@ -126,7 +143,6 @@ const AdminPanel: React.FC = () => {
       return;
     }
 
-    // For base and admin users, an organization is required
     if ((newUser.role === 'base' || newUser.role === 'admin') && !newUser.organizationId) {
       toast({
         title: "Error",
@@ -173,7 +189,6 @@ const AdminPanel: React.FC = () => {
   const handleUpdateUser = () => {
     if (!editingUser) return;
     
-    // For base and admin users, an organization is required
     if ((editingUser.role === 'base' || editingUser.role === 'admin') && !editingUser.organizationId) {
       toast({
         title: "Error",
@@ -287,7 +302,6 @@ const AdminPanel: React.FC = () => {
         : org
     );
     
-    // Update organization name in users
     const updatedUsers = mockUsers.map(user => 
       user.organizationId === editingOrganization.id 
         ? { ...user, organizationName: editingOrganization.name }
@@ -305,7 +319,6 @@ const AdminPanel: React.FC = () => {
   };
 
   const handleDeleteOrganization = (organizationId: string) => {
-    // Check if there are users associated with this organization
     const associatedUsers = mockUsers.filter(user => user.organizationId === organizationId);
     if (associatedUsers.length > 0) {
       toast({
@@ -371,8 +384,10 @@ const AdminPanel: React.FC = () => {
     });
   };
 
-  const handleManageOrganizationAgents = (organizationId: string) => {
+  const handleManageOrganizationAgents = (organizationId: string, organizationName: string) => {
     setSelectedOrganizationId(organizationId);
+    setSelectedOrganizationName(organizationName);
+    setAgentFilter('');
     setOrganizationAgentDialogOpen(true);
   };
 
@@ -890,6 +905,9 @@ const AdminPanel: React.FC = () => {
                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Users
                         </th>
+                        <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Agent Access
+                        </th>
                         <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Actions
                         </th>
@@ -898,6 +916,10 @@ const AdminPanel: React.FC = () => {
                     <tbody className="bg-white divide-y divide-gray-200">
                       {mockOrganizations.map((org) => {
                         const orgUsers = mockUsers.filter(user => user.organizationId === org.id);
+                        const visibleAgentsCount = mockAgentVisibility.filter(agent => 
+                          agent.visibleToOrganizations.some(orgItem => orgItem.id === org.id)
+                        ).length;
+                        
                         return (
                           <tr key={org.id}>
                             <td className="px-6 py-4 whitespace-nowrap">
@@ -909,16 +931,21 @@ const AdminPanel: React.FC = () => {
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="text-sm text-gray-500">{orgUsers.length} users</div>
                             </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-center">
+                              <Badge variant="outline" className="text-sm">
+                                {visibleAgentsCount} agents
+                              </Badge>
+                            </td>
                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                               <div className="flex justify-end gap-2">
                                 <Button 
                                   variant="ghost" 
                                   size="sm" 
-                                  onClick={() => handleManageOrganizationAgents(org.id)}
+                                  onClick={() => handleManageOrganizationAgents(org.id, org.name)}
                                   className="text-indigo-600 hover:text-indigo-900"
                                   title="Manage Agent Access"
                                 >
-                                  <LinkIcon className="w-4 h-4" />
+                                  <Eye className="w-4 h-4" />
                                 </Button>
                                 <Button 
                                   variant="ghost" 
@@ -985,31 +1012,45 @@ const AdminPanel: React.FC = () => {
                   <DialogContent className="sm:max-w-md">
                     <DialogHeader>
                       <DialogTitle>
-                        Manage Agent Access
+                        Agent Access for {selectedOrganizationName}
                       </DialogTitle>
                     </DialogHeader>
                     <div className="py-4">
-                      <p className="text-sm text-gray-600 mb-4">
-                        Select which agents this organization can access:
-                      </p>
-                      {selectedOrganizationId && (
-                        <div className="space-y-3">
-                          {mockAgentVisibility.map(agent => {
+                      <div className="flex items-center space-x-2 mb-4">
+                        <Search className="w-4 h-4 text-gray-500" />
+                        <Input 
+                          placeholder="Filter agents..." 
+                          value={agentFilter}
+                          onChange={(e) => setAgentFilter(e.target.value)}
+                          className="flex-1"
+                        />
+                      </div>
+                      
+                      <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
+                        {filteredAgents.length > 0 ? (
+                          filteredAgents.map(agent => {
                             const isVisible = agent.visibleToOrganizations.some(
                               org => org.id === selectedOrganizationId
                             );
                             return (
-                              <div key={agent.agentId} className="flex items-center justify-between">
-                                <span className="text-sm font-medium">{agent.name}</span>
+                              <div key={agent.agentId} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
+                                <div className="flex flex-col">
+                                  <span className="text-sm font-medium">{agent.name}</span>
+                                  <span className="text-xs text-gray-500">ID: {agent.agentId}</span>
+                                </div>
                                 <Switch 
                                   checked={isVisible}
                                   onCheckedChange={() => toggleOrganizationAgentVisibility(agent.agentId, selectedOrganizationId)}
                                 />
                               </div>
                             );
-                          })}
-                        </div>
-                      )}
+                          })
+                        ) : (
+                          <div className="text-center py-4 text-gray-500">
+                            No agents found matching your filter
+                          </div>
+                        )}
+                      </div>
                     </div>
                     <DialogFooter>
                       <Button variant="outline" onClick={() => setOrganizationAgentDialogOpen(false)}>
