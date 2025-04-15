@@ -5,7 +5,10 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Folder, FolderPlus, PencilRuler, Trash2 } from 'lucide-react';
+import { 
+  Folder, FolderPlus, PencilRuler, Trash2, Database, Activity, FileEdit, ClipboardList, Globe,
+  Cloud, Brain, Code, Settings, Chart, BarChart, ShoppingCart, Share2, ZapOff, Zap, FileText, Heart
+} from 'lucide-react';
 
 interface CategoryDialogProps {
   isOpen: boolean;
@@ -47,6 +50,67 @@ export const CategoryDialog: React.FC<CategoryDialogProps> = ({
   
   const HeaderIcon = isAddNew ? FolderPlus : PencilRuler;
 
+  // Color options for the color picker
+  const availableColors = [
+    { name: 'Red', value: '#FF5733' },
+    { name: 'Blue', value: '#337AFF' },
+    { name: 'Green', value: '#33FF57' },
+    { name: 'Purple', value: '#8733FF' },
+    { name: 'Yellow', value: '#FFD133' },
+    { name: 'Cyan', value: '#33FFF5' },
+    { name: 'Pink', value: '#FF33E6' },
+    { name: 'Orange', value: '#FF8C33' },
+    { name: 'Teal', value: '#33FFB8' },
+    { name: 'Lavender', value: '#D133FF' },
+  ];
+  
+  // Component to render the icon based on icon name
+  const IconComponent = ({ iconName }: { iconName: string }) => {
+    switch (iconName) {
+      case 'database': return <Database className="h-4 w-4" />;
+      case 'activity': return <Activity className="h-4 w-4" />;
+      case 'file-edit': return <FileEdit className="h-4 w-4" />;
+      case 'clipboard-list': return <ClipboardList className="h-4 w-4" />;
+      case 'globe': return <Globe className="h-4 w-4" />;
+      case 'cloud': return <Cloud className="h-4 w-4" />;
+      case 'brain': return <Brain className="h-4 w-4" />;
+      case 'code': return <Code className="h-4 w-4" />;
+      case 'settings': return <Settings className="h-4 w-4" />;
+      case 'chart': return <Chart className="h-4 w-4" />;
+      case 'bar-chart': return <BarChart className="h-4 w-4" />;
+      case 'shopping-cart': return <ShoppingCart className="h-4 w-4" />;
+      case 'share': return <Share2 className="h-4 w-4" />;
+      case 'zap': return <Zap className="h-4 w-4" />;
+      case 'zap-off': return <ZapOff className="h-4 w-4" />;
+      case 'file-text': return <FileText className="h-4 w-4" />;
+      case 'heart': return <Heart className="h-4 w-4" />;
+      case 'folder': return <Folder className="h-4 w-4" />;
+      default: return <Folder className="h-4 w-4" />;
+    }
+  };
+
+  // Extended icon options
+  const extendedIconOptions = [
+    { name: 'Database', value: 'database' },
+    { name: 'Activity', value: 'activity' },
+    { name: 'File Edit', value: 'file-edit' },
+    { name: 'Clipboard', value: 'clipboard-list' },
+    { name: 'Globe', value: 'globe' },
+    { name: 'Cloud', value: 'cloud' },
+    { name: 'Brain', value: 'brain' },
+    { name: 'Code', value: 'code' },
+    { name: 'Settings', value: 'settings' },
+    { name: 'Chart', value: 'chart' },
+    { name: 'Bar Chart', value: 'bar-chart' },
+    { name: 'Shopping Cart', value: 'shopping-cart' },
+    { name: 'Share', value: 'share' },
+    { name: 'Zap', value: 'zap' },
+    { name: 'Zap Off', value: 'zap-off' },
+    { name: 'File Text', value: 'file-text' },
+    { name: 'Heart', value: 'heart' },
+    { name: 'Folder', value: 'folder' },
+  ];
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden rounded-xl">
@@ -76,34 +140,43 @@ export const CategoryDialog: React.FC<CategoryDialogProps> = ({
             
             <div className="space-y-2">
               <Label htmlFor="categoryColor" className="text-base font-medium">Color</Label>
-              <Select onValueChange={setCategoryColor} defaultValue={categoryColor}>
-                <SelectTrigger id="categoryColor" className="rounded-lg h-11">
-                  <SelectValue placeholder="Select a color" />
-                </SelectTrigger>
-                <SelectContent className="rounded-lg">
-                  {colorOptions.map((color) => (
-                    <SelectItem key={color.value} value={color.value}>
-                      <div className="flex items-center gap-2">
-                        <div className={`w-4 h-4 rounded-full bg-category-${color.value}`}></div>
-                        {color.name}
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="grid grid-cols-5 gap-2 mt-2">
+                {availableColors.map((color) => (
+                  <div 
+                    key={color.value}
+                    className={`h-8 w-8 rounded-full cursor-pointer transition-all hover:scale-110 ${categoryColor === color.value ? 'ring-2 ring-offset-2 ring-blue-500' : ''}`}
+                    style={{ backgroundColor: color.value }}
+                    onClick={() => setCategoryColor(color.value)}
+                    title={color.name}
+                  />
+                ))}
+              </div>
+              <Input
+                type="color"
+                value={categoryColor}
+                onChange={(e) => setCategoryColor(e.target.value)}
+                className="w-full h-11 mt-2 cursor-pointer"
+              />
             </div>
             
             <div className="space-y-2">
               <Label htmlFor="categoryIcon" className="text-base font-medium">Icon</Label>
               <Select onValueChange={setCategoryIcon} defaultValue={categoryIcon}>
                 <SelectTrigger id="categoryIcon" className="rounded-lg h-11">
-                  <SelectValue placeholder="Select an icon" />
+                  <SelectValue placeholder="Select an icon">
+                    {categoryIcon && (
+                      <div className="flex items-center gap-2">
+                        <IconComponent iconName={categoryIcon} />
+                        <span>{extendedIconOptions.find(i => i.value === categoryIcon)?.name || 'Icon'}</span>
+                      </div>
+                    )}
+                  </SelectValue>
                 </SelectTrigger>
-                <SelectContent className="rounded-lg">
-                  {iconOptions.map((icon) => (
+                <SelectContent className="rounded-lg max-h-[300px]">
+                  {extendedIconOptions.map((icon) => (
                     <SelectItem key={icon.value} value={icon.value}>
                       <div className="flex items-center gap-2">
-                        <Folder className="h-4 w-4" />
+                        <IconComponent iconName={icon.value} />
                         {icon.name}
                       </div>
                     </SelectItem>

@@ -5,6 +5,7 @@ import { Plus, Search } from 'lucide-react';
 import { LLMModelDetails } from "@/contexts/AgentContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import LLMCard from './LLMCard';
+import { Input } from "@/components/ui/input";
 
 interface LLMModelsTabProps {
   llmModels: LLMModelDetails[];
@@ -47,16 +48,13 @@ const LLMModelsTab: React.FC<LLMModelsTabProps> = ({
       </div>
 
       <div className="relative mb-6">
-        <input
-          type="text"
+        <Input
+          className="pl-10"
           placeholder="Search LLM models..."
-          className="w-full border border-gray-300 rounded-lg py-3 px-4 pl-12"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <div className="absolute inset-y-0 left-0 flex items-center pl-3">
-          <Search className="w-6 h-6 text-gray-400" />
-        </div>
+        <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
