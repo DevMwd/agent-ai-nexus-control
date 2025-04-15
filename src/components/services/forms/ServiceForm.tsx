@@ -43,6 +43,7 @@ const ServiceForm: React.FC<ServiceFormProps> = ({
   },
   submitLabel = "Save"
 }) => {
+  const defaultLogo = '/public/lovable-uploads/86b10a75-6f9b-47b2-a434-b1e8c0fe23ea.png';
   const [logoPreview, setLogoPreview] = useState<string | null>(defaultValues.logo || null);
   
   const form = useForm<ServiceFormValues>({
@@ -63,9 +64,17 @@ const ServiceForm: React.FC<ServiceFormProps> = ({
     }
   };
 
+  const handleSubmit = (values: ServiceFormValues) => {
+    // If no logo was provided, set the default one
+    if (!values.logo) {
+      values.logo = defaultLogo;
+    }
+    onSubmit(values);
+  };
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
         <FormField
           control={form.control}
           name="name"
@@ -131,8 +140,6 @@ const ServiceForm: React.FC<ServiceFormProps> = ({
               <FormLabel>Cost per Unit</FormLabel>
               <FormControl>
                 <Input 
-                  type="number" 
-                  step="0.01" 
                   placeholder="0.00" 
                   {...field} 
                 />
@@ -173,10 +180,14 @@ const ServiceForm: React.FC<ServiceFormProps> = ({
                     {logoPreview ? (
                       <AvatarImage src={logoPreview} alt="Service logo" />
                     ) : (
-                      <AvatarFallback>
-                        <Image className="h-8 w-8 text-gray-400" />
-                      </AvatarFallback>
+                      <AvatarImage 
+                        src={defaultLogo} 
+                        alt="Default service logo" 
+                      />
                     )}
+                    <AvatarFallback>
+                      <Image className="h-8 w-8 text-gray-400" />
+                    </AvatarFallback>
                   </Avatar>
                 </div>
                 <div className="flex-1">

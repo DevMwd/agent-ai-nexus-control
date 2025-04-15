@@ -98,7 +98,8 @@ const mockServices: Service[] = [
     category: 'DB', 
     costStructure: 'Per record', 
     costPerUnit: 'A partire da $10/mese', 
-    hasFreetier: true 
+    hasFreetier: true,
+    logo: '/public/lovable-uploads/86b10a75-6f9b-47b2-a434-b1e8c0fe23ea.png'
   },
   { 
     id: '2', 
@@ -106,7 +107,8 @@ const mockServices: Service[] = [
     category: 'DOCUMENT COMPOSITION', 
     costStructure: 'Per documento', 
     costPerUnit: 'A partire da $0.01', 
-    hasFreetier: true 
+    hasFreetier: true,
+    logo: '/public/lovable-uploads/86b10a75-6f9b-47b2-a434-b1e8c0fe23ea.png'
   },
   { 
     id: '3', 
@@ -114,7 +116,8 @@ const mockServices: Service[] = [
     category: 'SCRAPING - CRAWLING', 
     costStructure: 'Per richiesta', 
     costPerUnit: 'Variabile', 
-    hasFreetier: false 
+    hasFreetier: false,
+    logo: '/public/lovable-uploads/86b10a75-6f9b-47b2-a434-b1e8c0fe23ea.png'
   },
   { 
     id: '4', 
@@ -122,7 +125,8 @@ const mockServices: Service[] = [
     category: 'REASONING', 
     costStructure: 'Per token', 
     costPerUnit: 'Variabile', 
-    hasFreetier: true 
+    hasFreetier: true,
+    logo: '/public/lovable-uploads/86b10a75-6f9b-47b2-a434-b1e8c0fe23ea.png'
   },
   { 
     id: '5', 
@@ -130,7 +134,8 @@ const mockServices: Service[] = [
     category: 'LLM PROVIDER', 
     costStructure: 'Per richiesta', 
     costPerUnit: 'Variabile', 
-    hasFreetier: true 
+    hasFreetier: true,
+    logo: '/public/lovable-uploads/86b10a75-6f9b-47b2-a434-b1e8c0fe23ea.png'
   },
 ];
 

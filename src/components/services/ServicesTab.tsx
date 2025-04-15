@@ -1,9 +1,11 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2, Search } from 'lucide-react';
 import { Service } from "@/contexts/AgentContext";
 import CategoryBadge from './CategoryBadge';
+import { Input } from "@/components/ui/input";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ServicesTabProps {
   servicesList: Service[];
@@ -20,6 +22,13 @@ const ServicesTab: React.FC<ServicesTabProps> = ({
   onEditService, 
   onDeleteService 
 }) => {
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  const filteredServices = servicesList.filter(service => 
+    service.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    service.category.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
@@ -30,6 +39,16 @@ const ServicesTab: React.FC<ServicesTabProps> = ({
             <span>New Service</span>
           </Button>
         </div>
+      </div>
+
+      <div className="mb-6 relative">
+        <Input
+          className="pl-10"
+          placeholder="Search services by name or category..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
       </div>
 
       <div className="bg-white rounded-lg shadow-sm overflow-hidden">
@@ -45,33 +64,52 @@ const ServicesTab: React.FC<ServicesTabProps> = ({
             </tr>
           </thead>
           <tbody>
-            {servicesList.map((service) => (
-              <tr key={service.id} className="border-b">
-                <td className="p-4">{service.name}</td>
-                <td className="p-4">
-                  <CategoryBadge category={service.category} />
-                </td>
-                <td className="p-4">{service.costStructure}</td>
-                <td className="p-4">{service.costPerUnit}</td>
-                <td className="p-4">
-                  {service.hasFreetier ? (
-                    <span className="text-green-500">Yes</span>
-                  ) : (
-                    <span className="text-gray-500">No</span>
-                  )}
-                </td>
-                <td className="p-4">
-                  <div className="flex space-x-2">
-                    <Button variant="ghost" size="sm" onClick={() => onEditService(service.id)}>
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm" onClick={() => onDeleteService(service.id)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+            {filteredServices.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="p-4 text-center text-gray-500">
+                  No services found. Try adjusting your search query.
                 </td>
               </tr>
-            ))}
+            ) : (
+              filteredServices.map((service) => (
+                <tr key={service.id} className="border-b">
+                  <td className="p-4">
+                    <div className="flex items-center gap-3">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage 
+                          src={service.logo || '/public/lovable-uploads/86b10a75-6f9b-47b2-a434-b1e8c0fe23ea.png'} 
+                          alt={service.name} 
+                        />
+                        <AvatarFallback>{service.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                      </Avatar>
+                      <span>{service.name}</span>
+                    </div>
+                  </td>
+                  <td className="p-4">
+                    <CategoryBadge category={service.category} />
+                  </td>
+                  <td className="p-4">{service.costStructure}</td>
+                  <td className="p-4">{service.costPerUnit}</td>
+                  <td className="p-4">
+                    {service.hasFreetier ? (
+                      <span className="text-green-500">Yes</span>
+                    ) : (
+                      <span className="text-gray-500">No</span>
+                    )}
+                  </td>
+                  <td className="p-4">
+                    <div className="flex space-x-2">
+                      <Button variant="ghost" size="sm" onClick={() => onEditService(service.id)}>
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => onDeleteService(service.id)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
