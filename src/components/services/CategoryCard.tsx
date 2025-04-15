@@ -5,16 +5,18 @@ import { Edit, Trash2, Database, Activity, FileEdit, ClipboardList, Globe, Cloud
 
 interface CategoryCardProps {
   name: string;
-  color: string;
-  icon: string;
+  color?: string;
+  icon?: string;
+  count?: number;
   onEdit: () => void;
   onDelete: () => void;
 }
 
 const CategoryCard: React.FC<CategoryCardProps> = ({ 
   name, 
-  color, 
-  icon,
+  color = 'blue',
+  icon = 'database',
+  count,
   onEdit,
   onDelete
 }) => {
@@ -48,7 +50,12 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
           <div className={`${getBgColor()} p-2 rounded-lg`}>
             {getIcon()}
           </div>
-          <h3 className="font-semibold text-lg">{name}</h3>
+          <div>
+            <h3 className="font-semibold text-lg">{name}</h3>
+            {count !== undefined && (
+              <span className="text-sm text-gray-500">{count} services</span>
+            )}
+          </div>
         </div>
         <div className="flex gap-1">
           <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={onEdit}>
