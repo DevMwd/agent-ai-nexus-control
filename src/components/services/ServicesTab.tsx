@@ -29,6 +29,16 @@ const ServicesTab: React.FC<ServicesTabProps> = ({
     service.category.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // Function to get initials from service name
+  const getInitials = (name: string) => {
+    if (!name) return '';
+    const words = name.split(' ');
+    if (words.length === 1) {
+      return name.substring(0, 2).toUpperCase();
+    }
+    return (words[0].charAt(0) + words[1].charAt(0)).toUpperCase();
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
@@ -76,11 +86,13 @@ const ServicesTab: React.FC<ServicesTabProps> = ({
                   <td className="p-4">
                     <div className="flex items-center gap-3">
                       <Avatar className="h-8 w-8">
-                        <AvatarImage 
-                          src={service.logo || '/lovable-uploads/db33afc5-52a1-4549-a340-88ce96bee0f9.png'} 
-                          alt={service.name} 
-                        />
-                        <AvatarFallback>{service.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                        {service.logo ? (
+                          <AvatarImage src={service.logo} alt={service.name} />
+                        ) : (
+                          <AvatarFallback className="bg-gray-200 text-gray-700 font-medium">
+                            {getInitials(service.name)}
+                          </AvatarFallback>
+                        )}
                       </Avatar>
                       <span className="font-medium">{service.name}</span>
                     </div>
@@ -105,10 +117,10 @@ const ServicesTab: React.FC<ServicesTabProps> = ({
                       <Button 
                         variant="ghost" 
                         size="sm" 
-                        className="hover:bg-red-100" 
+                        className="hover:bg-red-100 text-red-500" 
                         onClick={() => onDeleteService(service.id)}
                       >
-                        <Trash2 className="h-4 w-4 text-red-500" />
+                        <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
                   </td>

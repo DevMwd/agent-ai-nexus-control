@@ -56,7 +56,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
   };
   
   return (
-    <Card className={`overflow-hidden transition-all duration-200 ${getBorderColor()}`}>
+    <Card className={`overflow-hidden transition-all duration-200 shadow-sm hover:shadow-md ${getBorderColor()}`}>
       <CardContent className="p-5">
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-3 mb-2">
@@ -77,10 +77,10 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
             <Button 
               variant="ghost" 
               size="sm" 
-              className="h-8 w-8 p-0 hover:bg-red-100" 
+              className="h-8 w-8 p-0 hover:bg-red-100 text-red-500" 
               onClick={onDelete}
             >
-              <Trash2 className="h-4 w-4 text-red-500" />
+              <Trash2 className="h-4 w-4" />
             </Button>
           </div>
         </div>
