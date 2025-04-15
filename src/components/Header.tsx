@@ -19,9 +19,9 @@ const Header: React.FC = () => {
   ];
 
   return (
-    <header className="flex justify-center items-center py-6 bg-[#e3eaf8] w-full">
+    <header className="flex justify-center items-center py-4 bg-[#e3eaf8] w-full">
       <div className="container flex items-center justify-between px-6 max-w-6xl">
-        <div className="flex items-center -ml-20">
+        <div className="flex items-center -ml-28">
           <img 
             src="/lovable-uploads/5ad87de6-d908-46b1-8423-928baae021c6.png" 
             alt="Action Logo" 
@@ -30,7 +30,7 @@ const Header: React.FC = () => {
         </div>
         
         <div className="flex-1 flex justify-center">
-          <nav className="bg-white rounded-full px-6 py-2 shadow-md flex max-w-3xl w-full">
+          <nav className="bg-white rounded-full px-8 py-1.5 shadow-md flex max-w-4xl w-full">
             {navItems.map((item) => {
               const isActive = location.pathname === item.path;
               return (
@@ -56,7 +56,7 @@ const Header: React.FC = () => {
         <div className="pr-2">
           <Link 
             to="/profile" 
-            className="p-3 h-12 w-12 rounded-full bg-white hover:bg-gray-100 transition-colors shadow-md flex items-center justify-center"
+            className="p-3 h-full w-12 rounded-full bg-white hover:bg-gray-100 transition-colors shadow-md flex items-center justify-center"
           >
             <User className="w-6 h-6 text-indigo-900" />
           </Link>
@@ -67,4 +67,3 @@ const Header: React.FC = () => {
 };
 
 export default Header;
-
