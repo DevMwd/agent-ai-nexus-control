@@ -21,7 +21,7 @@ const Header: React.FC = () => {
   return (
     <header className="flex justify-center items-center py-6 bg-[#e3eaf8] w-full">
       <div className="container flex items-center justify-between px-6 max-w-6xl">
-        <div className="flex items-center pl-2">
+        <div className="flex items-center -ml-20">
           <img 
             src="/lovable-uploads/5ad87de6-d908-46b1-8423-928baae021c6.png" 
             alt="Action Logo" 
@@ -67,3 +67,4 @@ const Header: React.FC = () => {
 };
 
 export default Header;
+
