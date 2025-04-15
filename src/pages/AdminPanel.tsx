@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -34,12 +33,22 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
+interface MockUser {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  organizationId?: string;
+  organizationName?: string;
+  profileImage?: string;
+}
+
 const AdminPanel: React.FC = () => {
   const [activeTab, setActiveTab] = useState('general');
   const { isAdmin, isOwner, user } = useAuth();
   const { agents } = useAgents();
   
-  const [mockUsers, setMockUsers] = useState([
+  const [mockUsers, setMockUsers] = useState<MockUser[]>([
     { id: '1', name: 'Admin User', email: 'admin@example.com', role: 'admin', organizationId: '1', organizationName: 'MWD' },
     { id: '2', name: 'Base User', email: 'user@example.com', role: 'base', organizationId: '1', organizationName: 'MWD' },
     { id: '3', name: 'Owner User', email: 'owner@example.com', role: 'owner', profileImage: '/lovable-uploads/695db59c-0b86-4a3f-afbe-6cf313ac93e5.png' }
@@ -131,10 +140,13 @@ const AdminPanel: React.FC = () => {
       ? mockOrganizations.find(org => org.id === newUser.organizationId) 
       : undefined;
 
-    const newMockUser = {
+    const newMockUser: MockUser = {
       id: Math.random().toString(36).substr(2, 9),
-      ...newUser,
-      organizationName: organization?.name
+      name: newUser.name,
+      email: newUser.email,
+      role: newUser.role,
+      ...(newUser.organizationId && { organizationId: newUser.organizationId }),
+      ...(organization && { organizationName: organization.name })
     };
 
     setMockUsers([...mockUsers, newMockUser]);
@@ -147,7 +159,7 @@ const AdminPanel: React.FC = () => {
     });
   };
 
-  const handleEditUser = (user: typeof mockUsers[0]) => {
+  const handleEditUser = (user: MockUser) => {
     setEditingUser({
       id: user.id,
       name: user.name,
@@ -178,7 +190,10 @@ const AdminPanel: React.FC = () => {
     const updatedUsers = mockUsers.map(user => 
       user.id === editingUser.id 
         ? { 
-            ...editingUser, 
+            ...user,
+            name: editingUser.name,
+            role: editingUser.role,
+            ...(editingUser.organizationId && { organizationId: editingUser.organizationId }),
             organizationName: organization?.name 
           } 
         : user
