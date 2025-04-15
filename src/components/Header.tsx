@@ -20,8 +20,8 @@ const Header: React.FC = () => {
 
   return (
     <header className="flex justify-center items-center py-6 bg-[#e3eaf8] w-full">
-      <div className="container flex items-center justify-between max-w-6xl px-4">
-        <div className="flex items-center">
+      <div className="container flex items-center justify-between px-6 max-w-6xl">
+        <div className="flex items-center pl-2">
           <img 
             src="/lovable-uploads/5ad87de6-d908-46b1-8423-928baae021c6.png" 
             alt="Action Logo" 
@@ -30,7 +30,7 @@ const Header: React.FC = () => {
         </div>
         
         <div className="flex-1 flex justify-center">
-          <nav className="bg-white rounded-full px-4 py-2 shadow-md flex">
+          <nav className="bg-white rounded-full px-6 py-2 shadow-md flex max-w-3xl w-full">
             {navItems.map((item) => {
               const isActive = location.pathname === item.path;
               return (
@@ -53,7 +53,7 @@ const Header: React.FC = () => {
           </nav>
         </div>
         
-        <div>
+        <div className="pr-2">
           <Link 
             to="/profile" 
             className="p-3 h-12 w-12 rounded-full bg-white hover:bg-gray-100 transition-colors shadow-md flex items-center justify-center"
