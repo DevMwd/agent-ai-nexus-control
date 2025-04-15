@@ -23,8 +23,8 @@ const Header: React.FC = () => {
       <div className="container flex items-center justify-between px-6 max-w-6xl">
         <div className="flex items-center -ml-16">
           <img 
-            src="/lovable-uploads/5ad87de6-d908-46b1-8423-928baae021c6.png" 
-            alt="Action Logo" 
+            src="/lovable-uploads/a2223f4d-ac62-4db3-b61f-6c61a7f3beab.png" 
+            alt="BlueSky Agent AI Logo" 
             className="h-10" 
           />
         </div>
@@ -56,7 +56,7 @@ const Header: React.FC = () => {
         <div className="pr-0">
           <Link 
             to="/profile" 
-            className="p-3 h-9 w-12 rounded-full bg-white hover:bg-gray-100 transition-colors shadow-md flex items-center justify-center"
+            className="p-3 h-[38px] w-12 rounded-full bg-white hover:bg-gray-100 transition-colors shadow-md flex items-center justify-center"
           >
             <User className="w-6 h-6 text-indigo-900" />
           </Link>
