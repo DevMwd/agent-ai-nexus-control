@@ -19,7 +19,7 @@ export const AddLLMDialog: React.FC<AddLLMDialogProps> = ({
 }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[650px] p-0 overflow-hidden rounded-xl">
+      <DialogContent className="sm:max-w-[650px] p-0 overflow-hidden rounded-xl border-none shadow-xl">
         <div className="bg-gradient-to-r from-action-primary to-purple-700 p-6 text-white">
           <DialogHeader>
             <div className="flex items-center gap-3">
@@ -33,7 +33,7 @@ export const AddLLMDialog: React.FC<AddLLMDialogProps> = ({
             </DialogDescription>
           </DialogHeader>
         </div>
-        <div className="p-6">
+        <div className="p-6 bg-white">
           <LLMForm 
             onSubmit={onSubmit} 
             onCancel={onClose} 
@@ -73,7 +73,7 @@ export const EditLLMDialog: React.FC<EditLLMDialogProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[650px] p-0 overflow-hidden rounded-xl">
+      <DialogContent className="sm:max-w-[650px] p-0 overflow-hidden rounded-xl border-none shadow-xl">
         <div className="bg-gradient-to-r from-indigo-600 to-violet-500 p-6 text-white">
           <DialogHeader>
             <div className="flex items-center gap-3">
@@ -87,7 +87,7 @@ export const EditLLMDialog: React.FC<EditLLMDialogProps> = ({
             </DialogDescription>
           </DialogHeader>
         </div>
-        <div className="p-6">
+        <div className="p-6 bg-white">
           <LLMForm 
             onSubmit={onSubmit} 
             onCancel={onClose} 
@@ -114,7 +114,7 @@ export const DeleteLLMDialog: React.FC<DeleteLLMDialogProps> = ({
 }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[450px] p-0 overflow-hidden rounded-xl">
+      <DialogContent className="sm:max-w-[450px] p-0 overflow-hidden rounded-xl border-none shadow-xl">
         <div className="bg-gradient-to-r from-red-500 to-pink-600 p-6 text-white">
           <DialogHeader>
             <div className="flex items-center gap-3">
@@ -125,8 +125,8 @@ export const DeleteLLMDialog: React.FC<DeleteLLMDialogProps> = ({
             </div>
           </DialogHeader>
         </div>
-        <div className="p-6">
-          <DialogDescription className="py-4 text-lg">
+        <div className="p-6 bg-white">
+          <DialogDescription className="py-4 text-lg text-gray-700">
             Are you sure you want to delete this LLM model? This action cannot be undone.
           </DialogDescription>
           <DialogFooter className="pt-4">

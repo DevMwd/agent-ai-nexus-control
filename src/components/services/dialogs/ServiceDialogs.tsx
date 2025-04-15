@@ -19,7 +19,7 @@ export const AddServiceDialog: React.FC<AddServiceDialogProps> = ({
 }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[650px] p-0 overflow-hidden rounded-xl">
+      <DialogContent className="sm:max-w-[650px] p-0 overflow-hidden rounded-xl border-none shadow-xl">
         <div className="bg-gradient-to-r from-action-blue to-blue-500 p-6 text-white">
           <DialogHeader>
             <div className="flex items-center gap-3">
@@ -33,7 +33,7 @@ export const AddServiceDialog: React.FC<AddServiceDialogProps> = ({
             </DialogDescription>
           </DialogHeader>
         </div>
-        <div className="p-6">
+        <div className="p-6 bg-white">
           <ServiceForm 
             onSubmit={onSubmit} 
             onCancel={onClose} 
@@ -71,7 +71,7 @@ export const EditServiceDialog: React.FC<EditServiceDialogProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[650px] p-0 overflow-hidden rounded-xl">
+      <DialogContent className="sm:max-w-[650px] p-0 overflow-hidden rounded-xl border-none shadow-xl">
         <div className="bg-gradient-to-r from-blue-600 to-cyan-500 p-6 text-white">
           <DialogHeader>
             <div className="flex items-center gap-3">
@@ -85,7 +85,7 @@ export const EditServiceDialog: React.FC<EditServiceDialogProps> = ({
             </DialogDescription>
           </DialogHeader>
         </div>
-        <div className="p-6">
+        <div className="p-6 bg-white">
           <ServiceForm 
             onSubmit={onSubmit} 
             onCancel={onClose} 
@@ -111,7 +111,7 @@ export const DeleteServiceDialog: React.FC<DeleteServiceDialogProps> = ({
 }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[450px] p-0 overflow-hidden rounded-xl">
+      <DialogContent className="sm:max-w-[450px] p-0 overflow-hidden rounded-xl border-none shadow-xl">
         <div className="bg-gradient-to-r from-red-500 to-pink-600 p-6 text-white">
           <DialogHeader>
             <div className="flex items-center gap-3">
@@ -122,8 +122,8 @@ export const DeleteServiceDialog: React.FC<DeleteServiceDialogProps> = ({
             </div>
           </DialogHeader>
         </div>
-        <div className="p-6">
-          <DialogDescription className="py-4 text-lg">
+        <div className="p-6 bg-white">
+          <DialogDescription className="py-4 text-lg text-gray-700">
             Are you sure you want to delete this service? This action cannot be undone.
           </DialogDescription>
           <DialogFooter className="pt-4">

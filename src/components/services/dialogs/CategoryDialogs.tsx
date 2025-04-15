@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -51,7 +50,6 @@ export const CategoryDialog: React.FC<CategoryDialogProps> = ({
   
   const HeaderIcon = isAddNew ? FolderPlus : PencilRuler;
 
-  // Color options for the color picker
   const availableColors = [
     { name: 'Red', value: '#FF5733' },
     { name: 'Blue', value: '#337AFF' },
@@ -64,8 +62,7 @@ export const CategoryDialog: React.FC<CategoryDialogProps> = ({
     { name: 'Teal', value: '#33FFB8' },
     { name: 'Lavender', value: '#D133FF' },
   ];
-  
-  // Component to render the icon based on icon name
+
   const IconComponent = ({ iconName }: { iconName: string }) => {
     switch (iconName) {
       case 'database': return <Database className="h-4 w-4" />;
@@ -97,7 +94,6 @@ export const CategoryDialog: React.FC<CategoryDialogProps> = ({
     }
   };
 
-  // Extended icon options
   const extendedIconOptions = [
     { name: 'Database', value: 'database' },
     { name: 'Activity', value: 'activity' },
@@ -128,7 +124,7 @@ export const CategoryDialog: React.FC<CategoryDialogProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden rounded-xl">
+      <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden rounded-xl border-none shadow-xl">
         <div className={`${gradientClass} p-6 text-white`}>
           <DialogHeader>
             <div className="flex items-center gap-3">
@@ -140,7 +136,7 @@ export const CategoryDialog: React.FC<CategoryDialogProps> = ({
             {description && <DialogDescription className="text-white/80 mt-2">{description}</DialogDescription>}
           </DialogHeader>
         </div>
-        <div className="p-6">
+        <div className="p-6 bg-white">
           <div className="space-y-5">
             <div className="space-y-2">
               <Label htmlFor="categoryName" className="text-base font-medium">Category Name</Label>
@@ -149,7 +145,7 @@ export const CategoryDialog: React.FC<CategoryDialogProps> = ({
                 value={categoryName}
                 onChange={(e) => setCategoryName(e.target.value)}
                 placeholder="Enter category name"
-                className="rounded-lg h-11"
+                className="rounded-lg h-11 border-gray-300 focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
               />
             </div>
             
@@ -170,14 +166,14 @@ export const CategoryDialog: React.FC<CategoryDialogProps> = ({
                 type="color"
                 value={categoryColor}
                 onChange={(e) => setCategoryColor(e.target.value)}
-                className="w-full h-11 mt-2 cursor-pointer"
+                className="w-full h-11 mt-2 cursor-pointer border-gray-300 rounded-lg"
               />
             </div>
             
             <div className="space-y-2">
               <Label htmlFor="categoryIcon" className="text-base font-medium">Icon</Label>
               <Select onValueChange={setCategoryIcon} defaultValue={categoryIcon}>
-                <SelectTrigger id="categoryIcon" className="rounded-lg h-11">
+                <SelectTrigger id="categoryIcon" className="rounded-lg h-11 border-gray-300">
                   <SelectValue placeholder="Select an icon">
                     {categoryIcon && (
                       <div className="flex items-center gap-2">
@@ -187,7 +183,7 @@ export const CategoryDialog: React.FC<CategoryDialogProps> = ({
                     )}
                   </SelectValue>
                 </SelectTrigger>
-                <SelectContent className="rounded-lg max-h-[300px]">
+                <SelectContent className="rounded-lg max-h-[300px] bg-white shadow-lg border-none">
                   {extendedIconOptions.map((icon) => (
                     <SelectItem key={icon.value} value={icon.value}>
                       <div className="flex items-center gap-2">
@@ -230,7 +226,7 @@ export const DeleteCategoryDialog: React.FC<DeleteCategoryDialogProps> = ({
 }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[450px] p-0 overflow-hidden rounded-xl">
+      <DialogContent className="sm:max-w-[450px] p-0 overflow-hidden rounded-xl border-none shadow-xl">
         <div className="bg-gradient-to-r from-red-500 to-pink-600 p-6 text-white">
           <DialogHeader>
             <div className="flex items-center gap-3">
@@ -241,8 +237,8 @@ export const DeleteCategoryDialog: React.FC<DeleteCategoryDialogProps> = ({
             </div>
           </DialogHeader>
         </div>
-        <div className="p-6">
-          <DialogDescription className="py-4 text-lg">
+        <div className="p-6 bg-white">
+          <DialogDescription className="py-4 text-lg text-gray-700">
             Are you sure you want to delete the category "{categoryName}"? This action cannot be undone.
           </DialogDescription>
           <DialogFooter className="pt-4">
