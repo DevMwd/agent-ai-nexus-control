@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ScoreBar from '@/components/ScoreBar';
 import CategoryChart from '@/components/CategoryChart';
 import EfficiencyGauge from '@/components/EfficiencyGauge';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 const AgentDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -49,6 +50,10 @@ const AgentDetails: React.FC = () => {
     value
   }));
 
+  const logoInitials = agent.title.substring(0, 2).toUpperCase();
+  const isValidLogoUrl = typeof agent.logo === 'string' && 
+    (agent.logo.startsWith('http') || agent.logo.startsWith('data:'));
+
   return (
     <div className="container mx-auto px-6 py-8">
       <div className="mb-6">
@@ -58,16 +63,23 @@ const AgentDetails: React.FC = () => {
         </Link>
       </div>
 
-      <div className="flex items-center gap-6 mb-8">
-        <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center text-xl font-semibold">
-          {agent.logo}
-        </div>
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-4xl font-bold">{agent.title}</h1>
-            <span className="text-gray-500">{agent.subtitle}</span>
+      <div className="flex justify-between items-center mb-8">
+        <div className="flex items-center gap-6">
+          <Avatar className="w-20 h-20">
+            {isValidLogoUrl ? (
+              <AvatarImage src={agent.logo} alt={agent.title} className="object-cover" />
+            ) : null}
+            <AvatarFallback className="bg-gray-200 text-gray-700 text-xl font-semibold">
+              {logoInitials}
+            </AvatarFallback>
+          </Avatar>
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-4xl font-bold">{agent.title}</h1>
+              <span className="text-gray-500">{agent.subtitle}</span>
+            </div>
+            <p className="text-gray-600">{agent.description}</p>
           </div>
-          <p className="text-gray-600">{agent.description}</p>
         </div>
       </div>
 

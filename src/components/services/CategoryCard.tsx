@@ -9,8 +9,8 @@ interface CategoryCardProps {
   color?: string;
   icon?: string;
   count?: number;
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 const CategoryCard: React.FC<CategoryCardProps> = ({ 
@@ -70,19 +70,25 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
               )}
             </div>
           </div>
-          <div className="flex gap-1">
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={onEdit}>
-              <Edit className="h-4 w-4" />
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="h-8 w-8 p-0 hover:bg-red-100 text-red-500" 
-              onClick={onDelete}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
+          {(onEdit || onDelete) && (
+            <div className="flex gap-1">
+              {onEdit && (
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={onEdit}>
+                  <Edit className="h-4 w-4" />
+                </Button>
+              )}
+              {onDelete && (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-8 w-8 p-0 hover:bg-red-100 text-red-500" 
+                  onClick={onDelete}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
