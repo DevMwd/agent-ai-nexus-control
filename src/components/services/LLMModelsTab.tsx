@@ -12,7 +12,7 @@ interface LLMModelsTabProps {
   onAddLLM: () => void;
   onEditLLM: (id: string) => void;
   onDeleteLLM: (id: string) => void;
-  onSelectLLM: (id: string) => void;
+  onSelectLLM?: (id: string) => void;
 }
 
 const LLMModelsTab: React.FC<LLMModelsTabProps> = ({ 
@@ -24,7 +24,7 @@ const LLMModelsTab: React.FC<LLMModelsTabProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredModels, setFilteredModels] = useState(llmModels);
-  const { user, isOwner } = useAuth();
+  const { isOwner } = useAuth();
 
   React.useEffect(() => {
     if (searchTerm) {
@@ -67,7 +67,7 @@ const LLMModelsTab: React.FC<LLMModelsTabProps> = ({
             model={model}
             onEdit={isOwner() ? onEditLLM : undefined}
             onDelete={isOwner() ? onDeleteLLM : undefined}
-            onSelect={onSelectLLM}
+            onSelect={isOwner() ? onSelectLLM : undefined}
           />
         ))}
       </div>

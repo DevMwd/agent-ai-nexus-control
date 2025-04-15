@@ -5,15 +5,18 @@ import { Check, X, Edit, Trash2, Brain } from 'lucide-react';
 import { LLMModelDetails } from "@/contexts/AgentContext";
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface LLMCardProps {
   model: LLMModelDetails;
   onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
-  onSelect: (id: string) => void;
+  onSelect?: (id: string) => void;
 }
 
 export const LLMCard: React.FC<LLMCardProps> = ({ model, onEdit, onDelete, onSelect }) => {
+  const { isOwner } = useAuth();
+  
   return (
     <Card className="flex flex-col h-full overflow-hidden shadow-sm hover:shadow-md transition-shadow">
       <CardContent className="p-4 sm:p-6 flex-grow">
@@ -107,14 +110,16 @@ export const LLMCard: React.FC<LLMCardProps> = ({ model, onEdit, onDelete, onSel
         </div>
       </CardContent>
       
-      <CardFooter className="px-4 sm:px-6 pb-4 sm:pb-6 pt-0">
-        <Button 
-          onClick={() => onSelect(model.id)}
-          className="w-full bg-white border border-action-primary text-action-primary font-medium py-2 rounded-lg hover:bg-action-primary hover:text-white transition-colors"
-        >
-          Select
-        </Button>
-      </CardFooter>
+      {isOwner() && onSelect && (
+        <CardFooter className="px-4 sm:px-6 pb-4 sm:pb-6 pt-0">
+          <Button 
+            onClick={() => onSelect(model.id)}
+            className="w-full bg-white border border-action-primary text-action-primary font-medium py-2 rounded-lg hover:bg-action-primary hover:text-white transition-colors"
+          >
+            Select
+          </Button>
+        </CardFooter>
+      )}
     </Card>
   );
 };

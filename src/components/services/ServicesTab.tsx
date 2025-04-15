@@ -6,6 +6,7 @@ import { Service } from "@/contexts/AgentContext";
 import CategoryBadge from './CategoryBadge';
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface ServicesTabProps {
   servicesList: Service[];
@@ -23,6 +24,7 @@ const ServicesTab: React.FC<ServicesTabProps> = ({
   onDeleteService 
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const { isOwner } = useAuth();
   
   const filteredServices = servicesList.filter(service => 
     service.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -43,12 +45,14 @@ const ServicesTab: React.FC<ServicesTabProps> = ({
     <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Services</h1>
-        <div className="flex gap-4">
-          <Button variant="action" className="flex items-center gap-2" onClick={onNewService}>
-            <Plus className="w-5 h-5" />
-            <span>New Service</span>
-          </Button>
-        </div>
+        {isOwner() && (
+          <div className="flex gap-4">
+            <Button variant="action" className="flex items-center gap-2" onClick={onNewService}>
+              <Plus className="w-5 h-5" />
+              <span>New Service</span>
+            </Button>
+          </div>
+        )}
       </div>
 
       <div className="mb-6 relative">
@@ -70,13 +74,15 @@ const ServicesTab: React.FC<ServicesTabProps> = ({
               <th className="text-left p-4 text-gray-700">Cost Structure</th>
               <th className="text-left p-4 text-gray-700">Cost per Unit</th>
               <th className="text-left p-4 text-gray-700">Free Tier</th>
-              <th className="text-left p-4 text-gray-700">Actions</th>
+              {isOwner() && (
+                <th className="text-left p-4 text-gray-700">Actions</th>
+              )}
             </tr>
           </thead>
           <tbody>
             {filteredServices.length === 0 ? (
               <tr>
-                <td colSpan={6} className="p-4 text-center text-gray-500">
+                <td colSpan={isOwner() ? 6 : 5} className="p-4 text-center text-gray-500">
                   No services found. Try adjusting your search query.
                 </td>
               </tr>
@@ -109,21 +115,23 @@ const ServicesTab: React.FC<ServicesTabProps> = ({
                       <span className="text-gray-500">No</span>
                     )}
                   </td>
-                  <td className="p-4">
-                    <div className="flex space-x-2">
-                      <Button variant="ghost" size="sm" onClick={() => onEditService(service.id)}>
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="hover:bg-red-100 text-red-500" 
-                        onClick={() => onDeleteService(service.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </td>
+                  {isOwner() && (
+                    <td className="p-4">
+                      <div className="flex space-x-2">
+                        <Button variant="ghost" size="sm" onClick={() => onEditService(service.id)}>
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="hover:bg-red-100 text-red-500" 
+                          onClick={() => onDeleteService(service.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </td>
+                  )}
                 </tr>
               ))
             )}

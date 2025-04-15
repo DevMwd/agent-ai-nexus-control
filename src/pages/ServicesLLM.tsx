@@ -7,6 +7,7 @@ import { Service, ServiceCategory, LLMModelDetails } from '@/contexts/AgentConte
 import { v4 as uuidv4 } from 'uuid';
 import { useToast } from "@/components/ui/use-toast";
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useAuth } from '@/contexts/AuthContext';
 
 // Import components
 import ServicesTab from '@/components/services/ServicesTab';
@@ -29,6 +30,7 @@ const ServicesLLM: React.FC = () => {
   const { services, llmModels } = useAgents();
   const [servicesList, setServicesList] = useState(services);
   const [llmModelsList, setLLMModelsList] = useState(llmModels);
+  const { isOwner } = useAuth();
   
   // Category state
   const [isAddCategoryDialogOpen, setIsAddCategoryDialogOpen] = useState(false);
@@ -66,6 +68,8 @@ const ServicesLLM: React.FC = () => {
 
   // Service handlers
   const handleEditService = (id: string) => {
+    if (!isOwner()) return;
+    
     const service = servicesList.find(s => s.id === id);
     if (service) {
       setServiceToEdit(service);
@@ -74,11 +78,15 @@ const ServicesLLM: React.FC = () => {
   };
 
   const handleDeleteService = (id: string) => {
+    if (!isOwner()) return;
+    
     setSelectedService(id);
     setIsDeleteServiceDialogOpen(true);
   };
 
   const handleAddServiceSubmit = async (values: ServiceFormValues) => {
+    if (!isOwner()) return;
+    
     const newService: Service = {
       id: uuidv4(),
       name: values.name,
@@ -107,7 +115,7 @@ const ServicesLLM: React.FC = () => {
   };
 
   const handleEditServiceSubmit = async (values: ServiceFormValues) => {
-    if (!serviceToEdit) return;
+    if (!isOwner() || !serviceToEdit) return;
     
     const updatedService: Service = {
       id: serviceToEdit.id,
@@ -139,7 +147,7 @@ const ServicesLLM: React.FC = () => {
   };
 
   const handleDeleteServiceSubmit = async () => {
-    if (!selectedService) return;
+    if (!isOwner() || !selectedService) return;
     
     try {
       await servicesDB.delete(selectedService);
@@ -162,6 +170,8 @@ const ServicesLLM: React.FC = () => {
 
   // LLM handlers
   const handleEditLLM = (id: string) => {
+    if (!isOwner()) return;
+    
     const llm = llmModelsList.find(m => m.id === id);
     if (llm) {
       setLLMToEdit(llm);
@@ -170,11 +180,15 @@ const ServicesLLM: React.FC = () => {
   };
 
   const handleDeleteLLM = (id: string) => {
+    if (!isOwner()) return;
+    
     setSelectedLLM(id);
     setIsDeleteLLMDialogOpen(true);
   };
 
   const handleAddLLMSubmit = async (values: LLMFormValues, logoFile?: File | null) => {
+    if (!isOwner()) return;
+    
     const newLLM: LLMModelDetails = {
       id: uuidv4(),
       name: values.name,
@@ -205,7 +219,7 @@ const ServicesLLM: React.FC = () => {
   };
 
   const handleEditLLMSubmit = async (values: LLMFormValues, logoFile?: File | null) => {
-    if (!llmToEdit) return;
+    if (!isOwner() || !llmToEdit) return;
     
     const updatedLLM: LLMModelDetails = {
       id: llmToEdit.id,
@@ -239,7 +253,7 @@ const ServicesLLM: React.FC = () => {
   };
 
   const handleDeleteLLMSubmit = async () => {
-    if (!selectedLLM) return;
+    if (!isOwner() || !selectedLLM) return;
     
     try {
       await llmModelsDB.delete(selectedLLM);
@@ -270,10 +284,13 @@ const ServicesLLM: React.FC = () => {
   };
 
   const handleNewService = () => {
+    if (!isOwner()) return;
     setIsAddServiceDialogOpen(true);
   };
 
   const handleSelectModel = (modelId: string) => {
+    if (!isOwner()) return;
+    
     toast({
       title: "Modello Selezionato",
       description: `La funzionalità di selezione del modello sarà implementata in un futuro aggiornamento.`,
@@ -281,10 +298,13 @@ const ServicesLLM: React.FC = () => {
   };
 
   const handleAddCategory = () => {
+    if (!isOwner()) return;
     setIsAddCategoryDialogOpen(true);
   };
 
   const handleEditCategory = (name: string) => {
+    if (!isOwner()) return;
+    
     setSelectedCategory(name);
     setCategoryName(name);
     setCategoryColor("blue");
@@ -293,38 +313,42 @@ const ServicesLLM: React.FC = () => {
   };
 
   const handleDeleteCategory = (name: string) => {
+    if (!isOwner()) return;
+    
     setSelectedCategory(name);
     setIsDeleteCategoryDialogOpen(true);
   };
 
   const handleAddCategorySubmit = () => {
-    if (categoryName.trim()) {
-      toast({
-        title: "Categoria Aggiunta",
-        description: `La categoria "${categoryName}" è stata aggiunta con successo.`,
-      });
-      setIsAddCategoryDialogOpen(false);
-      setCategoryName("");
-      setCategoryColor("blue");
-      setCategoryIcon("database");
-    }
+    if (!isOwner() || !categoryName.trim()) return;
+    
+    toast({
+      title: "Categoria Aggiunta",
+      description: `La categoria "${categoryName}" è stata aggiunta con successo.`,
+    });
+    setIsAddCategoryDialogOpen(false);
+    setCategoryName("");
+    setCategoryColor("blue");
+    setCategoryIcon("database");
   };
 
   const handleEditCategorySubmit = () => {
-    if (categoryName.trim()) {
-      toast({
-        title: "Categoria Aggiornata",
-        description: `La categoria "${selectedCategory}" è stata aggiornata in "${categoryName}".`,
-      });
-      setIsEditCategoryDialogOpen(false);
-      setCategoryName("");
-      setCategoryColor("blue");
-      setCategoryIcon("database");
-      setSelectedCategory(null);
-    }
+    if (!isOwner() || !categoryName.trim()) return;
+    
+    toast({
+      title: "Categoria Aggiornata",
+      description: `La categoria "${selectedCategory}" è stata aggiornata in "${categoryName}".`,
+    });
+    setIsEditCategoryDialogOpen(false);
+    setCategoryName("");
+    setCategoryColor("blue");
+    setCategoryIcon("database");
+    setSelectedCategory(null);
   };
 
   const handleDeleteCategorySubmit = () => {
+    if (!isOwner()) return;
+    
     toast({
       title: "Categoria Eliminata",
       description: `La categoria "${selectedCategory}" è stata eliminata con successo.`,
@@ -365,7 +389,7 @@ const ServicesLLM: React.FC = () => {
         <TabsContent value="services" className="mt-6">
           <ServicesTab
             servicesList={servicesList}
-            onManageCategories={() => setActiveTab("categories")}
+            onManageCategories={handleManageCategories}
             onNewService={handleNewService}
             onEditService={handleEditService}
             onDeleteService={handleDeleteService}
@@ -391,85 +415,90 @@ const ServicesLLM: React.FC = () => {
         </TabsContent>
       </Tabs>
 
-      {/* Category Dialogs */}
-      <CategoryDialog
-        isOpen={isAddCategoryDialogOpen}
-        onClose={() => setIsAddCategoryDialogOpen(false)}
-        onSubmit={handleAddCategorySubmit}
-        categoryName={categoryName}
-        setCategoryName={setCategoryName}
-        categoryColor={categoryColor}
-        setCategoryColor={setCategoryColor}
-        categoryIcon={categoryIcon}
-        setCategoryIcon={setCategoryIcon}
-        title="Add New Category"
-        submitLabel="Add Category"
-        colorOptions={colorOptions}
-        iconOptions={iconOptions}
-      />
+      {/* Only render dialogs if the user is an owner */}
+      {isOwner() && (
+        <>
+          {/* Category Dialogs */}
+          <CategoryDialog
+            isOpen={isAddCategoryDialogOpen}
+            onClose={() => setIsAddCategoryDialogOpen(false)}
+            onSubmit={handleAddCategorySubmit}
+            categoryName={categoryName}
+            setCategoryName={setCategoryName}
+            categoryColor={categoryColor}
+            setCategoryColor={setCategoryColor}
+            categoryIcon={categoryIcon}
+            setCategoryIcon={setCategoryIcon}
+            title="Add New Category"
+            submitLabel="Add Category"
+            colorOptions={colorOptions}
+            iconOptions={iconOptions}
+          />
 
-      <CategoryDialog
-        isOpen={isEditCategoryDialogOpen}
-        onClose={() => setIsEditCategoryDialogOpen(false)}
-        onSubmit={handleEditCategorySubmit}
-        categoryName={categoryName}
-        setCategoryName={setCategoryName}
-        categoryColor={categoryColor}
-        setCategoryColor={setCategoryColor}
-        categoryIcon={categoryIcon}
-        setCategoryIcon={setCategoryIcon}
-        title="Edit Category"
-        submitLabel="Save Changes"
-        colorOptions={colorOptions}
-        iconOptions={iconOptions}
-      />
+          <CategoryDialog
+            isOpen={isEditCategoryDialogOpen}
+            onClose={() => setIsEditCategoryDialogOpen(false)}
+            onSubmit={handleEditCategorySubmit}
+            categoryName={categoryName}
+            setCategoryName={setCategoryName}
+            categoryColor={categoryColor}
+            setCategoryColor={setCategoryColor}
+            categoryIcon={categoryIcon}
+            setCategoryIcon={setCategoryIcon}
+            title="Edit Category"
+            submitLabel="Save Changes"
+            colorOptions={colorOptions}
+            iconOptions={iconOptions}
+          />
 
-      <DeleteCategoryDialog
-        isOpen={isDeleteCategoryDialogOpen}
-        onClose={() => setIsDeleteCategoryDialogOpen(false)}
-        onDelete={handleDeleteCategorySubmit}
-        categoryName={selectedCategory}
-      />
+          <DeleteCategoryDialog
+            isOpen={isDeleteCategoryDialogOpen}
+            onClose={() => setIsDeleteCategoryDialogOpen(false)}
+            onDelete={handleDeleteCategorySubmit}
+            categoryName={selectedCategory}
+          />
 
-      {/* Service Dialogs */}
-      <AddServiceDialog
-        isOpen={isAddServiceDialogOpen}
-        onClose={() => setIsAddServiceDialogOpen(false)}
-        onSubmit={handleAddServiceSubmit}
-      />
+          {/* Service Dialogs */}
+          <AddServiceDialog
+            isOpen={isAddServiceDialogOpen}
+            onClose={() => setIsAddServiceDialogOpen(false)}
+            onSubmit={handleAddServiceSubmit}
+          />
 
-      <EditServiceDialog
-        isOpen={isEditServiceDialogOpen}
-        onClose={() => setIsEditServiceDialogOpen(false)}
-        onSubmit={handleEditServiceSubmit}
-        service={serviceToEdit}
-      />
+          <EditServiceDialog
+            isOpen={isEditServiceDialogOpen}
+            onClose={() => setIsEditServiceDialogOpen(false)}
+            onSubmit={handleEditServiceSubmit}
+            service={serviceToEdit}
+          />
 
-      <DeleteServiceDialog
-        isOpen={isDeleteServiceDialogOpen}
-        onClose={() => setIsDeleteServiceDialogOpen(false)}
-        onDelete={handleDeleteServiceSubmit}
-      />
+          <DeleteServiceDialog
+            isOpen={isDeleteServiceDialogOpen}
+            onClose={() => setIsDeleteServiceDialogOpen(false)}
+            onDelete={handleDeleteServiceSubmit}
+          />
 
-      {/* LLM Dialogs */}
-      <AddLLMDialog
-        isOpen={isAddLLMDialogOpen}
-        onClose={() => setIsAddLLMDialogOpen(false)}
-        onSubmit={handleAddLLMSubmit}
-      />
+          {/* LLM Dialogs */}
+          <AddLLMDialog
+            isOpen={isAddLLMDialogOpen}
+            onClose={() => setIsAddLLMDialogOpen(false)}
+            onSubmit={handleAddLLMSubmit}
+          />
 
-      <EditLLMDialog
-        isOpen={isEditLLMDialogOpen}
-        onClose={() => setIsEditLLMDialogOpen(false)}
-        onSubmit={handleEditLLMSubmit}
-        llm={llmToEdit}
-      />
+          <EditLLMDialog
+            isOpen={isEditLLMDialogOpen}
+            onClose={() => setIsEditLLMDialogOpen(false)}
+            onSubmit={handleEditLLMSubmit}
+            llm={llmToEdit}
+          />
 
-      <DeleteLLMDialog
-        isOpen={isDeleteLLMDialogOpen}
-        onClose={() => setIsDeleteLLMDialogOpen(false)}
-        onDelete={handleDeleteLLMSubmit}
-      />
+          <DeleteLLMDialog
+            isOpen={isDeleteLLMDialogOpen}
+            onClose={() => setIsDeleteLLMDialogOpen(false)}
+            onDelete={handleDeleteLLMSubmit}
+          />
+        </>
+      )}
     </div>
   );
 };

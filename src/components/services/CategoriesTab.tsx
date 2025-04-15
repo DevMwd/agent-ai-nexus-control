@@ -5,6 +5,7 @@ import { Plus, Search } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import CategoryCard from './CategoryCard';
 import { ServiceCategory } from '@/contexts/AgentContext';
+import { useAuth } from "@/contexts/AuthContext";
 
 interface CategoriesTabProps {
   onAddCategory: () => void;
@@ -29,6 +30,7 @@ const CategoriesTab: React.FC<CategoriesTabProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [categories] = useState(defaultCategories);
+  const { isOwner } = useAuth();
   
   const filteredCategories = categories.filter(category => 
     category.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -38,14 +40,16 @@ const CategoriesTab: React.FC<CategoriesTabProps> = ({
     <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Categories</h1>
-        <Button 
-          variant="action" 
-          className="flex items-center gap-2"
-          onClick={onAddCategory}
-        >
-          <Plus className="w-5 h-5" />
-          <span>New Category</span>
-        </Button>
+        {isOwner() && (
+          <Button 
+            variant="action" 
+            className="flex items-center gap-2"
+            onClick={onAddCategory}
+          >
+            <Plus className="w-5 h-5" />
+            <span>New Category</span>
+          </Button>
+        )}
       </div>
 
       <div className="mb-6 relative">
@@ -69,8 +73,8 @@ const CategoriesTab: React.FC<CategoriesTabProps> = ({
               key={category.name}
               name={category.name}
               count={category.count}
-              onEdit={() => onEditCategory(category.name)}
-              onDelete={() => onDeleteCategory(category.name)}
+              onEdit={isOwner() ? () => onEditCategory(category.name) : undefined}
+              onDelete={isOwner() ? () => onDeleteCategory(category.name) : undefined}
             />
           ))}
         </div>
