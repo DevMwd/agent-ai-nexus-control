@@ -22,24 +22,24 @@ const Agents: React.FC = () => {
   }
 
   return (
-    <div className="container mx-auto px-6 py-8 bg-[#e3eaf8]">
+    <div className="container mx-auto px-6 py-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Your Agents Team</h1>
         {isAdmin() && (
           <Link 
             to="/agents/new" 
-            className="flex items-center gap-2 bg-indigo-900 text-white px-4 py-2 rounded-full hover:bg-indigo-800 transition-all shadow-sm"
+            className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-all shadow-sm"
           >
             <Plus className="w-5 h-5" />
             <span>Agent marketplace</span>
-            <span className="bg-white text-indigo-900 text-xs px-2 py-0.5 rounded-full ml-1">Soon</span>
+            <span className="bg-white text-indigo-600 text-xs px-2 py-0.5 rounded-full ml-1">Soon</span>
           </Link>
         )}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {agents.map((agent) => (
-          <div key={agent.id} className="transform transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
+          <div key={agent.id} className="h-full transform transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
             <AgentCard agent={agent} />
           </div>
         ))}
