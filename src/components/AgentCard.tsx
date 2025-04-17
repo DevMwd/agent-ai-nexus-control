@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { PieChart, Pie, Cell } from 'recharts';
+import { Badge } from '@/components/ui/badge';
 
 interface AgentCardProps {
   agent: AIAgent;
@@ -91,77 +92,84 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent }) => {
           </div>
         </div>
         
-        <p className="text-gray-500 mb-6">{agent.description}</p>
-        
-        {/* Related Services Section */}
-        <div className="mb-6">
-          <h4 className="text-xl font-bold text-black mb-3">Related services:</h4>
-          <div className="flex gap-2">
-            {agent.services.slice(0, 3).map((service, index) => (
-              <div 
-                key={index} 
-                className="p-2.5 bg-gray-200 rounded-full flex items-center justify-center"
-                title={service.name}
-              >
-                {getServiceIcon(service.name)}
-              </div>
-            ))}
-          </div>
-        </div>
-        
-        {/* Categories Section with Chart */}
-        <div className="mb-6">
-          <h4 className="text-xl font-bold text-black mb-3">Applied service categories</h4>
-          <div className="flex flex-col md:flex-row md:items-center justify-between">
-            <div className="space-y-2 mb-4 md:mb-0">
-              {Object.entries(agent.categoriesDistribution)
-                .filter(([_, value]) => value > 0)
-                .slice(0, 3)
-                .map(([category]) => {
-                  const categoryType = category as ServiceCategory;
-                  let icon;
-                  
-                  if (categoryType === 'INTEGRATIONS') {
-                    icon = <Download className="w-4 h-4 text-blue-600" />;
-                  } else if (categoryType === 'REASONING') {
-                    icon = <FileText className="w-4 h-4 text-blue-600" />;
-                  } else if (categoryType === 'DB') {
-                    icon = <Database className="w-4 h-4 text-blue-600" />;
-                  } else {
-                    icon = <FileJson className="w-4 h-4 text-blue-600" />;
-                  }
-                  
-                  return (
-                    <div 
-                      key={category} 
-                      className="flex items-center px-4 py-2 bg-blue-50 text-blue-600 rounded-full border border-blue-200 w-fit"
-                    >
-                      {icon}
-                      <span className="ml-2 font-medium">{category}</span>
-                    </div>
-                  );
-                })}
-            </div>
+        <div className="mb-6 flex flex-col md:flex-row gap-6">
+          {/* Description and Related Services in a row */}
+          <div className="flex-1">
+            <p className="text-gray-500 mb-4">{agent.description}</p>
             
-            <div className="w-36 h-36 mx-auto md:mx-0">
-              <PieChart width={150} height={150}>
-                <Pie
-                  data={categoryData}
-                  cx={75}
-                  cy={75}
-                  innerRadius={35}
-                  outerRadius={60}
-                  fill="#8884d8"
-                  dataKey="value"
-                >
-                  {categoryData.map((entry, index) => (
-                    <Cell 
-                      key={`cell-${index}`} 
-                      fill={COLORS[entry.name] || '#e2e8f0'} 
-                    />
-                  ))}
-                </Pie>
-              </PieChart>
+            {/* Related Services Section */}
+            <div>
+              <h4 className="text-xl font-bold text-black mb-3">Related services:</h4>
+              <div className="flex gap-2">
+                {agent.services.slice(0, 3).map((service, index) => (
+                  <div 
+                    key={index} 
+                    className="p-2.5 bg-gray-200 rounded-full flex items-center justify-center"
+                    title={service.name}
+                  >
+                    {getServiceIcon(service.name)}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          
+          {/* Categories Section with Chart */}
+          <div className="flex-1">
+            <h4 className="text-xl font-bold text-black mb-3">Applied service categories</h4>
+            <div className="flex flex-col md:flex-row md:items-center justify-between">
+              <div className="space-y-1 mb-4 md:mb-0">
+                {Object.entries(agent.categoriesDistribution)
+                  .filter(([_, value]) => value > 0)
+                  .slice(0, 3)
+                  .map(([category]) => {
+                    const categoryType = category as ServiceCategory;
+                    let icon;
+                    
+                    if (categoryType === 'INTEGRATIONS') {
+                      icon = <Download className="w-3 h-3" />;
+                    } else if (categoryType === 'REASONING') {
+                      icon = <FileText className="w-3 h-3" />;
+                    } else if (categoryType === 'DB') {
+                      icon = <Database className="w-3 h-3" />;
+                    } else {
+                      icon = <FileJson className="w-3 h-3" />;
+                    }
+                    
+                    return (
+                      <Badge 
+                        key={category} 
+                        className="flex items-center gap-1 px-2 py-1 bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200"
+                        variant="outline"
+                      >
+                        {icon}
+                        <span className="text-xs font-medium">{category}</span>
+                      </Badge>
+                    );
+                  })}
+              </div>
+              
+              <div className="h-20 w-20">
+                <PieChart width={80} height={80}>
+                  <Pie
+                    data={categoryData}
+                    cx={40}
+                    cy={40}
+                    innerRadius={20}
+                    outerRadius={35}
+                    fill="#8884d8"
+                    dataKey="value"
+                    paddingAngle={2}
+                  >
+                    {categoryData.map((entry, index) => (
+                      <Cell 
+                        key={`cell-${index}`} 
+                        fill={COLORS[entry.name] || '#e2e8f0'} 
+                      />
+                    ))}
+                  </Pie>
+                </PieChart>
+              </div>
             </div>
           </div>
         </div>
@@ -173,7 +181,7 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent }) => {
             {agent.llms.map((llm, index) => (
               <span 
                 key={index} 
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-full text-sm"
+                className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
               >
                 {llm}
               </span>
