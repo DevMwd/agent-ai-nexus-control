@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { MessageCircle, Pencil, Check, X } from 'lucide-react';
+import { MessageCircle, Pencil, Check, X, Database, Activity, FileEdit, ClipboardList, Globe, Cloud } from 'lucide-react';
 import { AIAgent, ServiceCategory } from '@/contexts/AgentContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card } from '@/components/ui/card';
@@ -38,6 +39,27 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent }) => {
   const displayLLMs = agent.llms.length > 0 
     ? agent.llms 
     : ['GPT-4o Mini'];
+
+  // Helper function to get the appropriate icon for a service
+  const getServiceIcon = (serviceName: string) => {
+    const name = serviceName.toLowerCase();
+    
+    if (name.includes('database') || name.includes('sql') || name.includes('storage')) {
+      return <Database className="w-4 h-4 text-blue-600" />;
+    } else if (name.includes('analytics') || name.includes('monitor') || name.includes('metrics')) {
+      return <Activity className="w-4 h-4 text-red-600" />;
+    } else if (name.includes('document') || name.includes('file') || name.includes('text')) {
+      return <FileEdit className="w-4 h-4 text-purple-600" />;
+    } else if (name.includes('list') || name.includes('task') || name.includes('check')) {
+      return <ClipboardList className="w-4 h-4 text-yellow-600" />;
+    } else if (name.includes('web') || name.includes('api') || name.includes('http')) {
+      return <Globe className="w-4 h-4 text-green-600" />;
+    } else if (name.includes('cloud') || name.includes('aws') || name.includes('azure')) {
+      return <Cloud className="w-4 h-4 text-indigo-600" />;
+    } else {
+      return <Database className="w-4 h-4 text-gray-600" />; // Default icon
+    }
+  };
 
   return (
     <Card className="bg-white rounded-2xl shadow-sm overflow-hidden">
@@ -90,8 +112,8 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent }) => {
               <h4 className="text-sm font-medium mb-2">Related services:</h4>
               <div className="flex gap-2">
                 {agent.services.slice(0, 3).map((service, index) => (
-                  <div key={index} className="p-2 bg-gray-100 rounded-full">
-                    <span className="text-xs">{service.name.charAt(0)}</span>
+                  <div key={index} className="p-2 bg-gray-100 rounded-full flex items-center justify-center">
+                    {getServiceIcon(service.name)}
                   </div>
                 ))}
               </div>
