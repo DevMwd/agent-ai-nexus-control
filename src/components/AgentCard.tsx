@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface AgentCardProps {
   agent: AIAgent;
@@ -146,13 +147,73 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent }) => {
                 })}
             </div>
             
-            {/* Custom donut chart that matches design */}
+            {/* Custom donut chart that matches design with tooltips */}
             <div className="h-32 w-32 relative">
               <svg viewBox="0 0 36 36" className="h-full w-full">
-                <circle cx="18" cy="18" r="15.915" fill="none" className="stroke-[3]" stroke="#e2e8f0" strokeDasharray="100" strokeDashoffset="0"></circle>
-                <circle cx="18" cy="18" r="15.915" fill="none" className="stroke-[3]" stroke="#1a1562" strokeDasharray="25 75" strokeDashoffset="0" strokeLinecap="round"></circle>
-                <circle cx="18" cy="18" r="15.915" fill="none" className="stroke-[3]" stroke="#4071FF" strokeDasharray="40 60" strokeDashoffset="-25" strokeLinecap="round"></circle>
-                <circle cx="18" cy="18" r="15.915" fill="none" className="stroke-[3]" stroke="#e2e8f0" strokeDasharray="35 65" strokeDashoffset="-65" strokeLinecap="round"></circle>
+                <TooltipProvider>
+                  {/* Background circle */}
+                  <circle cx="18" cy="18" r="15.915" fill="none" className="stroke-[3]" stroke="#e2e8f0" strokeDasharray="100" strokeDashoffset="0"></circle>
+                  
+                  {/* LLM PROVIDER segment */}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <circle 
+                        cx="18" 
+                        cy="18" 
+                        r="15.915" 
+                        fill="none" 
+                        className="stroke-[3] cursor-pointer" 
+                        stroke="#1a1562" 
+                        strokeDasharray="25 75" 
+                        strokeDashoffset="0" 
+                        strokeLinecap="round"
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>LLM PROVIDER: 25%</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  
+                  {/* INTEGRATIONS segment */}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <circle 
+                        cx="18" 
+                        cy="18" 
+                        r="15.915" 
+                        fill="none" 
+                        className="stroke-[3] cursor-pointer" 
+                        stroke="#4071FF" 
+                        strokeDasharray="40 60" 
+                        strokeDashoffset="-25" 
+                        strokeLinecap="round"
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>INTEGRATIONS: 40%</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  
+                  {/* DB segment */}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <circle 
+                        cx="18" 
+                        cy="18" 
+                        r="15.915" 
+                        fill="none" 
+                        className="stroke-[3] cursor-pointer" 
+                        stroke="#e2e8f0" 
+                        strokeDasharray="35 65" 
+                        strokeDashoffset="-65" 
+                        strokeLinecap="round"
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>DB: 35%</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </svg>
             </div>
           </div>
