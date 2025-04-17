@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAgents } from '@/contexts/AgentContext';
-import { ArrowLeft, MessageCircle, Pencil, Zap, Timer, PiggyBank, Shield, Database } from 'lucide-react';
+import { ArrowLeft, MessageCircle, Pencil, Zap, Timer, PiggyBank, Shield, Database, Clock, DollarSign, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import ScoreBar from '@/components/ScoreBar';
@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import CategoryChart from '@/components/CategoryChart';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useAuth } from '@/contexts/AuthContext';
+import { Card, CardContent } from "@/components/ui/card";
 
 const AgentDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -112,6 +113,7 @@ const AgentDetails: React.FC = () => {
           <Tabs defaultValue="agent-stats" className="mt-6 rounded-xl">
             <TabsList className="mb-6 bg-gray-100 p-1 rounded-md">
               <TabsTrigger value="agent-stats" className="rounded-md data-[state=active]:bg-white">Statistics</TabsTrigger>
+              <TabsTrigger value="roi" className="rounded-md data-[state=active]:bg-white">ROI Analytics</TabsTrigger>
               <TabsTrigger value="settings" className="rounded-md data-[state=active]:bg-white">Settings</TabsTrigger>
             </TabsList>
 
@@ -253,6 +255,220 @@ const AgentDetails: React.FC = () => {
                   </div>
                 </div>
               </div>
+            </TabsContent>
+            
+            {/* ROI Analytics Tab */}
+            <TabsContent value="roi" className="bg-transparent">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-xl font-bold">ROI</h3>
+                      <DollarSign className="text-green-500 h-6 w-6" />
+                    </div>
+                    <div className="text-3xl font-bold text-green-600 mb-2">347%</div>
+                    <p className="text-gray-500 text-sm">Return on investment</p>
+                    
+                    <div className="mt-6 pt-4 border-t border-gray-100">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-gray-600">Investment</span>
+                        <span className="font-semibold">€ {agent.totalCost.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-600">Return</span>
+                        <span className="font-semibold">€ {(agent.totalCost * 4.47).toFixed(2)}</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-xl font-bold">Time Saved</h3>
+                      <Clock className="text-blue-500 h-6 w-6" />
+                    </div>
+                    <div className="text-3xl font-bold text-blue-600 mb-2">128 hrs</div>
+                    <p className="text-gray-500 text-sm">Monthly time savings</p>
+                    
+                    <div className="mt-6 pt-4 border-t border-gray-100">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-gray-600">Per session</span>
+                        <span className="font-semibold">27 min</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-600">Sessions/month</span>
+                        <span className="font-semibold">284</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-xl font-bold">Money Saved</h3>
+                      <TrendingUp className="text-purple-500 h-6 w-6" />
+                    </div>
+                    <div className="text-3xl font-bold text-purple-600 mb-2">€ 8,320</div>
+                    <p className="text-gray-500 text-sm">Monthly cost savings</p>
+                    
+                    <div className="mt-6 pt-4 border-t border-gray-100">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-gray-600">Hourly rate</span>
+                        <span className="font-semibold">€ 65</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-600">Hours saved</span>
+                        <span className="font-semibold">128</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <Card>
+                  <CardContent className="p-6">
+                    <h3 className="text-xl font-bold mb-4">Productivity Impact</h3>
+                    <div className="space-y-6">
+                      <div>
+                        <div className="flex justify-between mb-2">
+                          <span className="text-gray-600">Task Completion</span>
+                          <span className="font-semibold">+42%</span>
+                        </div>
+                        <div className="w-full bg-gray-100 rounded-full h-2">
+                          <div className="bg-green-500 h-2 rounded-full" style={{ width: '42%' }}></div>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <div className="flex justify-between mb-2">
+                          <span className="text-gray-600">Error Reduction</span>
+                          <span className="font-semibold">-38%</span>
+                        </div>
+                        <div className="w-full bg-gray-100 rounded-full h-2">
+                          <div className="bg-blue-500 h-2 rounded-full" style={{ width: '38%' }}></div>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <div className="flex justify-between mb-2">
+                          <span className="text-gray-600">Process Automation</span>
+                          <span className="font-semibold">+67%</span>
+                        </div>
+                        <div className="w-full bg-gray-100 rounded-full h-2">
+                          <div className="bg-purple-500 h-2 rounded-full" style={{ width: '67%' }}></div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardContent className="p-6">
+                    <h3 className="text-xl font-bold mb-4">User Adoption</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-blue-50 rounded-lg p-4">
+                        <p className="text-sm text-gray-600 mb-1">Active Users</p>
+                        <p className="text-2xl font-bold">87</p>
+                        <p className="text-xs text-green-600 mt-1">+12% vs previous month</p>
+                      </div>
+                      
+                      <div className="bg-green-50 rounded-lg p-4">
+                        <p className="text-sm text-gray-600 mb-1">Sessions</p>
+                        <p className="text-2xl font-bold">284</p>
+                        <p className="text-xs text-green-600 mt-1">+19% vs previous month</p>
+                      </div>
+                      
+                      <div className="bg-purple-50 rounded-lg p-4">
+                        <p className="text-sm text-gray-600 mb-1">Avg. Duration</p>
+                        <p className="text-2xl font-bold">5.2m</p>
+                        <p className="text-xs text-red-600 mt-1">-8% vs previous month</p>
+                      </div>
+                      
+                      <div className="bg-yellow-50 rounded-lg p-4">
+                        <p className="text-sm text-gray-600 mb-1">Satisfaction</p>
+                        <p className="text-2xl font-bold">4.8/5</p>
+                        <p className="text-xs text-green-600 mt-1">+0.3 vs previous month</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+              
+              <Card>
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-bold mb-6">Annual Projection</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                      <h4 className="text-lg font-semibold mb-4">Investment</h4>
+                      <div className="space-y-4">
+                        <div>
+                          <p className="text-gray-500 mb-1">Agent Cost</p>
+                          <p className="text-xl font-bold">€ {(agent.totalCost * 12).toFixed(2)}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-500 mb-1">Implementation</p>
+                          <p className="text-xl font-bold">€ 8,500.00</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-500 mb-1">Training</p>
+                          <p className="text-xl font-bold">€ 3,200.00</p>
+                        </div>
+                        <div className="pt-4 border-t border-gray-100">
+                          <p className="text-gray-500 mb-1">Total Investment</p>
+                          <p className="text-2xl font-bold text-blue-600">€ {(agent.totalCost * 12 + 8500 + 3200).toFixed(2)}</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <h4 className="text-lg font-semibold mb-4">Returns</h4>
+                      <div className="space-y-4">
+                        <div>
+                          <p className="text-gray-500 mb-1">Time Savings</p>
+                          <p className="text-xl font-bold">€ {(8320 * 12).toFixed(2)}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-500 mb-1">Error Reduction</p>
+                          <p className="text-xl font-bold">€ 34,600.00</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-500 mb-1">Process Improvements</p>
+                          <p className="text-xl font-bold">€ 27,800.00</p>
+                        </div>
+                        <div className="pt-4 border-t border-gray-100">
+                          <p className="text-gray-500 mb-1">Total Returns</p>
+                          <p className="text-2xl font-bold text-green-600">€ {(8320 * 12 + 34600 + 27800).toFixed(2)}</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-gray-50 p-5 rounded-xl">
+                      <h4 className="text-lg font-semibold mb-4">ROI Summary</h4>
+                      <div className="space-y-4">
+                        <div>
+                          <p className="text-gray-500 mb-1">Total Investment</p>
+                          <p className="text-xl font-bold">€ {(agent.totalCost * 12 + 8500 + 3200).toFixed(2)}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-500 mb-1">Total Returns</p>
+                          <p className="text-xl font-bold">€ {(8320 * 12 + 34600 + 27800).toFixed(2)}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-500 mb-1">Net Benefit</p>
+                          <p className="text-xl font-bold text-green-600">€ {((8320 * 12 + 34600 + 27800) - (agent.totalCost * 12 + 8500 + 3200)).toFixed(2)}</p>
+                        </div>
+                        <div className="pt-4 border-t border-gray-100">
+                          <p className="text-gray-500 mb-1">ROI Percentage</p>
+                          <p className="text-2xl font-bold text-green-600">347%</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </TabsContent>
             
             <TabsContent value="settings">
