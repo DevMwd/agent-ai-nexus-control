@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useAgents, AIAgent, ServiceCategory } from '@/contexts/AgentContext';
@@ -35,7 +34,6 @@ const AgentDetails: React.FC = () => {
     return <div>Loading...</div>;
   }
 
-  // Prepare data for category chart
   const categoryData = Object.entries(agent.categoriesDistribution)
     .filter(([_, value]) => value > 0)
     .map(([name, value]) => ({
@@ -43,14 +41,12 @@ const AgentDetails: React.FC = () => {
       value
     }));
 
-  // Realistic LLM distribution data
   const llmData = [
     { name: 'Private GPT', value: 45 },
     { name: 'Azure OpenAI', value: 31 },
     { name: 'Claude 3 Opus', value: 24 }
   ];
 
-  // More realistic monthly cost data
   const monthlyCostData = [
     { name: 'Jan', cost: 4200 },
     { name: 'Feb', cost: 3800 },
@@ -60,7 +56,6 @@ const AgentDetails: React.FC = () => {
     { name: 'Jun', cost: 5800 }
   ];
 
-  // Session performance data
   const sessionPerformanceData = [
     { name: 'Mon', tokens: 12000, time: 2.4, cost: 1200 },
     { name: 'Tue', tokens: 15000, time: 3.1, cost: 1500 },
@@ -84,8 +79,8 @@ const AgentDetails: React.FC = () => {
         </Link>
       </div>
 
-      <div className="flex justify-between items-center mb-8">
-        <div className="flex items-center gap-6">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-8">
+        <div className="flex items-center gap-6 mb-4 md:mb-0">
           <Avatar className="w-20 h-20">
             {isValidLogoUrl ? (
               <AvatarImage src={agent.logo} alt={agent.title} className="object-cover" />
@@ -95,10 +90,7 @@ const AgentDetails: React.FC = () => {
             </AvatarFallback>
           </Avatar>
           <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-4xl font-bold">{agent.title}</h1>
-              <span className="text-gray-500">{agent.subtitle}</span>
-            </div>
+            <h1 className="text-4xl font-bold">{agent.title}</h1>
             <p className="text-gray-600">{agent.description}</p>
           </div>
         </div>
@@ -546,7 +538,6 @@ const AgentDetails: React.FC = () => {
               </div>
 
               <div className="flex-1 overflow-y-auto mb-6 bg-gray-50 p-4 rounded-lg min-h-[300px]">
-                {/* Chat messages would go here */}
                 <div className="space-y-4">
                   <div className="flex flex-col">
                     <div className="bg-gray-200 rounded-lg py-2 px-4 max-w-[80%] self-start">
