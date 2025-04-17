@@ -1,21 +1,21 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider, useAuth } from "./contexts/AuthContext";
-import { AgentProvider } from "./contexts/AgentContext";
-import Home from "./pages/Home";
-import Agents from "./pages/Agents";
-import NotFound from "./pages/NotFound";
-import Header from "./components/Header";
-import Login from "./pages/Login";
-import AgentDetails from "./pages/AgentDetails";
-import ServicesLLM from "./pages/ServicesLLM";
-import AdminPanel from "./pages/AdminPanel";
-import SessionLogs from "./pages/SessionLogs";
-import Profile from "./pages/Profile";
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import Home from './pages/Home';
+import Index from './pages/Index';
+import Login from './pages/Login';
+import Profile from './pages/Profile';
+import Agents from './pages/Agents';
+import AgentDetails from './pages/AgentDetails';
 import AgentEdit from './pages/AgentEdit';
+import AgentChat from './pages/AgentChat';
+import ServicesLLM from './pages/ServicesLLM';
+import SessionLogs from './pages/SessionLogs';
+import AdminPanel from './pages/AdminPanel';
+import NotFound from './pages/NotFound';
+import Header from './components/Header';
+import { Toaster } from "@/components/ui/toaster";
+import { AgentProvider } from './contexts/AgentContext';
+import { AuthProvider } from './contexts/AuthContext';
 
 const queryClient = new QueryClient();
 
@@ -45,7 +45,7 @@ const App = () => (
       <Sonner />
       <AuthProvider>
         <AgentProvider>
-          <BrowserRouter>
+          <Router>
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route 
@@ -84,6 +84,16 @@ const App = () => (
                   <RequireAuth>
                     <MainLayout>
                       <AgentEdit />
+                    </MainLayout>
+                  </RequireAuth>
+                } 
+              />
+              <Route 
+                path="/agents/:id/chat" 
+                element={
+                  <RequireAuth>
+                    <MainLayout>
+                      <AgentChat />
                     </MainLayout>
                   </RequireAuth>
                 } 
@@ -130,7 +140,7 @@ const App = () => (
               />
               <Route path="*" element={<NotFound />} />
             </Routes>
-          </BrowserRouter>
+          </Router>
         </AgentProvider>
       </AuthProvider>
     </TooltipProvider>

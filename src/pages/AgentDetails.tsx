@@ -34,6 +34,10 @@ const AgentDetails: React.FC = () => {
     }
   }, [id, agents, setCurrentAgent]);
 
+  const handleChatWithAgent = () => {
+    navigate(`/agents/${id}/chat`);
+  };
+
   return (
     <div className="container mx-auto px-6 py-8">
       {/* Back button */}
@@ -84,7 +88,11 @@ const AgentDetails: React.FC = () => {
             </div>
             
             <div className="flex flex-col xs:flex-row gap-3 w-full md:w-auto">
-              <Button className="flex items-center gap-2 w-full md:w-auto" variant="action">
+              <Button 
+                className="flex items-center gap-2 w-full md:w-auto" 
+                variant="action"
+                onClick={handleChatWithAgent}
+              >
                 <MessageCircle className="w-5 h-5" />
                 Chat with Agent
               </Button>
