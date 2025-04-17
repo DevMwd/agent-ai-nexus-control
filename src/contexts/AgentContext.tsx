@@ -30,6 +30,8 @@ export interface AgentNode {
   cost: number;
   calls: number;
   tokens: number;
+  llmId?: string;
+  services?: string[];
   scores?: {
     quality?: number;
     speed?: number;
@@ -44,6 +46,18 @@ export interface AgentSession {
   servicesCost: number;
   services: Service[];
   llms: LLMModel[];
+  duration: number; // in minutes
+}
+
+export interface CostAnalysis {
+  hourlyRate: number; // cost per hour for execution
+  sessionLength: number; // average session length in minutes
+  manualHourlyRate: number; // cost if done manually
+  timeSavedPerSession: number; // time saved in minutes per session
+  annualSessions: number; // estimated annual sessions
+  annualTimeSaved: number; // annual time saved in hours
+  annualCostSaved: number; // annual cost saved
+  roi: number; // return on investment percentage
 }
 
 export interface AIAgent {
@@ -56,6 +70,7 @@ export interface AIAgent {
   isActive: boolean;
   services: Service[];
   llms: LLMModel[];
+  primaryLlm?: LLMModel; // The primary LLM used by the agent
   totalCost: number;
   servicesCost: number;
   llmCost: number;
@@ -64,6 +79,7 @@ export interface AIAgent {
   nodes: AgentNode[];
   sessions: AgentSession[];
   prompt?: string;
+  costAnalysis: CostAnalysis;
 }
 
 export interface LLMModelDetails {
@@ -221,7 +237,8 @@ const createMockAgent = (id: string, title: string, version: string, subtitle: s
     logo: 'SB',
     isActive,
     services: mockServices.slice(0, 3),
-    llms: ['GPT-4o Mini', 'Claude 3 Opus'], // Add some default LLMs
+    llms: ['GPT-4o Mini', 'Claude 3 Opus'],
+    primaryLlm: 'GPT-4o Mini',
     totalCost: 187.20,
     servicesCost: 187.20,
     llmCost: 187.20,
@@ -247,9 +264,39 @@ const createMockAgent = (id: string, title: string, version: string, subtitle: s
         cost: 18000,
         calls: 120,
         tokens: 5000,
+        llmId: '1', // GPT-4o
+        services: ['1', '2'], // Airtable, Apitemplate
         scores: {
           quality: 4.6,
           speed: 3.1
+        }
+      },
+      {
+        id: '2',
+        name: 'Customer profiling',
+        type: 'Claude',
+        cost: 12000,
+        calls: 78,
+        tokens: 3200,
+        llmId: '4', // Claude 3 Opus
+        services: ['3'], // Firecrawl
+        scores: {
+          quality: 4.8,
+          speed: 2.9
+        }
+      },
+      {
+        id: '3',
+        name: 'Sales recommendations',
+        type: 'GPT',
+        cost: 8500,
+        calls: 240,
+        tokens: 8900,
+        llmId: '2', // GPT-4o Mini
+        services: ['4', '5'], // Groq, HuggingFace
+        scores: {
+          quality: 4.2,
+          speed: 4.5
         }
       }
     ],
@@ -261,9 +308,20 @@ const createMockAgent = (id: string, title: string, version: string, subtitle: s
         llmCost: 25.20,
         servicesCost: 12.24,
         services: mockServices.slice(0, 2),
-        llms: ['GPT-4o Mini', 'Claude 3 Opus'] // Add some LLMs to sessions too
+        llms: ['GPT-4o Mini', 'Claude 3 Opus'],
+        duration: 15 // 15 minutes
       }
-    ]
+    ],
+    costAnalysis: {
+      hourlyRate: 149.76, // cost per hour for execution
+      sessionLength: 15, // average session length in minutes
+      manualHourlyRate: 75, // cost if done manually by a human
+      timeSavedPerSession: 45, // time saved in minutes per session (compared to manual)
+      annualSessions: 250, // estimated annual sessions
+      annualTimeSaved: 187.5, // annual time saved in hours
+      annualCostSaved: 14062.5, // annual cost saved
+      roi: 376 // return on investment percentage
+    }
   };
 };
 

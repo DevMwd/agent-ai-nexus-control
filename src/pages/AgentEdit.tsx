@@ -1,7 +1,8 @@
+
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { useAgents, AIAgent, LLMModel, LLMModelDetails } from '@/contexts/AgentContext';
-import { ArrowLeft, Save, Upload, X, Check } from 'lucide-react';
+import { useAgents, AIAgent, LLMModel, LLMModelDetails, CostAnalysis } from '@/contexts/AgentContext';
+import { ArrowLeft, Save, Upload, X, Check, DollarSign, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -13,6 +14,16 @@ import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Card, CardContent } from "@/components/ui/card";
+
+interface CostAnalysisFormData {
+  hourlyRate: number;
+  sessionLength: number;
+  manualHourlyRate: number;
+  timeSavedPerSession: number;
+  annualSessions: number;
+}
 
 const AgentEdit: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -25,6 +36,9 @@ const AgentEdit: React.FC = () => {
   // State for logo upload
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [logoFile, setLogoFile] = useState<File | null>(null);
+
+  // State for primary LLM
+  const [primaryLlm, setPrimaryLlm] = useState<LLMModel | undefined>(undefined);
   
   // Form state
   const form = useForm({
@@ -38,7 +52,14 @@ const AgentEdit: React.FC = () => {
       saving: 0,
       privacy: 0,
       selectedLlms: [] as LLMModel[],
-      prompt: ''
+      prompt: '',
+      costAnalysis: {
+        hourlyRate: 0,
+        sessionLength: 0,
+        manualHourlyRate: 0,
+        timeSavedPerSession: 0,
+        annualSessions: 0
+      } as CostAnalysisFormData
     }
   });
 
@@ -57,6 +78,7 @@ const AgentEdit: React.FC = () => {
     const foundAgent = agents.find(a => a.id === id);
     if (foundAgent) {
       setAgent(foundAgent);
+      setPrimaryLlm(foundAgent.primaryLlm);
       
       // Set form default values
       form.reset({
@@ -69,7 +91,14 @@ const AgentEdit: React.FC = () => {
         saving: foundAgent.scores.saving,
         privacy: foundAgent.scores.privacy,
         selectedLlms: foundAgent.llms,
-        prompt: foundAgent.prompt || "System prompt for this agent. In a real application, this would contain the actual prompt configuration."
+        prompt: foundAgent.prompt || "System prompt for this agent. In a real application, this would contain the actual prompt configuration.",
+        costAnalysis: {
+          hourlyRate: foundAgent.costAnalysis?.hourlyRate || 0,
+          sessionLength: foundAgent.costAnalysis?.sessionLength || 0,
+          manualHourlyRate: foundAgent.costAnalysis?.manualHourlyRate || 0,
+          timeSavedPerSession: foundAgent.costAnalysis?.timeSavedPerSession || 0,
+          annualSessions: foundAgent.costAnalysis?.annualSessions || 0
+        }
       });
       
       // Set logo preview if it's not a data URL (to avoid displaying base64 string)
@@ -83,11 +112,32 @@ const AgentEdit: React.FC = () => {
     }
   }, [id, agents, navigate, isAdmin, form, loading]);
 
+  const calculateRoi = (data: CostAnalysisFormData): CostAnalysis => {
+    const annualTimeSaved = (data.timeSavedPerSession * data.annualSessions) / 60; // convert to hours
+    const annualCostSaved = annualTimeSaved * data.manualHourlyRate;
+    const annualAgentCost = (data.hourlyRate * data.sessionLength * data.annualSessions) / 60; // convert to hours
+    const roi = annualCostSaved > 0 ? Math.round((annualCostSaved / annualAgentCost) * 100) : 0;
+
+    return {
+      hourlyRate: data.hourlyRate,
+      sessionLength: data.sessionLength,
+      manualHourlyRate: data.manualHourlyRate,
+      timeSavedPerSession: data.timeSavedPerSession,
+      annualSessions: data.annualSessions,
+      annualTimeSaved,
+      annualCostSaved,
+      roi
+    };
+  };
+
   const onSubmit = async (data: any) => {
     if (!agent || !id) return;
     
     try {
       setIsSubmitting(true);
+      
+      // Calculate ROI metrics
+      const costAnalysis = calculateRoi(data.costAnalysis);
       
       // Prepare the updated agent data
       const updatedAgent: Partial<AIAgent> & { id: string } = {
@@ -103,7 +153,9 @@ const AgentEdit: React.FC = () => {
           privacy: data.privacy
         },
         llms: data.selectedLlms,
-        prompt: data.prompt
+        primaryLlm,
+        prompt: data.prompt,
+        costAnalysis
       };
       
       // Handle logo update
@@ -149,7 +201,21 @@ const AgentEdit: React.FC = () => {
     const currentLlms = form.getValues('selectedLlms');
     if (currentLlms.includes(llm)) {
       form.setValue('selectedLlms', currentLlms.filter(l => l !== llm));
+      // If primary LLM is removed, reset it
+      if (primaryLlm === llm) {
+        setPrimaryLlm(undefined);
+      }
     } else {
+      form.setValue('selectedLlms', [...currentLlms, llm]);
+    }
+  };
+
+  const handlePrimaryLlmSelect = (llm: LLMModel) => {
+    setPrimaryLlm(llm);
+    
+    // Make sure this LLM is also selected in the list
+    const currentLlms = form.getValues('selectedLlms');
+    if (!currentLlms.includes(llm)) {
       form.setValue('selectedLlms', [...currentLlms, llm]);
     }
   };
@@ -236,167 +302,331 @@ const AgentEdit: React.FC = () => {
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white p-6 rounded-lg shadow-sm">
-              <h2 className="text-xl font-semibold mb-6">Basic Information</h2>
-              
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="title">Agent Title</Label>
-                  <Input
-                    id="title"
-                    {...form.register('title')}
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="subtitle">Subtitle</Label>
-                  <Input
-                    id="subtitle"
-                    {...form.register('subtitle')}
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="description">Description</Label>
-                  <Textarea
-                    id="description"
-                    {...form.register('description')}
-                    rows={3}
-                  />
-                </div>
-                
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="isActive"
-                    checked={form.watch('isActive')}
-                    onCheckedChange={(checked) => form.setValue('isActive', checked)}
-                  />
-                  <Label htmlFor="isActive" className="cursor-pointer">Active</Label>
-                </div>
-              </div>
-            </div>
+          <Tabs defaultValue="basic-info" className="w-full">
+            <TabsList className="mb-6">
+              <TabsTrigger value="basic-info">Basic Info</TabsTrigger>
+              <TabsTrigger value="llm-config">LLM Configuration</TabsTrigger>
+              <TabsTrigger value="cost-analysis">Cost Analysis & ROI</TabsTrigger>
+              <TabsTrigger value="prompt">Prompt</TabsTrigger>
+            </TabsList>
             
-            <div className="bg-white p-6 rounded-lg shadow-sm">
-              <h2 className="text-xl font-semibold mb-6">Performance Parameters</h2>
-              
-              <div className="space-y-6">
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <Label htmlFor="quality">Quality</Label>
-                    <span className="text-sm font-medium">{form.watch('quality')}/5</span>
+            <TabsContent value="basic-info">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-white p-6 rounded-lg shadow-sm">
+                  <h2 className="text-xl font-semibold mb-6">Basic Information</h2>
+                  
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="title">Agent Title</Label>
+                      <Input
+                        id="title"
+                        {...form.register('title')}
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="subtitle">Subtitle</Label>
+                      <Input
+                        id="subtitle"
+                        {...form.register('subtitle')}
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="description">Description</Label>
+                      <Textarea
+                        id="description"
+                        {...form.register('description')}
+                        rows={3}
+                      />
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        id="isActive"
+                        checked={form.watch('isActive')}
+                        onCheckedChange={(checked) => form.setValue('isActive', checked)}
+                      />
+                      <Label htmlFor="isActive" className="cursor-pointer">Active</Label>
+                    </div>
                   </div>
-                  <Slider
-                    id="quality"
-                    min={0}
-                    max={5}
-                    step={0.1}
-                    value={[form.watch('quality')]}
-                    onValueChange={(value) => form.setValue('quality', value[0])}
-                  />
                 </div>
                 
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <Label htmlFor="speed">Speed</Label>
-                    <span className="text-sm font-medium">{form.watch('speed')}/5</span>
+                <div className="bg-white p-6 rounded-lg shadow-sm">
+                  <h2 className="text-xl font-semibold mb-6">Performance Parameters</h2>
+                  
+                  <div className="space-y-6">
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <Label htmlFor="quality">Quality</Label>
+                        <span className="text-sm font-medium">{form.watch('quality')}/5</span>
+                      </div>
+                      <Slider
+                        id="quality"
+                        min={0}
+                        max={5}
+                        step={0.1}
+                        value={[form.watch('quality')]}
+                        onValueChange={(value) => form.setValue('quality', value[0])}
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <Label htmlFor="speed">Speed</Label>
+                        <span className="text-sm font-medium">{form.watch('speed')}/5</span>
+                      </div>
+                      <Slider
+                        id="speed"
+                        min={0}
+                        max={5}
+                        step={0.1}
+                        value={[form.watch('speed')]}
+                        onValueChange={(value) => form.setValue('speed', value[0])}
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <Label htmlFor="saving">Cost Efficiency</Label>
+                        <span className="text-sm font-medium">{form.watch('saving')}/5</span>
+                      </div>
+                      <Slider
+                        id="saving"
+                        min={0}
+                        max={5}
+                        step={0.1}
+                        value={[form.watch('saving')]}
+                        onValueChange={(value) => form.setValue('saving', value[0])}
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <Label htmlFor="privacy">Privacy</Label>
+                        <span className="text-sm font-medium">{form.watch('privacy')}/5</span>
+                      </div>
+                      <Slider
+                        id="privacy"
+                        min={0}
+                        max={5}
+                        step={0.1}
+                        value={[form.watch('privacy')]}
+                        onValueChange={(value) => form.setValue('privacy', value[0])}
+                      />
+                    </div>
                   </div>
-                  <Slider
-                    id="speed"
-                    min={0}
-                    max={5}
-                    step={0.1}
-                    value={[form.watch('speed')]}
-                    onValueChange={(value) => form.setValue('speed', value[0])}
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <Label htmlFor="saving">Cost Efficiency</Label>
-                    <span className="text-sm font-medium">{form.watch('saving')}/5</span>
-                  </div>
-                  <Slider
-                    id="saving"
-                    min={0}
-                    max={5}
-                    step={0.1}
-                    value={[form.watch('saving')]}
-                    onValueChange={(value) => form.setValue('saving', value[0])}
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <Label htmlFor="privacy">Privacy</Label>
-                    <span className="text-sm font-medium">{form.watch('privacy')}/5</span>
-                  </div>
-                  <Slider
-                    id="privacy"
-                    min={0}
-                    max={5}
-                    step={0.1}
-                    value={[form.watch('privacy')]}
-                    onValueChange={(value) => form.setValue('privacy', value[0])}
-                  />
                 </div>
               </div>
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white p-6 rounded-lg shadow-sm">
-              <h2 className="text-xl font-semibold mb-6">LLM Selection</h2>
-              <p className="text-gray-600 mb-4">
-                Select the language models this agent can use:
-              </p>
-              
-              <div className="grid grid-cols-1 gap-4 max-h-[400px] overflow-y-auto pr-2">
-                {llmModels.map((llm) => {
-                  const isSelected = form.watch('selectedLlms').includes(llm.name as LLMModel);
+            </TabsContent>
+            
+            <TabsContent value="llm-config">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-white p-6 rounded-lg shadow-sm">
+                  <h2 className="text-xl font-semibold mb-6">Primary LLM</h2>
+                  <p className="text-gray-600 mb-4">
+                    Select the main language model for this agent:
+                  </p>
                   
-                  return (
-                    <div 
-                      key={llm.id} 
-                      className={`flex items-center space-x-3 p-3 rounded-lg border cursor-pointer ${isSelected ? 'border-action-primary bg-action-50' : 'border-gray-200 hover:bg-gray-50'}`}
-                      onClick={() => handleLlmToggle(llm.name as LLMModel)}
-                    >
-                      <div className="flex items-center justify-center h-5 w-5">
-                        {isSelected ? (
-                          <div className="h-5 w-5 rounded bg-action-primary flex items-center justify-center">
-                            <Check className="h-3 w-3 text-white" />
+                  <div className="grid grid-cols-1 gap-4 max-h-[400px] overflow-y-auto pr-2">
+                    {llmModels.map((llm) => {
+                      const isPrimary = primaryLlm === llm.name;
+                      const isSelected = form.watch('selectedLlms').includes(llm.name as LLMModel);
+                      
+                      return (
+                        <div 
+                          key={`primary-${llm.id}`} 
+                          className={`flex items-center space-x-3 p-3 rounded-lg border cursor-pointer ${isPrimary ? 'border-green-500 bg-green-50' : 'border-gray-200 hover:bg-gray-50'}`}
+                          onClick={() => handlePrimaryLlmSelect(llm.name as LLMModel)}
+                        >
+                          <div className="flex items-center justify-center h-5 w-5">
+                            {isPrimary ? (
+                              <div className="h-5 w-5 rounded-full bg-green-500 flex items-center justify-center">
+                                <Check className="h-3 w-3 text-white" />
+                              </div>
+                            ) : (
+                              <div className="h-5 w-5 rounded-full border border-gray-300"></div>
+                            )}
                           </div>
-                        ) : (
-                          <div className="h-5 w-5 rounded border border-gray-300"></div>
-                        )}
+                          <div className="flex-1">
+                            <label className="text-sm font-medium cursor-pointer">{llm.name}</label>
+                            <p className="text-xs text-gray-500">Provider: {llm.provider}</p>
+                          </div>
+                          <div className="text-right text-xs">
+                            <p>Input: €{llm.inputCost.toFixed(6)}/token</p>
+                            <p>Output: €{llm.outputCost.toFixed(6)}/token</p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+                
+                <div className="bg-white p-6 rounded-lg shadow-sm">
+                  <h2 className="text-xl font-semibold mb-6">Available LLMs</h2>
+                  <p className="text-gray-600 mb-4">
+                    Select all the language models this agent can use across its nodes:
+                  </p>
+                  
+                  <div className="grid grid-cols-1 gap-4 max-h-[400px] overflow-y-auto pr-2">
+                    {llmModels.map((llm) => {
+                      const isSelected = form.watch('selectedLlms').includes(llm.name as LLMModel);
+                      
+                      return (
+                        <div 
+                          key={llm.id} 
+                          className={`flex items-center space-x-3 p-3 rounded-lg border cursor-pointer ${isSelected ? 'border-action-primary bg-action-50' : 'border-gray-200 hover:bg-gray-50'}`}
+                          onClick={() => handleLlmToggle(llm.name as LLMModel)}
+                        >
+                          <div className="flex items-center justify-center h-5 w-5">
+                            {isSelected ? (
+                              <div className="h-5 w-5 rounded bg-action-primary flex items-center justify-center">
+                                <Check className="h-3 w-3 text-white" />
+                              </div>
+                            ) : (
+                              <div className="h-5 w-5 rounded border border-gray-300"></div>
+                            )}
+                          </div>
+                          <div className="flex-1">
+                            <label className="text-sm font-medium cursor-pointer">{llm.name}</label>
+                            <p className="text-xs text-gray-500">Provider: {llm.provider}</p>
+                          </div>
+                          <div className="text-right text-xs">
+                            <p>Input: €{llm.inputCost.toFixed(6)}/token</p>
+                            <p>Output: €{llm.outputCost.toFixed(6)}/token</p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="cost-analysis">
+              <Card>
+                <CardContent className="p-6">
+                  <h2 className="text-xl font-semibold mb-6">Cost Analysis & ROI Settings</h2>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label className="flex items-center gap-2">
+                          <DollarSign className="h-4 w-4 text-green-600" />
+                          Agent Hourly Rate (€)
+                        </Label>
+                        <Input
+                          type="number"
+                          {...form.register('costAnalysis.hourlyRate', { valueAsNumber: true })}
+                          min={0}
+                          step={0.01}
+                        />
+                        <p className="text-sm text-gray-500">Cost per hour for the agent's execution</p>
                       </div>
-                      <div className="flex-1">
-                        <label className="text-sm font-medium cursor-pointer">{llm.name}</label>
-                        <p className="text-xs text-gray-500">Provider: {llm.provider}</p>
+                      
+                      <div className="space-y-2">
+                        <Label className="flex items-center gap-2">
+                          <Clock className="h-4 w-4 text-blue-600" />
+                          Average Session Length (minutes)
+                        </Label>
+                        <Input
+                          type="number"
+                          {...form.register('costAnalysis.sessionLength', { valueAsNumber: true })}
+                          min={0}
+                          step={1}
+                        />
+                        <p className="text-sm text-gray-500">Average duration of each agent session</p>
                       </div>
-                      <div className="text-right text-xs">
-                        <p>Input: €{llm.inputCost.toFixed(6)}/token</p>
-                        <p>Output: €{llm.outputCost.toFixed(6)}/token</p>
+                      
+                      <div className="space-y-2">
+                        <Label className="flex items-center gap-2">
+                          <DollarSign className="h-4 w-4 text-red-600" />
+                          Manual Process Hourly Rate (€)
+                        </Label>
+                        <Input
+                          type="number"
+                          {...form.register('costAnalysis.manualHourlyRate', { valueAsNumber: true })}
+                          min={0}
+                          step={0.01}
+                        />
+                        <p className="text-sm text-gray-500">Cost per hour if the task was done manually</p>
                       </div>
                     </div>
-                  );
-                })}
-              </div>
-            </div>
+                    
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label className="flex items-center gap-2">
+                          <Clock className="h-4 w-4 text-purple-600" />
+                          Time Saved Per Session (minutes)
+                        </Label>
+                        <Input
+                          type="number"
+                          {...form.register('costAnalysis.timeSavedPerSession', { valueAsNumber: true })}
+                          min={0}
+                          step={1}
+                        />
+                        <p className="text-sm text-gray-500">Time saved compared to manual process</p>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label className="flex items-center gap-2">
+                          <DollarSign className="h-4 w-4 text-orange-600" />
+                          Estimated Annual Sessions
+                        </Label>
+                        <Input
+                          type="number"
+                          {...form.register('costAnalysis.annualSessions', { valueAsNumber: true })}
+                          min={0}
+                          step={1}
+                        />
+                        <p className="text-sm text-gray-500">Expected number of sessions per year</p>
+                      </div>
+                      
+                      <div className="mt-8 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <h3 className="font-medium text-gray-700 mb-2">ROI Preview</h3>
+                        <p className="text-sm text-gray-600">
+                          Update the values above to see the calculated ROI metrics.
+                        </p>
+                        
+                        {(() => {
+                          const costData = form.watch('costAnalysis');
+                          const isDataValid = costData.hourlyRate > 0 && costData.sessionLength > 0 && costData.manualHourlyRate > 0;
+                          
+                          if (isDataValid) {
+                            const analysis = calculateRoi(costData);
+                            return (
+                              <div className="mt-3 space-y-1 text-sm">
+                                <p>Annual Time Saved: <span className="font-medium">{analysis.annualTimeSaved.toFixed(1)} hours</span></p>
+                                <p>Annual Cost Saved: <span className="font-medium">€{analysis.annualCostSaved.toFixed(2)}</span></p>
+                                <p>ROI: <span className="font-medium">{analysis.roi}%</span></p>
+                              </div>
+                            );
+                          }
+                          
+                          return null;
+                        })()}
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
             
-            <div className="bg-white p-6 rounded-lg shadow-sm">
-              <h2 className="text-xl font-semibold mb-6">Prompt Configuration</h2>
-              <p className="text-gray-600 mb-4">
-                Edit the system prompt used by this agent:
-              </p>
-              
-              <Textarea
-                {...form.register('prompt')}
-                rows={10}
-                className="font-mono"
-              />
-            </div>
-          </div>
+            <TabsContent value="prompt">
+              <div className="bg-white p-6 rounded-lg shadow-sm">
+                <h2 className="text-xl font-semibold mb-6">Prompt Configuration</h2>
+                <p className="text-gray-600 mb-4">
+                  Edit the system prompt used by this agent:
+                </p>
+                
+                <Textarea
+                  {...form.register('prompt')}
+                  rows={10}
+                  className="font-mono"
+                />
+              </div>
+            </TabsContent>
+          </Tabs>
           
           <div className="flex justify-end">
             <Button 
