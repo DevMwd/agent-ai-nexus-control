@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAgents } from '@/contexts/AgentContext';
@@ -16,6 +17,14 @@ const AgentDetails: React.FC = () => {
   const [agent, setAgent] = useState(currentAgent);
   const navigate = useNavigate();
   const { isAdmin } = useAuth();
+
+  // Prepare chart data for CategoryChart component
+  const categoryChartData = agent ? Object.entries(agent.categoriesDistribution)
+    .filter(([_, value]) => value > 0)
+    .map(([category, value]) => ({
+      name: category,
+      value: value
+    })) : [];
 
   useEffect(() => {
     if (id) {
@@ -161,7 +170,7 @@ const AgentDetails: React.FC = () => {
                   </div>
                   
                   <div className="h-64">
-                    <CategoryChart />
+                    <CategoryChart data={categoryChartData} />
                   </div>
                 </div>
                 
@@ -180,7 +189,7 @@ const AgentDetails: React.FC = () => {
                             <p className="text-xs text-gray-500">{service.category}</p>
                           </div>
                         </div>
-                        <Badge variant={service.hasFreetier ? "success" : "outline"} className="text-xs">
+                        <Badge variant={service.hasFreetier ? "secondary" : "outline"} className="text-xs">
                           {service.hasFreetier ? 'Free Tier' : 'Paid'}
                         </Badge>
                       </div>
