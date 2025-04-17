@@ -7,13 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Form, FormField, FormItem, FormLabel, FormControl, FormDescription } from '@/components/ui/form';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -360,7 +353,6 @@ const AgentEdit: React.FC = () => {
               
               <div className="grid grid-cols-1 gap-4 max-h-[400px] overflow-y-auto pr-2">
                 {llmModels.map((llm) => {
-                  // Use the name field for LLM models
                   const isSelected = form.watch('selectedLlms').includes(llm.name as LLMModel);
                   
                   return (
