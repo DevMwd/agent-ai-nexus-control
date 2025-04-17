@@ -26,7 +26,7 @@ const ScoreBar: React.FC<ScoreBarProps> = ({ label, value, maxValue, colorClass,
           ></div>
         </div>
       </div>
-      <div className="text-gray-700 font-medium w-10 text-right">
+      <div className="text-gray-700 font-medium w-16 text-right">
         {value}/{maxValue}
       </div>
     </div>
