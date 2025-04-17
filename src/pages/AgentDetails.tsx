@@ -89,7 +89,7 @@ const AgentDetails: React.FC = () => {
           <TabsTrigger value="settings" className="rounded-md data-[state=active]:bg-white">Settings</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="agent-stats">
+        <TabsContent value="agent-stats" className="bg-transparent">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
             {/* LLM optimization card */}
             <div className="bg-white p-6 rounded-xl shadow-sm lg:col-span-2">
