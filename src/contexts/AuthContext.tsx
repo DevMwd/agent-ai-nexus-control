@@ -27,7 +27,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check for saved user in localStorage on mount
     const savedUser = localStorage.getItem('user');
     if (savedUser) {
       setUser(JSON.parse(savedUser));
@@ -38,16 +37,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, password: string) => {
     setLoading(true);
     try {
-      // In a real app, this would make an API call
-      // For demo, we'll simulate a successful login with mock data
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // For demo purposes, create a default user
       const mockUser: User = {
         id: '1',
         username: 'demo_user',
         email: email,
-        role: 'owner', // Use 'admin' for admin privileges, 'owner' for highest level
+        role: 'owner', // Ensuring owner role for testing
         name: 'Demo User',
         profileImage: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix'
       };

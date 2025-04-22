@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAgents } from '@/contexts/AgentContext';
@@ -13,6 +12,12 @@ const Agents: React.FC = () => {
   const { isAdmin, isOwner } = useAuth();
 
   const handleManifestUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // Only allow upload for owners
+    if (!isOwner()) {
+      toast.error('You do not have permission to upload agent manifests');
+      return;
+    }
+
     const file = event.target.files?.[0];
     if (!file) return;
 

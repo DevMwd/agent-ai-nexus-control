@@ -212,6 +212,11 @@ const AgentEdit: React.FC = () => {
   };
 
   const downloadAgentManifest = () => {
+    if (!isOwner()) {
+      toast.error("You don't have permission to download agent manifests");
+      return;
+    }
+
     if (!agent) return;
     
     const manifest = {
