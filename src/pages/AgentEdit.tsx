@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAgents, AIAgent, LLMModel, LLMModelDetails, CostAnalysis } from '@/contexts/AgentContext';
@@ -33,14 +32,10 @@ const AgentEdit: React.FC = () => {
   const navigate = useNavigate();
   const { isAdmin } = useAuth();
   
-  // State for logo upload
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [logoFile, setLogoFile] = useState<File | null>(null);
-
-  // State for primary LLM
   const [primaryLlm, setPrimaryLlm] = useState<LLMModel | undefined>(undefined);
   
-  // Form state
   const form = useForm({
     defaultValues: {
       title: '',
@@ -64,23 +59,19 @@ const AgentEdit: React.FC = () => {
   });
 
   useEffect(() => {
-    // Redirect if not admin
     if (!isAdmin()) {
       toast.error("You don't have permission to edit agents");
       navigate('/agents');
       return;
     }
     
-    // Wait for agents to load
     if (loading) return;
     
-    // Find the agent by ID
     const foundAgent = agents.find(a => a.id === id);
     if (foundAgent) {
       setAgent(foundAgent);
       setPrimaryLlm(foundAgent.primaryLlm);
       
-      // Set form default values
       form.reset({
         title: foundAgent.title,
         subtitle: foundAgent.subtitle,
@@ -101,7 +92,6 @@ const AgentEdit: React.FC = () => {
         }
       });
       
-      // Set logo preview if it's not a data URL (to avoid displaying base64 string)
       if (typeof foundAgent.logo === 'string' && foundAgent.logo.length > 10 && 
           (foundAgent.logo.startsWith('http') || foundAgent.logo.startsWith('data:'))) {
         setLogoPreview(foundAgent.logo);
@@ -113,9 +103,9 @@ const AgentEdit: React.FC = () => {
   }, [id, agents, navigate, isAdmin, form, loading]);
 
   const calculateRoi = (data: CostAnalysisFormData): CostAnalysis => {
-    const annualTimeSaved = (data.timeSavedPerSession * data.annualSessions) / 60; // convert to hours
+    const annualTimeSaved = (data.timeSavedPerSession * data.annualSessions) / 60;
     const annualCostSaved = annualTimeSaved * data.manualHourlyRate;
-    const annualAgentCost = (data.hourlyRate * data.sessionLength * data.annualSessions) / 60; // convert to hours
+    const annualAgentCost = (data.hourlyRate * data.sessionLength * data.annualSessions) / 60;
     const roi = annualCostSaved > 0 ? Math.round((annualCostSaved / annualAgentCost) * 100) : 0;
 
     return {
@@ -136,10 +126,8 @@ const AgentEdit: React.FC = () => {
     try {
       setIsSubmitting(true);
       
-      // Calculate ROI metrics
       const costAnalysis = calculateRoi(data.costAnalysis);
       
-      // Prepare the updated agent data
       const updatedAgent: Partial<AIAgent> & { id: string } = {
         id,
         title: data.title,
@@ -158,24 +146,13 @@ const AgentEdit: React.FC = () => {
         costAnalysis
       };
       
-      // Handle logo update
       if (logoFile) {
-        // Using initials as fallback if file reading fails
-        const logoInitials = data.title.substring(0, 2).toUpperCase();
-        
-        // In a real app, we'd upload the image to a server.
-        // For this demo, we'll create a data URL but store it properly
         const reader = new FileReader();
         reader.onloadend = async () => {
-          // Store the logo properly
           if (reader.result) {
-            updatedAgent.logo = logoInitials; // Use initials instead of the base64 string
-            
-            // For a real app, you would do something like:
-            // const uploadResponse = await uploadLogoToServer(logoFile);
-            // updatedAgent.logo = uploadResponse.logoUrl;
+            updatedAgent.logo = reader.result as string;
           } else {
-            updatedAgent.logo = logoInitials;
+            updatedAgent.logo = agent.logo || data.title.substring(0, 2).toUpperCase();
           }
           
           await updateAgent(updatedAgent);
@@ -184,7 +161,6 @@ const AgentEdit: React.FC = () => {
         };
         reader.readAsDataURL(logoFile);
       } else {
-        // Keep existing logo or use initials
         updatedAgent.logo = agent.logo || data.title.substring(0, 2).toUpperCase();
         await updateAgent(updatedAgent);
         toast.success("Agent updated successfully");
@@ -201,7 +177,6 @@ const AgentEdit: React.FC = () => {
     const currentLlms = form.getValues('selectedLlms');
     if (currentLlms.includes(llm)) {
       form.setValue('selectedLlms', currentLlms.filter(l => l !== llm));
-      // If primary LLM is removed, reset it
       if (primaryLlm === llm) {
         setPrimaryLlm(undefined);
       }
@@ -213,13 +188,12 @@ const AgentEdit: React.FC = () => {
   const handlePrimaryLlmSelect = (llm: LLMModel) => {
     setPrimaryLlm(llm);
     
-    // Make sure this LLM is also selected in the list
     const currentLlms = form.getValues('selectedLlms');
     if (!currentLlms.includes(llm)) {
       form.setValue('selectedLlms', [...currentLlms, llm]);
     }
   };
-  
+
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -231,10 +205,68 @@ const AgentEdit: React.FC = () => {
       reader.readAsDataURL(file);
     }
   };
-  
+
   const clearLogoPreview = () => {
     setLogoPreview(null);
     setLogoFile(null);
+  };
+
+  const downloadAgentManifest = () => {
+    if (!agent) return;
+    
+    const manifest = {
+      manifest: {
+        metadata: {
+          version: "2.0",
+          title: agent.title,
+          description: agent.description,
+          tags: ["ai-agent", "assistant"]
+        },
+        kind: {
+          type: "interactive"
+        },
+        configuration: {
+          llms: agent.llms.map(llm => ({ name: llm })),
+          primaryLlm: agent.primaryLlm,
+          nodes: agent.nodes.map(node => ({
+            id: node.id,
+            name: node.name,
+            type: node.type,
+            llm: node.llmId
+          })),
+          services: agent.services.map(service => ({
+            id: service.id,
+            name: service.name,
+            category: service.category
+          }))
+        },
+        performance: {
+          scores: agent.scores,
+          roi: {
+            hourlyRate: agent.costAnalysis.hourlyRate,
+            sessionLength: agent.costAnalysis.sessionLength,
+            manualHourlyRate: agent.costAnalysis.manualHourlyRate,
+            timeSavedPerSession: agent.costAnalysis.timeSavedPerSession,
+            annualSessions: agent.costAnalysis.annualSessions
+          }
+        },
+        prompt: agent.prompt
+      }
+    };
+    
+    const manifestYaml = JSON.stringify(manifest, null, 2);
+    
+    const blob = new Blob([manifestYaml], { type: 'application/yaml' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${agent.title.toLowerCase().replace(/\s+/g, '-')}-manifest.yml`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    toast.success('Agent manifest downloaded successfully');
   };
 
   if (loading) {
@@ -628,7 +660,22 @@ const AgentEdit: React.FC = () => {
             </TabsContent>
           </Tabs>
           
-          <div className="flex justify-end">
+          <div className="flex justify-end gap-4">
+            {isOwner() && (
+              <Button 
+                type="button" 
+                variant="outline" 
+                className="flex items-center gap-2"
+                onClick={downloadAgentManifest}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Download Agent Manifest
+              </Button>
+            )}
             <Button 
               type="submit" 
               variant="action" 
@@ -642,7 +689,11 @@ const AgentEdit: React.FC = () => {
                 </>
               ) : (
                 <>
-                  <Save className="w-5 h-5" />
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                    <polyline points="7 3 7 8 15 8"></polyline>
+                  </svg>
                   Save Changes
                 </>
               )}

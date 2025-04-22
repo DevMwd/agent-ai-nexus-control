@@ -1,84 +1,84 @@
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
-export type UserRole = 'base' | 'admin' | 'owner';
-
-export interface Organization {
+interface User {
   id: string;
-  name: string;
-  description?: string;
-  createdAt: string;
-}
-
-export interface User {
-  id: string;
-  name: string;
+  username: string;
   email: string;
-  role: UserRole;
-  organizationId?: string;
-  organizationName?: string;
-  profileImage?: string;
+  role: 'user' | 'admin' | 'owner';
 }
 
 interface AuthContextType {
   user: User | null;
-  isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
+  isAuthenticated: () => boolean;
   isAdmin: () => boolean;
   isOwner: () => boolean;
-  isBaseUser: () => boolean;
+  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Check for saved user in localStorage on mount
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
+    setLoading(false);
+  }, []);
 
   const login = async (email: string, password: string) => {
-    // In a real app, this would be an API call
-    // For demo purposes, we're setting a mock user
-    const mockUser: User = {
-      id: '1',
-      name: 'Demo User',
-      email: email,
-      role: email.includes('admin') ? 'admin' : email.includes('owner') ? 'owner' : 'base',
-      profileImage: email.includes('owner') ? '/lovable-uploads/695db59c-0b86-4a3f-afbe-6cf313ac93e5.png' : undefined,
-      organizationId: email.includes('owner') ? undefined : '1',
-      organizationName: email.includes('owner') ? undefined : 'MWD'
-    };
-    
-    setUser(mockUser);
+    setLoading(true);
+    try {
+      // In a real app, this would make an API call
+      // For demo, we'll simulate a successful login with mock data
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // For demo purposes, create a default user
+      const mockUser: User = {
+        id: '1',
+        username: 'demo_user',
+        email: email,
+        role: 'owner' // Use 'admin' for admin privileges, 'owner' for highest level
+      };
+      
+      setUser(mockUser);
+      localStorage.setItem('user', JSON.stringify(mockUser));
+    } catch (error) {
+      console.error('Login error:', error);
+      throw new Error('Login failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const logout = () => {
     setUser(null);
+    localStorage.removeItem('user');
   };
 
-  const isAdmin = () => {
-    return user?.role === 'admin' || user?.role === 'owner';
-  };
+  const isAuthenticated = () => !!user;
+  
+  const isAdmin = () => isAuthenticated() && (user?.role === 'admin' || user?.role === 'owner');
 
-  const isOwner = () => {
-    return user?.role === 'owner';
-  };
-
-  const isBaseUser = () => {
-    return user?.role === 'base';
-  };
+  const isOwner = () => isAuthenticated() && user?.role === 'owner';
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isAuthenticated: !!user,
-        login,
-        logout,
-        isAdmin,
-        isOwner,
-        isBaseUser,
-      }}
-    >
+    <AuthContext.Provider value={{ 
+      user, 
+      login, 
+      logout, 
+      isAuthenticated, 
+      isAdmin,
+      isOwner,
+      loading 
+    }}>
       {children}
     </AuthContext.Provider>
   );
@@ -91,3 +91,5 @@ export const useAuth = () => {
   }
   return context;
 };
+
+export default AuthContext;

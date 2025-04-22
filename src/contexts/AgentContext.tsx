@@ -101,6 +101,7 @@ interface AgentContextType {
   currentAgent: AIAgent | null;
   setCurrentAgent: (agent: AIAgent | null) => void;
   updateAgent: (updatedAgent: Partial<AIAgent> & { id: string }) => void;
+  createAgentFromManifest: (manifestYaml: string) => Promise<void>;
   loading: boolean;
 }
 
@@ -390,6 +391,108 @@ export const AgentProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     }
   };
 
+  const createAgentFromManifest = async (manifestYaml: string) => {
+    try {
+      // In a real app, you would use a proper YAML parser
+      // For this demo, we'll assume it's a JSON string
+      const manifest = JSON.parse(manifestYaml);
+      
+      if (!manifest.manifest || !manifest.manifest.metadata) {
+        throw new Error('Invalid manifest format');
+      }
+      
+      const metaData = manifest.manifest.metadata;
+      const config = manifest.manifest.configuration || {};
+      const performance = manifest.manifest.performance || {};
+      
+      // Create a new agent ID
+      const newAgentId = `agent-${Date.now()}`;
+      
+      // Map services from manifest to actual service objects
+      const agentServices = config.services 
+        ? config.services.map((svc: any) => 
+            services.find(s => s.id === svc.id || s.name === svc.name)
+          ).filter(Boolean)
+        : [];
+      
+      // Create new agent
+      const newAgent: AIAgent = {
+        id: newAgentId,
+        title: metaData.title || 'Imported Agent',
+        version: metaData.version || '1.0',
+        subtitle: metaData.subtitle || '',
+        description: metaData.description || '',
+        logo: metaData.title.substring(0, 2).toUpperCase(),
+        isActive: true,
+        services: agentServices,
+        llms: config.llms ? config.llms.map((l: any) => l.name as LLMModel) : [],
+        primaryLlm: config.primaryLlm,
+        totalCost: 0,
+        servicesCost: 0,
+        llmCost: 0,
+        categoriesDistribution: {
+          'INTEGRATIONS': 0,
+          'REASONING': 0,
+          'DB': 0,
+          'DOCUMENT COMPOSITION': 0,
+          'SCRAPING - CRAWLING': 0,
+          'LLM PROVIDER': 0
+        },
+        scores: performance.scores || {
+          quality: 0,
+          speed: 0,
+          saving: 0,
+          privacy: 0
+        },
+        nodes: config.nodes 
+          ? config.nodes.map((node: any) => ({
+              id: node.id || `node-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+              name: node.name,
+              type: node.type || 'Generic',
+              cost: 0,
+              calls: 0,
+              tokens: 0,
+              llmId: node.llm
+            }))
+          : [],
+        sessions: [],
+        prompt: manifest.manifest.prompt || '',
+        costAnalysis: performance.roi || {
+          hourlyRate: 0,
+          sessionLength: 0,
+          manualHourlyRate: 0,
+          timeSavedPerSession: 0,
+          annualSessions: 0,
+          annualTimeSaved: 0,
+          annualCostSaved: 0,
+          roi: 0
+        }
+      };
+      
+      // Calculate ROI metrics if not provided
+      if (!newAgent.costAnalysis.annualTimeSaved) {
+        const annualTimeSaved = (newAgent.costAnalysis.timeSavedPerSession * newAgent.costAnalysis.annualSessions) / 60;
+        const annualCostSaved = annualTimeSaved * newAgent.costAnalysis.manualHourlyRate;
+        const annualAgentCost = (newAgent.costAnalysis.hourlyRate * newAgent.costAnalysis.sessionLength * newAgent.costAnalysis.annualSessions) / 60;
+        const roi = annualCostSaved > 0 ? Math.round((annualCostSaved / annualAgentCost) * 100) : 0;
+        
+        newAgent.costAnalysis.annualTimeSaved = annualTimeSaved;
+        newAgent.costAnalysis.annualCostSaved = annualCostSaved;
+        newAgent.costAnalysis.roi = roi;
+      }
+      
+      // Add the new agent to the database
+      await agentsDB.add(newAgent);
+      
+      // Update the agents state
+      setAgents(prevAgents => [...prevAgents, newAgent]);
+      
+    } catch (error) {
+      console.error('Error creating agent from manifest:', error);
+      throw error;
+    }
+  };
+
   return (
     <AgentContext.Provider
       value={{
@@ -399,6 +502,7 @@ export const AgentProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         currentAgent,
         setCurrentAgent,
         updateAgent,
+        createAgentFromManifest,
         loading
       }}
     >
