@@ -6,6 +6,8 @@ interface User {
   username: string;
   email: string;
   role: 'user' | 'admin' | 'owner';
+  name?: string;
+  profileImage?: string;
 }
 
 interface AuthContextType {
@@ -45,7 +47,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         id: '1',
         username: 'demo_user',
         email: email,
-        role: 'owner' // Use 'admin' for admin privileges, 'owner' for highest level
+        role: 'owner', // Use 'admin' for admin privileges, 'owner' for highest level
+        name: 'Demo User',
+        profileImage: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix'
       };
       
       setUser(mockUser);

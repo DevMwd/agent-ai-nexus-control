@@ -36,6 +36,13 @@ const Profile: React.FC = () => {
     });
   };
 
+  // Function to get the first character of the user's name or username
+  const getUserInitial = () => {
+    if (user?.name) return user.name.charAt(0).toUpperCase();
+    if (user?.username) return user.username.charAt(0).toUpperCase();
+    return 'U';
+  };
+
   return (
     <div className="container mx-auto px-6 py-8">
       <div className="flex justify-between items-center mb-8">
@@ -47,8 +54,8 @@ const Profile: React.FC = () => {
           <div className="flex flex-col items-center">
             <div className="relative mb-4">
               <Avatar className="w-36 h-36">
-                <AvatarImage src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Profile" />
-                <AvatarFallback className="text-4xl">{user?.name?.charAt(0) || 'U'}</AvatarFallback>
+                <AvatarImage src={user?.profileImage || "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"} alt="Profile" />
+                <AvatarFallback className="text-4xl">{getUserInitial()}</AvatarFallback>
               </Avatar>
               <button 
                 onClick={handlePhotoUpload}

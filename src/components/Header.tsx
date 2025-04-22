@@ -50,7 +50,7 @@ const Header: React.FC = () => {
 
   // Get first letter of user's name for avatar fallback
   const getInitials = () => {
-    return user?.name ? user.name.charAt(0).toUpperCase() : 'U';
+    return user?.name ? user.name.charAt(0).toUpperCase() : user?.username.charAt(0).toUpperCase() || 'U';
   };
 
   const renderNavItems = (onItemClick?: () => void) => (
@@ -95,7 +95,7 @@ const Header: React.FC = () => {
             <DropdownMenuTrigger asChild>
               <button className="p-1 h-10 w-10 rounded-full bg-white hover:bg-gray-100 transition-colors shadow-md flex items-center justify-center">
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src={user?.profileImage} alt={user?.name} />
+                  <AvatarImage src={user?.profileImage} alt={user?.name || user?.username} />
                   <AvatarFallback className="bg-indigo-200 text-indigo-900">{getInitials()}</AvatarFallback>
                 </Avatar>
               </button>
@@ -157,7 +157,7 @@ const Header: React.FC = () => {
             <DropdownMenuTrigger asChild>
               <button className="p-1 h-10 w-10 md:h-12 md:w-12 rounded-full bg-white hover:bg-gray-100 transition-colors shadow-md flex items-center justify-center">
                 <Avatar className="h-9 w-9 md:h-10 md:w-10">
-                  <AvatarImage src={user?.profileImage} alt={user?.name} />
+                  <AvatarImage src={user?.profileImage} alt={user?.name || user?.username} />
                   <AvatarFallback className="bg-indigo-200 text-indigo-900">{getInitials()}</AvatarFallback>
                 </Avatar>
               </button>

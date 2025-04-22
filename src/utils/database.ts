@@ -1,3 +1,4 @@
+
 import { AIAgent, Service, LLMModelDetails } from '@/contexts/AgentContext';
 
 class AgentsDatabase {
@@ -29,6 +30,10 @@ class AgentsDatabase {
     this.agents.push(newAgent);
   }
 
+  async create(newAgent: AIAgent): Promise<void> {
+    await this.add(newAgent);
+  }
+
   async delete(id: string): Promise<void> {
     this.agents = this.agents.filter(agent => agent.id !== id);
   }
@@ -55,6 +60,10 @@ class ServicesDatabase {
 
   async add(newService: Service): Promise<void> {
     this.services.push(newService);
+  }
+  
+  async create(newService: Service): Promise<void> {
+    await this.add(newService);
   }
 
   async update(updatedService: Partial<Service> & { id: string }): Promise<void> {
@@ -89,6 +98,10 @@ class LLMModelsDatabase {
 
   async add(newLLMModel: LLMModelDetails): Promise<void> {
     this.llmModels.push(newLLMModel);
+  }
+  
+  async create(newLLMModel: LLMModelDetails): Promise<void> {
+    await this.add(newLLMModel);
   }
 
   async update(updatedLLMModel: Partial<LLMModelDetails> & { id: string }): Promise<void> {

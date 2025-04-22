@@ -30,7 +30,7 @@ const AgentEdit: React.FC = () => {
   const [agent, setAgent] = useState<AIAgent | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const navigate = useNavigate();
-  const { isAdmin } = useAuth();
+  const { isAdmin, isOwner } = useAuth();
   
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [logoFile, setLogoFile] = useState<File | null>(null);
