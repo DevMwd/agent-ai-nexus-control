@@ -1,6 +1,5 @@
-
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAgents, LLMModelDetails } from '@/contexts/AgentContext';
 import { ArrowLeft, Zap, Timer, PiggyBank, Shield, Settings, Cog, TrendingUp, Clock, DollarSign } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -17,6 +16,18 @@ const AgentChat: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { agents, llmModels, currentAgent, setCurrentAgent, loading } = useAgents();
   const [agent, setAgent] = useState(currentAgent);
+  const location = useLocation();
+
+  // Lettura della query string per capire quale tab mostrare di default
+  function getTabFromQuery() {
+    const params = new URLSearchParams(location.search);
+    return params.get('tab') || 'agent-stats';
+  }
+  const [currentTab, setCurrentTab] = useState(getTabFromQuery());
+
+  useEffect(() => {
+    setCurrentTab(getTabFromQuery());
+  }, [location.search]);
 
   // Prepare chart data for cost distribution
   const costCategoryData = agent ? Object.entries(agent.categoriesDistribution)
@@ -99,7 +110,7 @@ const AgentChat: React.FC = () => {
       </p>
 
       {/* Tabs navigation */}
-      <Tabs defaultValue="agent-stats" className="mb-8">
+      <Tabs value={currentTab} onValueChange={setCurrentTab} className="mb-8">
         <TabsList className="bg-blue-100 p-1 rounded-full w-full max-w-3xl mx-auto mb-8">
           <TabsTrigger 
             value="agent-stats" 

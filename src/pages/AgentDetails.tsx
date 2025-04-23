@@ -36,7 +36,8 @@ const AgentDetails: React.FC = () => {
   }, [id, agents, setCurrentAgent]);
 
   const handleChatWithAgent = () => {
-    navigate(`/agents/${id}/chat`);
+    // Naviga alla chat con il tab agent-stats attivo
+    navigate(`/agents/${id}/chat?tab=agent-stats`);
   };
 
   return (
