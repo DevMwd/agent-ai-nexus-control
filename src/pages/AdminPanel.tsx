@@ -2,7 +2,6 @@
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 
-// Since Organization doesn't exist, we'll create a simple admin panel without it
 const AdminPanel: React.FC = () => {
   const { isAdmin, isOwner } = useAuth();
   
