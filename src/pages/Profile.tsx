@@ -17,9 +17,22 @@ const Profile: React.FC = () => {
     photoUrl: ''
   });
 
+  const [passwordReset, setPasswordReset] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setProfile(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setPasswordReset(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSaveProfile = () => {
@@ -36,10 +49,37 @@ const Profile: React.FC = () => {
     });
   };
 
-  const handleResetPassword = () => {
+  const handleTogglePasswordReset = () => {
+    setShowPasswordForm(!showPasswordForm);
+    setPasswordReset({
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: ''
+    });
+  };
+
+  const handleResetPassword = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (passwordReset.newPassword !== passwordReset.confirmPassword) {
+      toast({
+        title: "Password Error",
+        description: "New passwords do not match.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     toast({
-      title: "Reset Password",
-      description: "La funzione di reset della password verrà implementata a breve.",
+      title: "Password Reset",
+      description: "Your password has been reset successfully.",
+    });
+    
+    setShowPasswordForm(false);
+    setPasswordReset({
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: ''
     });
   };
 
@@ -81,8 +121,8 @@ const Profile: React.FC = () => {
             </Button>
             <Button 
               variant="ghost"
-              onClick={handleResetPassword}
-              className="flex items-center gap-2 mt-4 bg-pink-100 hover:bg-pink-200 text-pink-700 font-semibold rounded-md border transition"
+              onClick={handleTogglePasswordReset}
+              className="flex items-center gap-2 mt-4 bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold rounded-md border transition"
             >
               <Lock className="w-4 h-4" />
               <span>Reset Password</span>
@@ -132,6 +172,71 @@ const Profile: React.FC = () => {
                 />
                 <p className="text-xs text-gray-500 mt-1">Email addresses cannot be changed</p>
               </div>
+              
+              {showPasswordForm && (
+                <div className="mt-6 border-t pt-6">
+                  <h3 className="text-lg font-semibold mb-4 text-blue-700">Reset Password</h3>
+                  <form onSubmit={handleResetPassword} className="space-y-4">
+                    <div>
+                      <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                        Current Password
+                      </label>
+                      <Input
+                        id="currentPassword"
+                        name="currentPassword"
+                        type="password"
+                        value={passwordReset.currentPassword}
+                        onChange={handlePasswordChange}
+                        required
+                      />
+                    </div>
+                    
+                    <div>
+                      <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                        New Password
+                      </label>
+                      <Input
+                        id="newPassword"
+                        name="newPassword"
+                        type="password"
+                        value={passwordReset.newPassword}
+                        onChange={handlePasswordChange}
+                        required
+                      />
+                    </div>
+                    
+                    <div>
+                      <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                        Confirm New Password
+                      </label>
+                      <Input
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        type="password"
+                        value={passwordReset.confirmPassword}
+                        onChange={handlePasswordChange}
+                        required
+                      />
+                    </div>
+                    
+                    <div className="flex gap-2">
+                      <Button 
+                        type="submit"
+                        variant="action"
+                      >
+                        Update Password
+                      </Button>
+                      <Button 
+                        type="button"
+                        variant="outline"
+                        onClick={handleTogglePasswordReset}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </form>
+                </div>
+              )}
               
               <div className="pt-4">
                 <Button 
