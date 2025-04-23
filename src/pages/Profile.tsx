@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/use-toast';
-import { Edit, Upload } from 'lucide-react';
+import { Edit, Upload, Lock } from 'lucide-react';
 
 const Profile: React.FC = () => {
   const { user } = useAuth();
@@ -33,6 +33,13 @@ const Profile: React.FC = () => {
     toast({
       title: "Photo Upload",
       description: "Profile photo upload will be implemented in a future update.",
+    });
+  };
+
+  const handleResetPassword = () => {
+    toast({
+      title: "Reset Password",
+      description: "La funzione di reset della password verrà implementata a breve.",
     });
   };
 
@@ -71,6 +78,14 @@ const Profile: React.FC = () => {
             >
               <Upload className="w-4 h-4" />
               <span>Upload Photo</span>
+            </Button>
+            <Button 
+              variant="ghost"
+              onClick={handleResetPassword}
+              className="flex items-center gap-2 mt-4 bg-pink-100 hover:bg-pink-200 text-pink-700 font-semibold rounded-md border transition"
+            >
+              <Lock className="w-4 h-4" />
+              <span>Reset Password</span>
             </Button>
           </div>
 
