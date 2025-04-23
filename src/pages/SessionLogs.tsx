@@ -1,5 +1,11 @@
+
 import React, { useState } from 'react';
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
+import { 
+  Accordion, 
+  AccordionItem, 
+  AccordionTrigger, 
+  AccordionContent 
+} from '@/components/ui/accordion';
 import { Calendar, Filter, Download, Search } from 'lucide-react';
 
 type SessionStep = {
@@ -164,70 +170,69 @@ const SessionLogs: React.FC = () => {
         </div>
 
         <div className="overflow-x-auto">
-          <Accordion type="single" collapsible value={expanded ?? undefined}>
-            <table className="min-w-full">
-              <thead>
-                <tr className="bg-gray-50 border-b">
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    ID
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Agent
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    User
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Date & Time
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Duration
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    LLM Cost
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Services Cost
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Total Cost
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
+          <table className="min-w-full">
+            <thead>
+              <tr className="bg-gray-50 border-b">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  ID
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Agent
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  User
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Date & Time
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Duration
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  LLM Cost
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Services Cost
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Total Cost
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              <Accordion type="single" collapsible value={expanded ?? undefined} className="w-full">
                 {sessionLogs.map(row => (
-                  <React.Fragment key={row.id}>
-                    <AccordionItem value={row.id} asChild>
-                      <tr
-                        className={`hover:bg-blue-50 cursor-pointer ${expanded === row.id ? "ring-2 ring-blue-200" : ""}`}
-                        onClick={() => row.steps ? handleAccordion(row.id) : undefined}
-                        style={row.steps ? { transition: 'background .15s' } : {}}
-                      >
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-600 font-medium">
-                          {row.id}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm">{row.agent}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm">{row.user}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm">{row.datetime}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm">{row.duration}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm">{row.llmCost}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm">{row.servicesCost}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{row.totalCost}</td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusColor[row.status]}`}>
-                            {row.status}
-                          </span>
-                        </td>
-                      </tr>
-                    </AccordionItem>
+                  <AccordionItem value={row.id} key={row.id} className="border-0">
+                    <tr
+                      className={`hover:bg-blue-50 cursor-pointer ${expanded === row.id ? "ring-2 ring-blue-200" : ""}`}
+                      onClick={() => row.steps ? handleAccordion(row.id) : undefined}
+                      style={row.steps ? { transition: 'background .15s' } : {}}
+                    >
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-600 font-medium">
+                        {row.id}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">{row.agent}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">{row.user}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">{row.datetime}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">{row.duration}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">{row.llmCost}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">{row.servicesCost}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{row.totalCost}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusColor[row.status]}`}>
+                          {row.status}
+                        </span>
+                      </td>
+                    </tr>
+                    
                     {row.steps && (
-                      <AccordionContent asChild forceMount>
-                        <tr>
-                          <td colSpan={9} className="bg-gray-50 px-6 py-4">
-                            <div>
+                      <tr>
+                        <td colSpan={9} className="p-0 border-0">
+                          <AccordionContent>
+                            <div className="bg-gray-50 px-6 py-4">
                               <div className="font-semibold mb-2 text-gray-700">Session Steps</div>
                               <table className="w-full text-sm border">
                                 <thead>
@@ -267,15 +272,15 @@ const SessionLogs: React.FC = () => {
                                 </tbody>
                               </table>
                             </div>
-                          </td>
-                        </tr>
-                      </AccordionContent>
+                          </AccordionContent>
+                        </td>
+                      </tr>
                     )}
-                  </React.Fragment>
+                  </AccordionItem>
                 ))}
-              </tbody>
-            </table>
-          </Accordion>
+              </Accordion>
+            </tbody>
+          </table>
         </div>
 
         <div className="flex justify-between items-center mt-6">
