@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Input } from '@/components/ui/input';
@@ -11,6 +10,21 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/components/ui/use-toast';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+
+const ROLES_OPTIONS = [
+  { id: 1, name: 'admin', label: 'Admin' },
+  { id: 2, name: 'user', label: 'User' },
+  { id: 3, name: 'editor', label: 'Editor' },
+];
+
+const PERMISSIONS = [
+  { value: 'Full access', label: 'Full access' },
+  { value: 'Limited access', label: 'Limited access' },
+  { value: 'Content management', label: 'Content management' },
+  { value: 'Analytics only', label: 'Analytics only' },
+  { value: 'API only', label: 'API only' },
+];
 
 const AdminPanel: React.FC = () => {
   const { isAdmin } = useAuth();
@@ -64,6 +78,20 @@ const AdminPanel: React.FC = () => {
     authType: "Bearer"
   });
   const [apiSaved, setApiSaved] = useState(false);
+
+  // Modifica handlers utente e ruolo per gestione Select dropdown
+  const handleUserRoleSelect = (value: string) => {
+    setNewUser({ ...newUser, role: value });
+  };
+  const handleEditingUserRoleSelect = (value: string) => {
+    setEditingUser({ ...editingUser, role: value });
+  };
+  const handleRolePermissionSelect = (value: string) => {
+    setNewRole({ ...newRole, permissions: value });
+  };
+  const handleEditingRolePermissionSelect = (value: string) => {
+    setEditingRole({ ...editingRole, permissions: value });
+  };
 
   // User Management handlers
   const handleUserChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -217,17 +245,17 @@ const AdminPanel: React.FC = () => {
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center gap-3 mb-8">
           <LayoutDashboard className="w-9 h-9 text-blue-700" />
-          <h1 className="text-4xl md:text-5xl font-black bg-gradient-to-br from-blue-700 via-indigo-600 to-blue-500 text-transparent bg-clip-text drop-shadow">Admin Panel</h1>
+          <h1 className="text-4xl md:text-5xl font-black bg-gradient-to-br from-blue-700 via-indigo-600 to-blue-500 text-transparent bg-clip-text drop-shadow">
+            Admin Panel
+          </h1>
         </div>
-        
-        <Card className={"shadow-xl border-0"}>
+        <Card className="shadow-xl border-0">
           <CardHeader className="pb-0">
             <CardTitle className="flex gap-2 items-center text-2xl mb-1">
               <Badge variant="outline" className="bg-blue-100 text-blue-700">Admin Control Center</Badge>
             </CardTitle>
-            <CardDescription>Manage all aspects of the platform from a single dashboard.</CardDescription>
+            <CardDescription>Gestisci tutti gli aspetti della piattaforma da questa dashboard strutturata.</CardDescription>
           </CardHeader>
-          
           <CardContent className="pt-4">
             <Tabs defaultValue="users" className="w-full">
               <TabsList className="mb-3 px-2 flex bg-gradient-to-br from-white via-blue-50 to-indigo-50 rounded-lg shadow-inner">
@@ -240,147 +268,179 @@ const AdminPanel: React.FC = () => {
               
               {/* User Management */}
               <TabsContent value="users">
-                <div className="md:flex md:items-center md:justify-between mb-6">
-                  <div>
-                    <div className="flex gap-2 items-center">
-                      <User className="w-6 h-6 text-blue-600" />
-                      <h2 className="text-xl font-extrabold tracking-tight">User Management</h2>
-                      <Badge variant="secondary" className="bg-blue-200 text-blue-700 ml-2">Management</Badge>
+                <div className="grid md:grid-cols-2 gap-8">
+                  {/* CREATE USER */}
+                  <section className="bg-blue-50 border rounded-xl shadow p-6 flex flex-col">
+                    <div className="flex gap-2 items-center mb-2">
+                      <UserPlus className="w-5 h-5 text-blue-600" />
+                      <h2 className="text-lg font-extrabold tracking-tight text-blue-700">Crea nuovo utente</h2>
                     </div>
-                    <div className="text-gray-500 mt-1 mb-3">Manage accounts, roles and permissions on the platform. Edit, add and update users.</div>
-                  </div>
-                  {!addingUser && (
-                    <Button variant="action" size="sm" onClick={handleUserAdd} className="mt-3 md:mt-0">
-                      <UserPlus className="w-4 h-4 mr-1" /> New user
-                    </Button>
-                  )}
-                </div>
-                
-                {addingUser && (
-                  <form onSubmit={handleUserCreate} className="mb-4 grid grid-cols-1 md:grid-cols-4 gap-2 p-4 rounded-lg bg-blue-50 border">
-                    <Input required name="username" placeholder="Username" value={newUser.username} onChange={handleNewUserChange} />
-                    <Input required name="email" placeholder="Email" value={newUser.email} onChange={handleNewUserChange} />
-                    <Input name="role" placeholder="Role" value={newUser.role} onChange={handleNewUserChange} />
-                    <div className="flex gap-1 items-center justify-end">
-                      <Button type="submit" variant="outline" size="sm" ><Save size={16}/></Button>
-                      <Button type="button" variant="outline" size="sm" onClick={handleUserAddCancel}><X size={16}/></Button>
+                    <form onSubmit={handleUserCreate} className="flex flex-col gap-3 mt-2">
+                      <Input required name="username" placeholder="Username" value={newUser.username} onChange={handleNewUserChange} autoComplete="off" />
+                      <Input required type="email" name="email" placeholder="Email" value={newUser.email} onChange={handleNewUserChange} autoComplete="off" />
+                      <Select value={newUser.role} onValueChange={handleUserRoleSelect}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Ruolo utente" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {ROLES_OPTIONS.map(opt => (
+                            <SelectItem value={opt.name} key={opt.id}>{opt.label}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <div className="flex gap-2 items-center justify-end mt-3">
+                        <Button type="submit" variant="action" size="sm"><Save size={16}/> Crea</Button>
+                        <Button type="button" variant="outline" size="sm" onClick={handleUserAddCancel}><X size={16}/>Reset</Button>
+                      </div>
+                    </form>
+                  </section>
+                  {/* USERS TABLE + EDIT */}
+                  <section className="bg-white border rounded-xl shadow p-6">
+                    <div className="flex gap-2 items-center mb-2">
+                      <User className="w-5 h-5 text-blue-600" />
+                      <h2 className="text-lg font-extrabold tracking-tight text-blue-700">Utenti registrati</h2>
                     </div>
-                  </form>
-                )}
-                
-                <div className="overflow-x-auto rounded-2xl border shadow bg-white/95">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Username</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Role</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {users.map(user =>
-                        editingUser && editingUser.id === user.id ? (
-                          <TableRow key={user.id} className="bg-blue-50/60">
-                            <TableCell>
-                              <Input name="username" className="rounded" value={editingUser.username} onChange={handleUserChange} />
-                            </TableCell>
-                            <TableCell>
-                              <Input name="email" className="rounded" value={editingUser.email} onChange={handleUserChange} />
-                            </TableCell>
-                            <TableCell>
-                              <Input name="role" className="rounded" value={editingUser.role} onChange={handleUserChange} />
-                            </TableCell>
-                            <TableCell className="flex gap-2">
-                              <Button variant="outline" size="sm" onClick={handleUserSave}><Save size={16}/></Button>
-                              <Button variant="outline" size="sm" onClick={handleUserCancel}><X size={16}/></Button>
-                            </TableCell>
+                    <div className="overflow-x-auto rounded-xl">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Username</TableHead>
+                            <TableHead>Email</TableHead>
+                            <TableHead>Ruolo</TableHead>
+                            <TableHead>Azioni</TableHead>
                           </TableRow>
-                        ) : (
-                          <TableRow key={user.id} className="hover:bg-blue-50/40">
-                            <TableCell>{user.username}</TableCell>
-                            <TableCell>{user.email}</TableCell>
-                            <TableCell><Badge variant="outline" className="bg-blue-50 text-blue-700">{user.role}</Badge></TableCell>
-                            <TableCell>
-                              <Button variant="outline" size="sm" onClick={() => handleUserEdit(user)}>
-                                <Edit size={16} className="mr-1"/> Edit
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        )
-                      )}
-                    </TableBody>
-                  </Table>
+                        </TableHeader>
+                        <TableBody>
+                          {users.map(user =>
+                            editingUser && editingUser.id === user.id ? (
+                              <TableRow key={user.id} className="bg-blue-50/60">
+                                <TableCell>
+                                  <Input name="username" className="rounded" value={editingUser.username} onChange={handleUserChange} />
+                                </TableCell>
+                                <TableCell>
+                                  <Input name="email" className="rounded" value={editingUser.email} onChange={handleUserChange} />
+                                </TableCell>
+                                <TableCell>
+                                  <Select value={editingUser.role} onValueChange={handleEditingUserRoleSelect}>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Ruolo" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {ROLES_OPTIONS.map(opt => (
+                                        <SelectItem value={opt.name} key={opt.id}>{opt.label}</SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </TableCell>
+                                <TableCell className="flex gap-2">
+                                  <Button variant="outline" size="sm" onClick={handleUserSave}><Save size={16}/></Button>
+                                  <Button variant="outline" size="sm" onClick={handleUserCancel}><X size={16}/></Button>
+                                </TableCell>
+                              </TableRow>
+                            ) : (
+                              <TableRow key={user.id} className="hover:bg-blue-50/40">
+                                <TableCell>{user.username}</TableCell>
+                                <TableCell>{user.email}</TableCell>
+                                <TableCell>
+                                  <Badge variant="outline" className="bg-blue-50 text-blue-700">{user.role}</Badge>
+                                </TableCell>
+                                <TableCell>
+                                  <Button variant="outline" size="sm" onClick={() => handleUserEdit(user)}>
+                                    <Edit size={16} className="mr-1"/> Modifica
+                                  </Button>
+                                </TableCell>
+                              </TableRow>
+                            )
+                          )}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </section>
                 </div>
               </TabsContent>
-              
+
               {/* Role Management */}
               <TabsContent value="roles">
-                <div className="md:flex md:items-center md:justify-between mb-6">
-                  <div>
-                    <div className="flex gap-2 items-center">
-                      <Shield className="w-6 h-6 text-indigo-600" />
-                      <h2 className="text-xl font-extrabold tracking-tight">Role Management</h2>
-                      <Badge variant="secondary" className="bg-indigo-200 text-indigo-700 ml-2">Security</Badge>
+                <div className="grid md:grid-cols-2 gap-8">
+                  {/* CREA RUOLO */}
+                  <section className="bg-purple-50 border rounded-xl shadow p-6 flex flex-col">
+                    <div className="flex gap-2 items-center mb-2">
+                      <Plus className="w-5 h-5 text-indigo-600" />
+                      <h2 className="text-lg font-extrabold tracking-tight text-indigo-800">Crea nuovo ruolo</h2>
                     </div>
-                    <div className="text-gray-500 mt-1 mb-3">Define and manage roles and their permissions.</div>
-                  </div>
-                  {!addingRole && (
-                    <Button variant="action" size="sm" onClick={handleRoleAdd} className="mt-3 md:mt-0">
-                      <Plus className="w-4 h-4 mr-1" /> New role
-                    </Button>
-                  )}
-                </div>
-                
-                {addingRole && (
-                  <form onSubmit={handleRoleCreate} className="mb-4 grid grid-cols-1 md:grid-cols-3 gap-2 p-4 rounded-lg bg-indigo-50 border">
-                    <Input required name="name" placeholder="Role Name" value={newRole.name} onChange={handleNewRoleChange} />
-                    <Input required name="permissions" placeholder="Permissions" value={newRole.permissions} onChange={handleNewRoleChange} />
-                    <div className="flex gap-1 items-center justify-end">
-                      <Button type="submit" variant="outline" size="sm" ><Save size={16}/></Button>
-                      <Button type="button" variant="outline" size="sm" onClick={handleRoleAddCancel}><X size={16}/></Button>
+                    <form onSubmit={handleRoleCreate} className="flex flex-col gap-3 mt-2">
+                      <Input required name="name" placeholder="Nome ruolo" value={newRole.name} onChange={handleNewRoleChange} autoComplete="off" />
+                      <Select value={newRole.permissions} onValueChange={handleRolePermissionSelect}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Tipo di permessi" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {PERMISSIONS.map(opt => (
+                            <SelectItem value={opt.value} key={opt.value}>{opt.label}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <div className="flex gap-2 items-center justify-end mt-3">
+                        <Button type="submit" variant="action" size="sm"><Save size={16}/> Crea</Button>
+                        <Button type="button" variant="outline" size="sm" onClick={handleRoleAddCancel}><X size={16}/>Reset</Button>
+                      </div>
+                    </form>
+                  </section>
+                  {/* RUOLI TABLE + EDIT */}
+                  <section className="bg-white border rounded-xl shadow p-6">
+                    <div className="flex gap-2 items-center mb-2">
+                      <Shield className="w-5 h-5 text-indigo-600" />
+                      <h2 className="text-lg font-extrabold tracking-tight text-indigo-800">Ruoli disponibili</h2>
                     </div>
-                  </form>
-                )}
-                
-                <div className="overflow-x-auto rounded-2xl border shadow bg-white/95">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Role Name</TableHead>
-                        <TableHead>Permissions</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {roles.map(role =>
-                        editingRole && editingRole.id === role.id ? (
-                          <TableRow key={role.id} className="bg-indigo-50/60">
-                            <TableCell>
-                              <Input name="name" className="rounded" value={editingRole.name} onChange={handleRoleChange} />
-                            </TableCell>
-                            <TableCell>
-                              <Input name="permissions" className="rounded" value={editingRole.permissions} onChange={handleRoleChange} />
-                            </TableCell>
-                            <TableCell className="flex gap-2">
-                              <Button variant="outline" size="sm" onClick={handleRoleSave}><Save size={16}/></Button>
-                              <Button variant="outline" size="sm" onClick={handleRoleCancel}><X size={16}/></Button>
-                            </TableCell>
+                    <div className="overflow-x-auto rounded-xl">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Ruolo</TableHead>
+                            <TableHead>Permessi</TableHead>
+                            <TableHead>Azioni</TableHead>
                           </TableRow>
-                        ) : (
-                          <TableRow key={role.id} className="hover:bg-indigo-50/40">
-                            <TableCell>{role.name}</TableCell>
-                            <TableCell>{role.permissions}</TableCell>
-                            <TableCell>
-                              <Button variant="outline" size="sm" onClick={() => handleRoleEdit(role)}>
-                                <Edit size={16} className="mr-1"/> Edit
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        )
-                      )}
-                    </TableBody>
-                  </Table>
+                        </TableHeader>
+                        <TableBody>
+                          {roles.map(role =>
+                            editingRole && editingRole.id === role.id ? (
+                              <TableRow key={role.id} className="bg-indigo-50/60">
+                                <TableCell>
+                                  <Input name="name" className="rounded" value={editingRole.name} onChange={handleRoleChange} />
+                                </TableCell>
+                                <TableCell>
+                                  <Select value={editingRole.permissions} onValueChange={handleEditingRolePermissionSelect}>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Permessi" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {PERMISSIONS.map(opt => (
+                                        <SelectItem value={opt.value} key={opt.value}>{opt.label}</SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </TableCell>
+                                <TableCell className="flex gap-2">
+                                  <Button variant="outline" size="sm" onClick={handleRoleSave}><Save size={16}/></Button>
+                                  <Button variant="outline" size="sm" onClick={handleRoleCancel}><X size={16}/></Button>
+                                </TableCell>
+                              </TableRow>
+                            ) : (
+                              <TableRow key={role.id} className="hover:bg-indigo-50/40">
+                                <TableCell>{role.name}</TableCell>
+                                <TableCell>{role.permissions}</TableCell>
+                                <TableCell>
+                                  <Button variant="outline" size="sm" onClick={() => handleRoleEdit(role)}>
+                                    <Edit size={16} className="mr-1"/> Modifica
+                                  </Button>
+                                </TableCell>
+                              </TableRow>
+                            )
+                          )}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </section>
                 </div>
               </TabsContent>
 
